@@ -167,6 +167,7 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
                         {_t("Select tags to help categorize your article.")}
                       </FormDescription>
                       <FormControl>
+                        {/* https://shadcnui-expansions.typeart.cc/docs/multiple-selector#Async%20Search%20and%20Creatable%20and%20Group */}
                         <MultipleSelector
                           maxSelected={10}
                           onSearch={async (searchTerm) => {
