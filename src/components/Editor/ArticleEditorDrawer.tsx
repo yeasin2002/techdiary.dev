@@ -1,17 +1,18 @@
 "use client";
 
-import { Article } from "@/backend/models/domain-models";
+import { Article, Tag } from "@/backend/models/domain-models";
 import * as articleActions from "@/backend/services/article.actions";
+import * as tagActions from "@/backend/services/tag.action";
 import { ArticleRepositoryInput } from "@/backend/services/inputs/article.input";
-import MultipleSelector, { Option } from "@/components/ui/multi-select";
+import MultipleSelector from "@/components/ui/multi-select";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { useTranslation } from "@/i18n/use-translation";
 import { useSession } from "@/store/session.atom";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { LinkIcon } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { LinkIcon, Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../ui/button";
@@ -25,7 +26,6 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { InputTags } from "../ui/input-tags";
 import { Sheet, SheetContent } from "../ui/sheet";
 import { Textarea } from "../ui/textarea";
 
@@ -39,10 +39,6 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
   const session = useSession();
   const { _t } = useTranslation();
   const router = useRouter();
-  const setDebounceHandler = useDebouncedCallback(async (slug: string) => {
-    const handle = await articleActions.getUniqueArticleHandle(slug);
-    form.setValue("handle", handle);
-  }, 2000);
   const updateMyArticleMutation = useMutation({
     mutationFn: (
       input: z.infer<typeof ArticleRepositoryInput.updateMyArticleInput>
@@ -57,21 +53,31 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
     },
   });
 
-  const [tags, setTags] = React.useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>(article.tags ?? []);
+
+  const setDebounceHandler = useDebouncedCallback(async (slug: string) => {
+    const handle = await articleActions.getUniqueArticleHandle(slug);
+    form.setValue("handle", handle);
+    updateMyArticleMutation.mutate({
+      article_id: article?.id ?? "",
+      handle: handle,
+    });
+  }, 2000);
 
   const form = useForm<
     z.infer<typeof ArticleRepositoryInput.updateMyArticleInput>
   >({
     defaultValues: {
       article_id: article.id,
+      title: article?.title ?? "",
       handle: article?.handle ?? "",
       excerpt: article?.excerpt ?? "",
+      tag_ids: article?.tags?.map((tag) => tag.id) ?? [],
       metadata: {
         seo: {
           title: article?.metadata?.seo?.title ?? "",
           description: article?.metadata?.seo?.description ?? "",
           keywords: article?.metadata?.seo?.keywords ?? [],
-          canonical_url: article?.metadata?.seo?.canonical_url ?? "",
         },
       },
     },
@@ -85,17 +91,17 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
       article_id: article?.id ?? "",
       excerpt: payload.excerpt,
       handle: payload.handle,
+      tag_ids: payload.tag_ids,
       metadata: {
         seo: {
           title: payload.metadata?.seo?.title ?? "",
           description: payload.metadata?.seo?.description ?? "",
           keywords: payload.metadata?.seo?.keywords ?? [],
-          canonical_url: payload.metadata?.seo?.canonical_url ?? "",
         },
       },
     });
   };
-  //className="m-3 h-[100vh-20px] w-[100vw-20px]"
+
   return (
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent>
@@ -105,49 +111,104 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
               onSubmit={form.handleSubmit(handleOnSubmit)}
               className="flex flex-col gap-2"
             >
-              {JSON.stringify(form.formState.errors)}
+              {JSON.stringify({
+                errors: form.formState.errors,
+                values: form.watch("tag_ids"),
+              })}
+              {/* <pre>{JSON.stringify(article, null, 2)}</pre> */}
+              <div className="flex flex-col gap-6">
+                <FormField
+                  control={form.control}
+                  name="handle"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{_t("Handle")}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Your handle"
+                          Prefix={
+                            <LinkIcon className="size-3 text-muted-foreground" />
+                          }
+                          {...field}
+                          onChange={(e) => {
+                            setDebounceHandler(e.target.value);
+                            form.setValue("handle", e.target.value);
+                          }}
+                        />
+                      </FormControl>
+                      <FormDescription className="-mt-1">
+                        https://www.techdiary.dev/@{session?.user?.username}/
+                        {form.watch("handle")}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="excerpt"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{_t("Excerpt")}</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="tag_ids"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{_t("Tags")}</FormLabel>
+                      <FormDescription className="text-xs">
+                        {_t("Select tags to help categorize your article.")}
+                      </FormDescription>
+                      <FormControl>
+                        <MultipleSelector
+                          maxSelected={10}
+                          onSearch={async (searchTerm) => {
+                            const res = await tagActions.getTags({
+                              limit: -1,
+                              page: 1,
+                              search: searchTerm,
+                            });
 
-              <FormField
-                control={form.control}
-                name="handle"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{_t("Handle")}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Your handle"
-                        Prefix={
-                          <LinkIcon className="size-3 text-muted-foreground" />
-                        }
-                        {...field}
-                        onChange={(e) => {
-                          setDebounceHandler(e.target.value);
-                          form.setValue("handle", e.target.value);
-                        }}
-                      />
-                    </FormControl>
-                    <FormDescription className="-mt-1">
-                      https://www.techdiary.dev/{session?.user?.username}/
-                      {form.watch("handle")}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/*  */}
-              <FormField
-                control={form.control}
-                name="excerpt"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{_t("Excerpt")}</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                            const searchResult = res ?? [];
+                            return searchResult?.map((tag) => ({
+                              label: tag.name,
+                              value: tag.id,
+                            }));
+                          }}
+                          value={
+                            selectedTags?.map((option) => ({
+                              label: option.name,
+                              value: option.id,
+                            })) ?? []
+                          }
+                          onChange={(e) => {
+                            setSelectedTags(
+                              e.map((option) => ({
+                                id: option.value,
+                                name: option.label,
+                                created_at: new Date(),
+                                updated_at: new Date(),
+                              }))
+                            );
+                            form.setValue(
+                              "tag_ids",
+                              e.map((option) => option.value)
+                            );
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               {/* Seo settings */}
               <div className="flex flex-col gap-6 mt-10">
@@ -170,7 +231,7 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
                         click-through-rates.
                       </FormDescription>
                       <FormControl>
-                        <Input {...field} placeholder={form.watch("handle")} />
+                        <Input {...field} placeholder={form.watch("title")} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -228,32 +289,17 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
                     </FormItem>
                   )}
                 />
-                {/* 
-                <FormField
-                  control={form.control}
-                  name="metadata.seo.keywords"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{_t("SEO Keywords")}</FormLabel>
-                      <FormDescription className="text-xs">
-                        Put some relevent keywords for better search engine
-                        visibility
-                      </FormDescription>
-                      <FormControl>
-                        <InputTags
-                          value={[]}
-                          onChange={(e) => {
-                            console.log(e);
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
               </div>
 
-              <Button>{_t("Save")}</Button>
+              <Button
+                type="submit"
+                disabled={updateMyArticleMutation.isPending}
+              >
+                {updateMyArticleMutation.isPending && (
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {_t("Save")}
+              </Button>
             </form>
           </Form>
         </div>

@@ -1,8 +1,9 @@
 "use server";
 
 import * as sessionActions from "@/backend/services/session.actions";
-import { persistenceRepository } from "../persistence-repositories";
-import { sql } from "../persistence/persistence-utils";
+import { persistenceRepository } from "../persistence/persistence-repositories";
+
+const sql = String.raw;
 
 const query = sql`
 SELECT (SELECT Count(*)
@@ -21,13 +22,12 @@ SELECT (SELECT Count(*)
 export async function myArticleMatrix() {
   const sessionUserId = await sessionActions.getSessionUserId();
 
-  const totalPostsQuery = await persistenceRepository.article.executeSQL(
-    query,
-    [sessionUserId!]
-  );
+  const totalPostsQuery = await pgClient?.executeSQL<any>(query, [
+    sessionUserId!,
+  ]);
 
   return {
-    total_articles: totalPostsQuery.rows[0].total_articles,
-    total_comments: totalPostsQuery.rows[0].total_comments,
+    total_articles: totalPostsQuery?.rows?.[0].total_articles,
+    total_comments: totalPostsQuery?.rows?.[0].total_comments,
   };
 }

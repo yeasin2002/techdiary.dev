@@ -1,26 +1,24 @@
-import { Article, User } from "@/backend/models/domain-models";
-import { persistenceRepository } from "@/backend/persistence-repositories";
-import {
-  and,
-  eq,
-  joinTable,
-  neq,
-} from "@/backend/persistence/persistence-where-operator";
+import { persistenceRepository } from "@/backend/persistence/persistence-repositories";
+
 import type { MetadataRoute } from "next";
+import { and, eq, neq } from "sqlkit";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const articles = await persistenceRepository.article.findRows({
+  const articles = await persistenceRepository.article.find({
     where: and(eq("is_published", true), neq("approved_at", null)),
     columns: ["handle", "updated_at"],
     limit: -1,
     joins: [
-      joinTable<Article, User>({
+      {
         as: "user",
-        joinTo: "users",
-        localField: "author_id",
-        foreignField: "id",
+        table: "users",
+        type: "left",
+        on: {
+          localField: "author_id",
+          foreignField: "id",
+        },
         columns: ["id", "username"],
-      }),
+      },
     ],
   });
 

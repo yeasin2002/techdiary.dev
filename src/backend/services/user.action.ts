@@ -1,9 +1,9 @@
 "use server";
 
+import { desc, eq } from "sqlkit";
 import { z } from "zod";
 import { User } from "../models/domain-models";
-import { persistenceRepository } from "../persistence-repositories";
-import { desc, eq } from "../persistence/persistence-where-operator";
+import { persistenceRepository } from "../persistence/persistence-repositories";
 import { handleRepositoryException } from "./RepositoryException";
 import { UserRepositoryInput } from "./inputs/user.input";
 
@@ -21,7 +21,7 @@ export async function updateUserProfile(
     const input =
       await UserRepositoryInput.updateUserProfileInput.parseAsync(_input);
 
-    const updatedUser = await persistenceRepository.user.updateOne({
+    const updatedUser = await persistenceRepository.user.update({
       where: eq("id", input.id),
       data: {
         name: input.name,
@@ -39,7 +39,7 @@ export async function updateUserProfile(
       },
     });
 
-    return updatedUser;
+    return updatedUser?.rows?.[0];
   } catch (error) {
     handleRepositoryException(error);
   }
@@ -54,7 +54,7 @@ export async function updateUserProfile(
  */
 export async function getUserById(id: string): Promise<User | null> {
   try {
-    const [user] = await persistenceRepository.user.findRows({
+    const [user] = await persistenceRepository.user.find({
       where: eq("id", id),
       limit: 1,
     });
@@ -77,7 +77,7 @@ export async function getUserByUsername(
   columns?: (keyof User)[]
 ): Promise<User | null> {
   try {
-    const [user] = await persistenceRepository.user.findRows({
+    const [user] = await persistenceRepository.user.find({
       where: eq("username", username),
       limit: 1,
       columns: columns ? columns : undefined,
@@ -98,7 +98,7 @@ export async function getUserByUsername(
  */
 export async function getUserByEmail(email: string): Promise<User | null> {
   try {
-    const [user] = await persistenceRepository.user.findRows({
+    const [user] = await persistenceRepository.user.find({
       where: eq("email", email),
       limit: 1,
     });
@@ -119,7 +119,7 @@ export async function getUserByEmail(email: string): Promise<User | null> {
  */
 export async function getUsers(page: number = 1, limit: number = 10) {
   try {
-    return persistenceRepository.user.findAllWithPagination({
+    return persistenceRepository.user.paginate({
       limit,
       orderBy: [desc("created_at")],
       columns: [

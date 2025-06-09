@@ -1,8 +1,8 @@
-import { persistenceRepository } from "@/backend/persistence-repositories";
+import { persistenceRepository } from "@/backend/persistence/persistence-repositories";
 import type { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const profiles = await persistenceRepository.user.findRows({
+  const profiles = await persistenceRepository.user.find({
     columns: ["username"],
     limit: -1,
   });
