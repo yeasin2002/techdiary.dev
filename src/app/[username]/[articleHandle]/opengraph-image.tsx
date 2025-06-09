@@ -1,9 +1,8 @@
-import { Article, User } from "@/backend/models/domain-models";
-import { persistenceRepository } from "@/backend/persistence-repositories";
-import { eq, leftJoin } from "@/backend/persistence/persistence-where-operator";
+import { persistenceRepository } from "@/backend/persistence/persistence-repositories";
 import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { eq } from "sqlkit";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -25,18 +24,21 @@ const getFileLocation = async (path: string) => {
 
 export default async function Image(options: ArticlePageProps) {
   const { articleHandle } = await options.params;
-  const [article] = await persistenceRepository.article.findRows({
+  const [article] = await persistenceRepository.article.find({
     where: eq("handle", articleHandle),
     columns: ["title", "excerpt", "cover_image", "body"],
     limit: 1,
     joins: [
-      leftJoin<Article, User>({
+      {
         as: "user",
-        joinTo: "users",
-        localField: "author_id",
-        foreignField: "id",
+        table: "users",
+        type: "left",
+        on: {
+          localField: "author_id",
+          foreignField: "id",
+        },
         columns: ["username", "profile_photo"],
-      }),
+      },
     ],
   });
 

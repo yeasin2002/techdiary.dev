@@ -1,6 +1,5 @@
 import HomeLeftSidebar from "@/app/(home)/_components/HomeLeftSidebar";
-import { persistenceRepository } from "@/backend/persistence-repositories";
-import { eq } from "@/backend/persistence/persistence-where-operator";
+import { persistenceRepository } from "@/backend/persistence/persistence-repositories";
 import * as articleActions from "@/backend/services/article.actions";
 import AppImage from "@/components/AppImage";
 import HomepageLayout from "@/components/layout/HomepageLayout";
@@ -12,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Article, WithContext } from "schema-dts";
+import { eq } from "sqlkit";
 import ArticleSidebar from "./_components/ArticleSidebar";
 
 interface ArticlePageProps {
@@ -26,7 +26,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   // read route params
   const { articleHandle } = await options.params;
-  const [article] = await persistenceRepository.article.findRows({
+  const [article] = await persistenceRepository.article.find({
     where: eq("handle", articleHandle),
     columns: ["title", "excerpt", "cover_image", "body"],
     limit: 1,

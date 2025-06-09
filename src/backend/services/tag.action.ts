@@ -21,9 +21,10 @@ export const getTags = async (
 ) => {
   try {
     const input = await TagRepositoryInput.findAllInput.parseAsync(_input);
-    return tagRepository.findRows({
+    const response = await tagRepository.find({
       where: input.search ? sk.like("name", `%${input.search}%`) : undefined,
     });
+    return response;
   } catch (error) {
     handleRepositoryException(error);
   }
@@ -37,7 +38,7 @@ export const syncTagsWithArticles = async (
       await TagRepositoryInput.syncTagsWithArticlesInput.parseAsync(_input);
 
     // Find all tags
-    const attached = await tagArticlePivotRepository.findRows({
+    const attached = await tagArticlePivotRepository.find({
       where: sk.eq("article_id", input.article_id),
     });
     const attachedTagids = attached.map((tag) => tag.tag_id) ?? [];
@@ -54,7 +55,7 @@ export const syncTagsWithArticles = async (
     );
 
     if (tagsToAdd.length) {
-      await tagArticlePivotRepository.insertMany(
+      await tagArticlePivotRepository.insert(
         tagsToAdd.map((tag) => ({
           article_id: input.article_id,
           tag_id: tag,

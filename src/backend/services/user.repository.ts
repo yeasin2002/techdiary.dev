@@ -1,17 +1,10 @@
 "use server";
 
 import { z } from "zod";
-import { User } from "../models/domain-models";
-import { persistenceRepository } from "../persistence-repositories";
-import { and, desc, eq } from "../persistence/persistence-where-operator";
-import { PersistentRepository } from "../persistence/persistence.repository";
-import { handleRepositoryException } from "./RepositoryException";
+import { persistenceRepository } from "../persistence/persistence-repositories";
 import { UserRepositoryInput } from "./inputs/user.input";
-
-const userRepository = new PersistentRepository<User>(
-  "users",
-  persistenceRepository.user
-);
+import { handleRepositoryException } from "./RepositoryException";
+import { and, desc, eq } from "sqlkit";
 
 /**
  * Creates or syncs a user account from a social login provider.
@@ -27,7 +20,7 @@ export async function bootSocialUser(
   try {
     const input =
       await UserRepositoryInput.syncSocialUserInput.parseAsync(_input);
-    let [user] = await userRepository.findRows({
+    let [user] = await persistenceRepository.user.find({
       where: eq("email", input.email),
       columns: ["id", "name", "username", "email"],
       orderBy: [desc("created_at")],
@@ -35,17 +28,21 @@ export async function bootSocialUser(
     });
 
     if (!user) {
-      user = await userRepository.createOne({
-        name: input.name,
-        username: input.username,
-        email: input.email,
-        profile_photo: input.profile_photo,
-        bio: input.bio ?? "",
-      });
+      user = (
+        await persistenceRepository.user.insert([
+          {
+            name: input.name,
+            username: input.username,
+            email: input.email,
+            profile_photo: input.profile_photo,
+            bio: input.bio ?? "",
+          },
+        ])
+      )?.rows?.[0];
     }
 
     // check user has social account
-    const [userSocial] = await persistenceRepository.userSocial.findRows({
+    const [userSocial] = await persistenceRepository.userSocial.find({
       where: and(
         eq("service", input.service),
         eq("service_uid", input.service_uid)
@@ -55,11 +52,13 @@ export async function bootSocialUser(
     });
 
     if (!userSocial) {
-      await persistenceRepository.userSocial.createOne({
-        service: input.service,
-        service_uid: input.service_uid,
-        user_id: user.id,
-      });
+      await persistenceRepository.userSocial.insert([
+        {
+          service: input.service,
+          service_uid: input.service_uid,
+          user_id: user.id,
+        },
+      ]);
     }
 
     return {

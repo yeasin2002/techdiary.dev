@@ -18,11 +18,7 @@ import {
 import { ArticleRepositoryInput } from "./inputs/article.input";
 import { getSessionUserId } from "./session.actions";
 import { syncTagsWithArticles } from "./tag.action";
-
-const articleRepository = new sk.Repository<Article>(
-  DatabaseTableName.articles,
-  pgClient
-);
+import { persistenceRepository } from "../persistence/persistence-repositories";
 
 /**
  * Creates a new article in the database.
@@ -37,16 +33,18 @@ export async function createArticle(
   try {
     const input =
       await ArticleRepositoryInput.createArticleInput.parseAsync(_input);
-    const article = await articleRepository.insertOne({
-      title: input.title,
-      handle: input.handle,
-      excerpt: input.excerpt ?? null,
-      body: input.body ?? null,
-      cover_image: input.cover_image ?? null,
-      is_published: input.is_published ?? false,
-      published_at: input.is_published ? new Date() : null,
-      author_id: input.author_id,
-    });
+    const article = await persistenceRepository.article.insert([
+      {
+        title: input.title,
+        handle: input.handle,
+        excerpt: input.excerpt ?? null,
+        body: input.body ?? null,
+        cover_image: input.cover_image ?? null,
+        is_published: input.is_published ?? false,
+        published_at: input.is_published ? new Date() : null,
+        author_id: input.author_id,
+      },
+    ]);
     return article;
   } catch (error) {
     handleRepositoryException(error);
@@ -67,17 +65,19 @@ export async function createMyArticle(
 
     const handle = await getUniqueArticleHandle(input.title);
 
-    const article = await articleRepository.insertOne({
-      title: input.title,
-      handle: handle,
-      excerpt: input.excerpt ?? null,
-      body: input.body ?? null,
-      cover_image: input.cover_image ?? null,
-      is_published: input.is_published ?? false,
-      published_at: input.is_published ? new Date() : null,
-      author_id: sessionUserId,
-    });
-    return article;
+    const article = await persistenceRepository.article.insert([
+      {
+        title: input.title,
+        handle: handle,
+        excerpt: input.excerpt ?? null,
+        body: input.body ?? null,
+        cover_image: input.cover_image ?? null,
+        is_published: input.is_published ?? false,
+        published_at: input.is_published ? new Date() : null,
+        author_id: sessionUserId,
+      },
+    ]);
+    return article?.rows?.[0];
   } catch (error) {
     handleRepositoryException(error);
   }
@@ -93,7 +93,7 @@ export const getUniqueArticleHandle = async (
 
     // If we have an ignoreArticleId, check if this article already exists
     if (ignoreArticleId) {
-      const [existingArticle] = await articleRepository.findRows({
+      const [existingArticle] = await persistenceRepository.article.find({
         where: eq("id", ignoreArticleId),
         columns: ["id", "handle"],
         limit: 1,
@@ -124,9 +124,10 @@ export const getUniqueArticleHandle = async (
     }
 
     // Get all existing handles that match our patterns
-    const existingArticles = await articleRepository.findRows({
+    const existingArticles = await persistenceRepository.article.find({
       where: whereClause,
       columns: ["handle"],
+      limit: 1,
     });
 
     // If no existing handles found, return the base handle
@@ -179,7 +180,7 @@ export async function updateArticle(
   try {
     const input =
       await ArticleRepositoryInput.updateArticleInput.parseAsync(_input);
-    const article = await articleRepository.updateOne({
+    const article = await persistenceRepository.article.update({
       where: eq("id", input.article_id),
       data: {
         title: input.title,
@@ -194,7 +195,7 @@ export async function updateArticle(
       },
     });
 
-    return article;
+    return article?.rows?.[0];
   } catch (error) {
     handleRepositoryException(error);
   }
@@ -212,7 +213,7 @@ export async function updateMyArticle(
     const input =
       await ArticleRepositoryInput.updateMyArticleInput.parseAsync(_input);
 
-    const article = await articleRepository.update({
+    const article = await persistenceRepository.article.update({
       where: and(eq("id", input.article_id), eq("author_id", sessionUserId)),
       data: removeNullOrUndefinedFromObject({
         title: input.title,
@@ -233,7 +234,7 @@ export async function updateMyArticle(
       });
     }
 
-    return article;
+    return article?.rows?.[0];
   } catch (error) {
     handleRepositoryException(error);
   }
@@ -248,11 +249,11 @@ export async function updateMyArticle(
  */
 export async function deleteArticle(article_id: string) {
   try {
-    const deletedArticles = await articleRepository.delete({
+    const deletedArticles = await persistenceRepository.article.delete({
       where: eq("id", article_id),
     });
 
-    return deletedArticles;
+    return deletedArticles?.rows?.[0];
   } catch (error) {
     handleRepositoryException(error);
   }
@@ -303,7 +304,7 @@ export async function articleFeed(
   try {
     const input = await ArticleRepositoryInput.feedInput.parseAsync(_input);
 
-    const response = await articleRepository.paginate({
+    const response = await persistenceRepository.article.paginate({
       where: and(eq("is_published", true), neq("approved_at", null)),
       page: input.page,
       limit: input.limit,
@@ -351,7 +352,7 @@ export async function userArticleFeed(
   try {
     const input = await ArticleRepositoryInput.userFeedInput.parseAsync(_input);
 
-    const response = await articleRepository.paginate({
+    const response = await persistenceRepository.article.paginate({
       where: and(
         eq("is_published", true),
         neq("approved_at", null),
@@ -397,7 +398,7 @@ export async function userArticleFeed(
 
 export async function articleDetailByHandle(article_handle: string) {
   try {
-    const [article] = await articleRepository.findRows({
+    const [article] = await persistenceRepository.article.find({
       where: eq("handle", article_handle),
       columns: [
         "id",
@@ -441,7 +442,7 @@ export async function articleDetailByHandle(article_handle: string) {
 
 export async function articleDetailByUUID(uuid: string) {
   try {
-    const [article] = await articleRepository.findRows({
+    const [article] = await persistenceRepository.article.find({
       where: eq("id", uuid),
       columns: [
         "id",
@@ -459,13 +460,16 @@ export async function articleDetailByUUID(uuid: string) {
         "updated_at",
       ],
       joins: [
-        leftJoin<Article, User>({
+        {
           as: "user",
-          joinTo: "users",
-          localField: "author_id",
-          foreignField: "id",
+          table: "users",
+          on: {
+            foreignField: "id",
+            localField: "author_id",
+          },
+          type: "left",
           columns: ["id", "name", "username", "profile_photo"],
-        }),
+        },
       ],
       limit: 1,
     });
@@ -490,7 +494,7 @@ export async function myArticles(
   }
 
   try {
-    const articles = await articleRepository.paginate({
+    const articles = await persistenceRepository.article.paginate({
       where: eq("author_id", sessionUserId!),
       columns: [
         "id",
@@ -522,7 +526,7 @@ export async function setArticlePublished(
 ) {
   const sessionUserId = await getSessionUserId();
   try {
-    const articles = await articleRepository.update({
+    const articles = await persistenceRepository.article.update({
       where: and(
         eq("id", article_id),
         eq("author_id", sessionUserId?.toString()!)
@@ -532,7 +536,7 @@ export async function setArticlePublished(
         published_at: is_published ? new Date() : null,
       },
     });
-    return articles;
+    return articles?.rows?.[0];
   } catch (error) {
     handleRepositoryException(error);
   }

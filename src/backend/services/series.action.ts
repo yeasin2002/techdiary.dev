@@ -1,14 +1,8 @@
+import { asc, eq } from "sqlkit";
 import { z } from "zod";
+import { persistenceRepository } from "../persistence/persistence-repositories";
 import { SeriesInput } from "./inputs/series.input";
 import { handleRepositoryException } from "./RepositoryException";
-import { persistenceRepository } from "../persistence-repositories";
-import {
-  asc,
-  desc,
-  eq,
-  leftJoin,
-} from "../persistence/persistence-where-operator";
-import { Article, Series, SeriesItem, User } from "../models/domain-models";
 
 export async function seriesFeed(
   _input: z.infer<typeof SeriesInput.seriesFeedInput>
@@ -16,7 +10,7 @@ export async function seriesFeed(
   try {
     const input = await SeriesInput.seriesFeedInput.parseAsync(_input);
 
-    return persistenceRepository.series.findAllWithPagination({
+    return persistenceRepository.series.paginate({
       limit: input.limit,
       page: input.page,
     });
@@ -27,32 +21,45 @@ export async function seriesFeed(
 
 export const getSeriesDetailByHandle = async (handle: string) => {
   try {
-    const [series] = await persistenceRepository.series.findRows({
+    const [series] = await persistenceRepository.series.find({
       where: eq("handle", handle),
       limit: 1,
       joins: [
-        leftJoin<Series, User>({
+        // leftJoin<Series, User>({
+        //   as: "owner",
+        //   joinTo: "users",
+        //   localField: "owner_id",
+        //   foreignField: "id",
+        //   columns: ["id", "name", "username", "profile_photo"],
+        // }),
+        {
+          on: {
+            foreignField: "id",
+            localField: "owner_id",
+          },
           as: "owner",
-          joinTo: "users",
-          localField: "owner_id",
-          foreignField: "id",
           columns: ["id", "name", "username", "profile_photo"],
-        }),
+          table: "users",
+          type: "left",
+        },
       ],
     });
 
-    const serieItems = await persistenceRepository.seriesItems.findRows({
+    const serieItems = await persistenceRepository.seriesItems.find({
       where: eq("series_id", series.id),
       orderBy: [asc("index")],
       limit: -1,
       joins: [
-        leftJoin<SeriesItem, Article>({
+        {
           as: "article",
-          joinTo: "articles",
-          localField: "article_id",
-          foreignField: "id",
+          table: "articles",
+          type: "left",
+          on: {
+            localField: "article_id",
+            foreignField: "id",
+          },
           columns: ["id", "title", "handle"],
-        }),
+        },
       ],
     });
     return {
