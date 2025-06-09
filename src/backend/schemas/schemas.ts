@@ -1,6 +1,7 @@
 import {
   AnyPgColumn,
   boolean,
+  integer,
   json,
   jsonb,
   pgTable,
@@ -31,7 +32,7 @@ export const usersTable = pgTable("users", {
 });
 
 export const userSocialsTable = pgTable("user_socials", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   service: varchar("service").notNull(),
   service_uid: varchar("service_uid").notNull(),
   user_id: uuid("user_id")
@@ -55,13 +56,40 @@ export const userSessionsTable = pgTable("user_sessions", {
 });
 
 export const userFollowsTable = pgTable("user_follows", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   follower_id: uuid("follower_id")
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
   followee_id: uuid("followee_id")
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
+  created_at: timestamp("created_at"),
+  updated_at: timestamp("updated_at"),
+});
+
+export const seriesTable = pgTable("series", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  title: varchar("title").notNull(),
+  handle: varchar("handle"),
+  cover_image: jsonb("cover_image").$type<IServerFile>(),
+  owner_id: uuid("owner_id")
+    .notNull()
+    .references(() => usersTable.id, { onDelete: "cascade" }),
+  created_at: timestamp("created_at"),
+  updated_at: timestamp("updated_at"),
+});
+
+export const seriesItemsTable = pgTable("series_items", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  series_id: uuid("series_id")
+    .notNull()
+    .references(() => seriesTable.id, { onDelete: "cascade" }),
+  type: varchar("type").notNull(), // title, article
+  title: varchar("title"),
+  article_id: uuid("article_id").references(() => articlesTable.id, {
+    onDelete: "cascade",
+  }),
+  index: integer("index").notNull().default(0),
   created_at: timestamp("created_at"),
   updated_at: timestamp("updated_at"),
 });

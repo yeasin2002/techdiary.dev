@@ -3,6 +3,7 @@
 import { Article } from "@/backend/models/domain-models";
 import * as articleActions from "@/backend/services/article.actions";
 import { ArticleRepositoryInput } from "@/backend/services/inputs/article.input";
+import MultipleSelector, { Option } from "@/components/ui/multi-select";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { useTranslation } from "@/i18n/use-translation";
 import { useSession } from "@/store/session.atom";
@@ -26,7 +27,6 @@ import {
 import { Input } from "../ui/input";
 import { InputTags } from "../ui/input-tags";
 import { Sheet, SheetContent } from "../ui/sheet";
-import { TagInput } from "../ui/tags-input";
 import { Textarea } from "../ui/textarea";
 
 interface Props {
@@ -105,6 +105,8 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
               onSubmit={form.handleSubmit(handleOnSubmit)}
               className="flex flex-col gap-2"
             >
+              {JSON.stringify(form.formState.errors)}
+
               <FormField
                 control={form.control}
                 name="handle"
@@ -132,7 +134,7 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
                   </FormItem>
                 )}
               />
-
+              {/*  */}
               <FormField
                 control={form.control}
                 name="excerpt"
@@ -177,6 +179,38 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
 
                 <FormField
                   control={form.control}
+                  name="metadata.seo.keywords"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{_t("SEO Keywords")}</FormLabel>
+                      <FormDescription className="text-xs">
+                        Put some relevent keywords for better search engine
+                        visibility.
+                      </FormDescription>
+                      <FormControl>
+                        <MultipleSelector
+                          creatable
+                          maxSelected={10}
+                          value={
+                            field.value?.map((option) => ({
+                              label: option,
+                              value: option,
+                            })) ?? []
+                          }
+                          onChange={(options) => {
+                            field.onChange(
+                              options.map((option) => option.value)
+                            );
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="metadata.seo.description"
                   render={({ field }) => (
                     <FormItem>
@@ -194,7 +228,7 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
                     </FormItem>
                   )}
                 />
-
+                {/* 
                 <FormField
                   control={form.control}
                   name="metadata.seo.keywords"
@@ -216,9 +250,7 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
-
-                <TagInput tags={tags ?? []} onTagsChange={setTags} />
+                /> */}
               </div>
 
               <Button>{_t("Save")}</Button>

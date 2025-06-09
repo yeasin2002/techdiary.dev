@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 yarn.lock
+pnpm-lock.yaml
 .yarn/cache
 bun.lockb
 .yarn/install-state.gz
@@ -37,3 +38,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.vscode/mcp.json
