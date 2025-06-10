@@ -32,7 +32,7 @@ const page: React.FC<Props> = async ({ params }) => {
     ],
   });
 
-  const aggregatedTags = await persistenceRepository.articleTag.find({
+  const aggregatedTags = await persistenceRepository.articleTagPivot.find({
     where: inArray("article_id", [article.id]),
     joins: [
       {

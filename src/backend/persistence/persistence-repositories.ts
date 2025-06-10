@@ -9,42 +9,54 @@ import {
   UserSession,
   UserSocial,
 } from "../models/domain-models";
-import { pgClient } from "./database-drivers/pg.client";
+import { pgClient } from "./clients";
 import { DatabaseTableName } from "./persistence-contracts";
+
+const repositoryConfig = {
+  logging: true,
+};
 
 export const userRepository = new Repository<User>(
   DatabaseTableName.users,
-  pgClient
+  pgClient,
+  repositoryConfig,
 );
 export const articleRepository = new Repository<Article>(
   DatabaseTableName.articles,
-  pgClient
+  pgClient,
+  repositoryConfig,
 );
 export const tagRepository = new Repository<Tag>(
   DatabaseTableName.tags,
-  pgClient
+  pgClient,
+  repositoryConfig,
 );
 export const articleTagRepository = new Repository<ArticleTag>(
   DatabaseTableName.article_tag,
-  pgClient
+  pgClient,
+  repositoryConfig,
 );
 export const userSocialRepository = new Repository<UserSocial>(
   DatabaseTableName.user_socials,
-  pgClient
+  pgClient,
+  repositoryConfig,
 );
 export const userSessionRepository = new Repository<UserSession>(
   DatabaseTableName.user_sessions,
-  pgClient
+  pgClient,
+  repositoryConfig,
 );
 
 const seriesRepository = new Repository<Series>(
   DatabaseTableName.series,
-  pgClient
+  pgClient,
+  repositoryConfig,
 );
 
 const seriesItemsRepository = new Repository<SeriesItem>(
   DatabaseTableName.series_items,
-  pgClient
+  pgClient,
+  repositoryConfig,
 );
 
 export const persistenceRepository = {
@@ -52,7 +64,7 @@ export const persistenceRepository = {
   userSocial: userSocialRepository,
   userSession: userSessionRepository,
   article: articleRepository,
-  articleTag: articleTagRepository,
+  articleTagPivot: articleTagRepository,
   tags: tagRepository,
   series: seriesRepository,
   seriesItems: seriesItemsRepository,

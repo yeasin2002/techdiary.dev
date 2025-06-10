@@ -1,8 +1,5 @@
 export enum DatabaseTableName {
-  tenants = "tenants",
-  clients = "clients",
   users = "users",
-  roles = "roles",
   articles = "articles",
   user_socials = "user_socials",
   user_sessions = "user_sessions",
