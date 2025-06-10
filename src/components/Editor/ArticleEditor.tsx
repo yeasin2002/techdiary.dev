@@ -313,7 +313,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
           open={isOpenSettingDrawer}
           onClose={toggleSettingDrawer}
           onSave={() => {
-            // Implementation needed
+            // silence is good
           }}
         />
       )}
