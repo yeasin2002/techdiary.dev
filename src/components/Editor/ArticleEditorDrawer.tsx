@@ -5,6 +5,7 @@ import * as articleActions from "@/backend/services/article.actions";
 import * as tagActions from "@/backend/services/tag.action";
 import { ArticleRepositoryInput } from "@/backend/services/inputs/article.input";
 import MultipleSelector from "@/components/ui/multi-select";
+import { useImmer } from "use-immer";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { useTranslation } from "@/i18n/use-translation";
 import { useSession } from "@/store/session.atom";
@@ -53,7 +54,7 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
     },
   });
 
-  const [selectedTags, setSelectedTags] = useState<Tag[]>(article.tags ?? []);
+  const [selectedTags, setSelectedTags] = useImmer<Tag[]>(article.tags ?? []);
 
   const setDebounceHandler = useDebouncedCallback(async (slug: string) => {
     const handle = await articleActions.getUniqueArticleHandle(slug);
@@ -167,6 +168,7 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
                         {_t("Select tags to help categorize your article.")}
                       </FormDescription>
                       <FormControl>
+                        {/* https://shadcnui-expansions.typeart.cc/docs/multiple-selector#Async%20Search%20and%20Creatable%20and%20Group */}
                         <MultipleSelector
                           maxSelected={10}
                           onSearch={async (searchTerm) => {
@@ -175,12 +177,12 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
                               page: 1,
                               search: searchTerm,
                             });
-
-                            const searchResult = res ?? [];
-                            return searchResult?.map((tag) => ({
-                              label: tag.name,
-                              value: tag.id,
-                            }));
+                            return (
+                              res?.map((tag) => ({
+                                label: tag.name,
+                                value: tag.id,
+                              })) ?? []
+                            );
                           }}
                           value={
                             selectedTags?.map((option) => ({
@@ -188,7 +190,28 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
                               value: option.id,
                             })) ?? []
                           }
+                          creatable
+                          onCreate={async (data) => {
+                            const createdResponse = await tagActions.createTag({
+                              name: data,
+                            });
+                            const old_tags = form.watch("tag_ids") ?? [];
+
+                            setSelectedTags(function (draft) {
+                              draft.push({
+                                id: createdResponse?.id!,
+                                name: data,
+                                created_at: new Date(),
+                                updated_at: new Date(),
+                              });
+                            });
+                            form.setValue("tag_ids", [
+                              ...old_tags,
+                              createdResponse?.id! as string,
+                            ]);
+                          }}
                           onChange={(e) => {
+                            console.log(e);
                             setSelectedTags(
                               e.map((option) => ({
                                 id: option.value,

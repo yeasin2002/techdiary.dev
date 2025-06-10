@@ -15,7 +15,7 @@ export async function GET(request: Request) {
   //   }
   // ]
   return NextResponse.json({
-    handle: await persistenceRepository.articleTag.delete({
+    handle: await persistenceRepository.articleTagPivot.delete({
       where: {
         AND: [
           {

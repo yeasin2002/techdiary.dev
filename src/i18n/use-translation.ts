@@ -11,9 +11,9 @@ export const useTranslation = () => {
   return {
     _t: (key: string) => dictionaries?.[lang || "en"]?.[key] || key,
     lang,
-    toggle: () => {
+    toggle: async () => {
       setLang(lang === "en" ? "bn" : "en");
-      setLanguage(lang === "en" ? "bn" : "en");
+      await setLanguage(lang === "en" ? "bn" : "en");
     },
   };
 };

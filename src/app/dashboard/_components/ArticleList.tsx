@@ -160,7 +160,11 @@ const ArticleList = () => {
                         }}
                       >
                         <CardStackIcon />
-                        <span>{_t("Make Unpublished")}</span>
+                        <span>
+                          {article.is_published
+                            ? _t("Make Draft")
+                            : _t("Publish article")}
+                        </span>
                       </button>
                     </DropdownMenuItem>
                   </DropdownMenuContent>

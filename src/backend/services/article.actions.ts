@@ -9,8 +9,8 @@ import * as sk from "sqlkit";
 import { and, desc, eq, like, neq, or } from "sqlkit";
 import { z } from "zod";
 import { Article, User } from "../models/domain-models";
-import { pgClient } from "../persistence/database-drivers/pg.client";
 import { DatabaseTableName } from "../persistence/persistence-contracts";
+import { persistenceRepository } from "../persistence/persistence-repositories";
 import {
   handleRepositoryException,
   RepositoryException,
@@ -18,38 +18,6 @@ import {
 import { ArticleRepositoryInput } from "./inputs/article.input";
 import { getSessionUserId } from "./session.actions";
 import { syncTagsWithArticles } from "./tag.action";
-import { persistenceRepository } from "../persistence/persistence-repositories";
-
-/**
- * Creates a new article in the database.
- *
- * @param _input - The article data to create, validated against ArticleRepositoryInput.createArticleInput schema
- * @returns Promise<Article> - The newly created article
- * @throws {RepositoryException} If article creation fails or validation fails
- */
-export async function createArticle(
-  _input: z.infer<typeof ArticleRepositoryInput.createArticleInput>
-) {
-  try {
-    const input =
-      await ArticleRepositoryInput.createArticleInput.parseAsync(_input);
-    const article = await persistenceRepository.article.insert([
-      {
-        title: input.title,
-        handle: input.handle,
-        excerpt: input.excerpt ?? null,
-        body: input.body ?? null,
-        cover_image: input.cover_image ?? null,
-        is_published: input.is_published ?? false,
-        published_at: input.is_published ? new Date() : null,
-        author_id: input.author_id,
-      },
-    ]);
-    return article;
-  } catch (error) {
-    handleRepositoryException(error);
-  }
-}
 
 export async function createMyArticle(
   _input: z.infer<typeof ArticleRepositoryInput.createMyArticleInput>

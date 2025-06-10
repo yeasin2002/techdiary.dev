@@ -1,22 +1,22 @@
 "use server";
 
 import * as sessionActions from "@/backend/services/session.actions";
-import { persistenceRepository } from "../persistence/persistence-repositories";
+import { pgClient } from "@/backend/persistence/clients";
 
 const sql = String.raw;
 
 const query = sql`
 SELECT (SELECT Count(*)
-          FROM   articles
-          WHERE  author_id = $1)
-       AS total_articles,
-       (SELECT Count(*)
-          FROM   comments
-          WHERE  comments.commentable_type = 'ARTICLE'
-            AND  comments.commentable_id IN (SELECT id
-                                              FROM   articles
-                                              WHERE  articles.author_id = $1))
-       AS total_comments
+    FROM   articles
+    WHERE  author_id = $1)
+  AS total_articles,
+  (SELECT Count(*)
+    FROM   comments
+    WHERE  comments.commentable_type = 'ARTICLE'
+      AND  comments.commentable_id IN (SELECT id
+                                        FROM   articles
+                                        WHERE  articles.author_id = $1))
+  AS total_comments
 `;
 
 export async function myArticleMatrix() {
