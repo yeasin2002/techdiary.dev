@@ -1,5 +1,7 @@
 "use client";
 
+// https://shadcnui-expansions.typeart.cc/docs/multiple-selector
+
 import { Command as CommandPrimitive, useCommandState } from "cmdk";
 import { X } from "lucide-react";
 import * as React from "react";
@@ -53,6 +55,8 @@ interface MultipleSelectorProps {
    **/
   onSearchSync?: (value: string) => Option[];
   onChange?: (options: Option[]) => void;
+  onCreate?: (value: string) => void;
+
   /** Limit the maximum number of selected options. */
   maxSelected?: number;
   /** When the number of selected options exceeds the limit, the onMaxSelected will be called. */
@@ -183,6 +187,7 @@ const MultipleSelector = React.forwardRef<
     {
       value,
       onChange,
+      onCreate,
       placeholder,
       defaultOptions: arrayDefaultOptions = [],
       options: arrayOptions,
@@ -379,9 +384,11 @@ const MultipleSelector = React.forwardRef<
               return;
             }
             setInputValue("");
-            const newOptions = [...selected, { value, label: value }];
-            setSelected(newOptions);
-            onChange?.(newOptions);
+            onCreate?.(value);
+
+            // const newOptions = [...selected, { value, label: value }];
+            // setSelected(newOptions);
+            // onChange?.(newOptions);
           }}
         >
           {`Create "${inputValue}"`}

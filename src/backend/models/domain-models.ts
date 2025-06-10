@@ -43,18 +43,19 @@ export interface IServerFile {
 }
 
 export interface ArticleMetadata {
-  seo: {
+  seo?: {
     title?: string;
     description?: string;
     keywords?: string[];
     canonical_url?: string;
-  };
+  } | null;
 }
 
 export interface Article {
   id: string;
   title: string;
   handle: string;
+  tags?: Tag[];
   excerpt?: string | null;
   body?: string | null;
   cover_image?: IServerFile | null;
@@ -89,4 +90,26 @@ export interface SeriesItem {
   index: number;
   created_at: Date;
   updated_at: Date;
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+  icon?: IServerFile | null;
+  color?: string | null;
+  description?: string | null;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface ArticleTag {
+  id: string;
+  article_id: string;
+  tag_id: string;
+  created_at: Date;
+  updated_at: Date;
+
+  // Relationships
+  article?: Article;
+  tag?: Tag;
 }
