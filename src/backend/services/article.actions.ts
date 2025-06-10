@@ -31,7 +31,17 @@ export async function createMyArticle(
     const input =
       await ArticleRepositoryInput.createMyArticleInput.parseAsync(_input);
 
-    const handle = await getUniqueArticleHandle(input.title);
+    // Default to "untitled" if title is empty
+    const titleToUse = input.title?.trim() || "Untitled Article";
+
+    // Generate a unique handle based on the title
+    const handle = await getUniqueArticleHandle(titleToUse);
+
+    if (!handle) {
+      throw new RepositoryException(
+        "Failed to generate a unique handle for the article"
+      );
+    }
 
     const article = await persistenceRepository.article.insert([
       {
@@ -47,7 +57,9 @@ export async function createMyArticle(
     ]);
     return article?.rows?.[0];
   } catch (error) {
+    console.error("Article creation error:", error);
     handleRepositoryException(error);
+    return null;
   }
 }
 
