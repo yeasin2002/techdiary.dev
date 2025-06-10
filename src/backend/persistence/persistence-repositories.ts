@@ -19,44 +19,44 @@ const repositoryConfig = {
 export const userRepository = new Repository<User>(
   DatabaseTableName.users,
   pgClient,
-  repositoryConfig,
+  repositoryConfig
 );
 export const articleRepository = new Repository<Article>(
   DatabaseTableName.articles,
   pgClient,
-  repositoryConfig,
+  repositoryConfig
 );
 export const tagRepository = new Repository<Tag>(
   DatabaseTableName.tags,
   pgClient,
-  repositoryConfig,
+  repositoryConfig
 );
 export const articleTagRepository = new Repository<ArticleTag>(
   DatabaseTableName.article_tag,
   pgClient,
-  repositoryConfig,
+  repositoryConfig
 );
 export const userSocialRepository = new Repository<UserSocial>(
   DatabaseTableName.user_socials,
   pgClient,
-  repositoryConfig,
+  repositoryConfig
 );
 export const userSessionRepository = new Repository<UserSession>(
   DatabaseTableName.user_sessions,
   pgClient,
-  repositoryConfig,
+  repositoryConfig
 );
 
 const seriesRepository = new Repository<Series>(
   DatabaseTableName.series,
   pgClient,
-  repositoryConfig,
+  repositoryConfig
 );
 
 const seriesItemsRepository = new Repository<SeriesItem>(
   DatabaseTableName.series_items,
   pgClient,
-  repositoryConfig,
+  repositoryConfig
 );
 
 export const persistenceRepository = {

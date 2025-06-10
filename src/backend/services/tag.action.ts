@@ -1,19 +1,40 @@
 "use server";
 
-import {and, eq, inArray, like} from "sqlkit";
-import {z} from "zod";
-import {persistenceRepository} from "../persistence/persistence-repositories";
-import {TagRepositoryInput} from "./inputs/tag.input";
-import {handleRepositoryException} from "./RepositoryException";
+import { and, eq, inArray, like } from "sqlkit";
+import { z } from "zod";
+import { persistenceRepository } from "../persistence/persistence-repositories";
+import { TagRepositoryInput } from "./inputs/tag.input";
+import { handleRepositoryException } from "./RepositoryException";
 
 export const getTags = async (
   _input: z.infer<typeof TagRepositoryInput.findAllInput>
 ) => {
   try {
     const input = await TagRepositoryInput.findAllInput.parseAsync(_input);
-    return await persistenceRepository.tags.find({
-      where: input.search ? like("name", `%${input.search}%`) : undefined,
+    return persistenceRepository.tags.find({
+      where: input.search
+        ? like("name", `%${input.search.toLowerCase()}%`)
+        : undefined,
     });
+  } catch (error) {
+    handleRepositoryException(error);
+  }
+};
+
+export const createTag = async (
+  _input: z.infer<typeof TagRepositoryInput.createInput>
+) => {
+  try {
+    const input = await TagRepositoryInput.createInput.parseAsync(_input);
+    const response = await persistenceRepository.tags.insert([
+      {
+        name: input.name,
+        description: input.description,
+        color: input.color,
+      },
+    ]);
+
+    return response.rows[0];
   } catch (error) {
     handleRepositoryException(error);
   }
