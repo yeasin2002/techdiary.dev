@@ -1,7 +1,7 @@
-import { generateRandomString } from "@/lib/utils";
-import { IGithubUser, IOAuthService } from "./oauth-contract";
-import { cookies } from "next/headers";
-import { env } from "@/env";
+import {generateRandomString} from "@/lib/utils";
+import {IGithubUser, IOAuthService} from "./oauth-contract";
+import {cookies} from "next/headers";
+import {env} from "@/env";
 
 export class GithubOAuthService implements IOAuthService<IGithubUser> {
   async getAuthorizationUrl(): Promise<string> {
@@ -41,8 +41,7 @@ export class GithubOAuthService implements IOAuthService<IGithubUser> {
       env.GITHUB_CALLBACK_URL
     );
 
-    const githubUser = await getGithubUser(githubAccessToken.access_token);
-    return githubUser;
+    return await getGithubUser(githubAccessToken.access_token);
   }
 }
 
@@ -79,8 +78,7 @@ export const validateGitHubCode = async (
     throw new Error("Failed to validate GitHub code");
   }
 
-  const data = await response.json();
-  return data;
+  return await response.json();
 };
 
 const getGithubUser = async (accessToken: string): Promise<IGithubUser> => {
@@ -93,6 +91,5 @@ const getGithubUser = async (accessToken: string): Promise<IGithubUser> => {
     throw new Error("Failed to get GitHub user");
   }
 
-  const githubUserResponse = (await githubAPI.json()) as IGithubUser;
-  return githubUserResponse;
+  return (await githubAPI.json()) as IGithubUser;
 };

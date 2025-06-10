@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import {cookies} from "next/headers";
 import bn from "@/i18n/bn.json";
 
 const dictionaries: {
@@ -15,8 +15,7 @@ const _t = async (key: string) => {
 
 export const getLang = async () => {
   const cookiesStore = await cookies();
-  const _lang = cookiesStore.get("language")?.value || "en";
-  return _lang;
+  return cookiesStore.get("language")?.value || "en";
 };
 
 export default _t;

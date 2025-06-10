@@ -215,7 +215,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
   );
 
   return (
-    <>
+    <div className="relative">
       <div className="flex bg-background gap-2 items-center justify-between mt-2 mb-10 sticky z-30 p-5">
         <div className="flex items-center gap-2 text-sm text-forground-muted">
           <div className="flex gap-4 items-center">
@@ -287,7 +287,9 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
           autoFocus
           rows={1}
           value={watchedTitle}
-          disabled={articleCreateMutation.isPending}
+          disabled={
+            articleCreateMutation.isPending || updateMyArticleMutation.isPending
+          }
           className="w-full text-2xl focus:outline-none bg-background resize-none"
           ref={titleRef}
           onBlur={(e) => handleSaveArticleOnBlurTitle(e.target.value)}
@@ -301,6 +303,10 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
         <div className="w-full">
           {editorMode === "write" ? (
             <textarea
+              disabled={
+                articleCreateMutation.isPending ||
+                updateMyArticleMutation.isPending
+              }
               tabIndex={2}
               className="focus:outline-none h-[calc(100vh-120px)] bg-background w-full resize-none"
               placeholder={_t("Write something stunning...")}
@@ -326,7 +332,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
           }}
         />
       )}
-    </>
+    </div>
   );
 };
 

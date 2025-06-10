@@ -1,24 +1,16 @@
 "use server";
 
+import { env } from "@/env";
 import { generateRandomString } from "@/lib/utils";
 import { cookies } from "next/headers";
 import { userAgent } from "next/server";
 import { cache } from "react";
+import { eq } from "sqlkit";
 import { z } from "zod";
-import { UserSession } from "../models/domain-models";
-import { persistenceRepository } from "../persistence-repositories";
-import { pgClient } from "../persistence/database-drivers/pg.client";
-import { eq } from "../persistence/persistence-where-operator";
-import { PersistentRepository } from "../persistence/persistence.repository";
+import { persistenceRepository } from "../persistence/persistence-repositories";
 import { handleRepositoryException } from "./RepositoryException";
 import { SessionResult, USER_SESSION_KEY } from "./action-type";
 import { UserSessionInput } from "./inputs/session.input";
-import { env } from "@/env";
-
-const sessionRepository = new PersistentRepository<UserSession>(
-  "user_sessions",
-  pgClient
-);
 
 /**
  * Creates a new login session for a user and sets a session cookie.
@@ -36,13 +28,15 @@ export async function createLoginSession(
     const input =
       await UserSessionInput.createLoginSessionInput.parseAsync(_input);
     const agent = userAgent(input.request);
-    await sessionRepository.createOne({
-      token,
-      user_id: input.user_id,
-      device: `${agent.os.name} ${agent.browser.name}`,
-      ip: input.request.headers.get("x-forwarded-for") ?? "",
-      last_action_at: new Date(),
-    });
+    await persistenceRepository.userSession.insert([
+      {
+        token,
+        user_id: input.user_id,
+        device: `${agent.os.name} ${agent.browser.name}`,
+        ip: input.request.headers.get("x-forwarded-for") ?? "",
+        last_action_at: new Date(),
+      },
+    ]);
     _cookies.set(USER_SESSION_KEY.SESSION_TOKEN, token, {
       path: "/",
       secure: env.NODE_ENV === "production",
@@ -65,7 +59,7 @@ export async function createLoginSession(
 export const validateSessionToken = async (
   token: string
 ): Promise<SessionResult> => {
-  const [session] = await persistenceRepository.userSession.findRows({
+  const [session] = await persistenceRepository.userSession.find({
     limit: 1,
     where: eq("token", token),
     columns: ["id", "user_id", "token", "device"],
@@ -74,14 +68,14 @@ export const validateSessionToken = async (
     return { session: null, user: null };
   }
 
-  await persistenceRepository.userSession.updateOne({
+  await persistenceRepository.userSession.update({
     where: eq("id", session.id),
     data: {
       last_action_at: new Date(),
     },
   });
 
-  const [user] = await persistenceRepository.user.findRows({
+  const [user] = await persistenceRepository.user.find({
     limit: 1,
     where: eq("id", session.user_id),
     columns: ["id", "name", "username", "email", "profile_photo"],
@@ -145,7 +139,7 @@ export const deleteLoginSession = async () => {
   }
 
   try {
-    await persistenceRepository.userSession.deleteRows({
+    await persistenceRepository.userSession.delete({
       where: eq("token", token),
     });
   } catch (error) {
@@ -157,7 +151,7 @@ export const deleteLoginSession = async () => {
 
 export const deleteSession = async (sessionId: string) => {
   try {
-    await persistenceRepository.userSession.deleteRows({
+    await persistenceRepository.userSession.delete({
       where: eq("id", sessionId),
     });
   } catch (error) {}
@@ -170,7 +164,7 @@ export const mySessions = async () => {
     return [];
   }
 
-  return persistenceRepository.userSession.findRows({
+  return persistenceRepository.userSession.find({
     where: eq("user_id", user_id),
     limit: -1,
   });
