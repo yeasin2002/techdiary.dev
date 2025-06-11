@@ -16,32 +16,32 @@ const repositoryConfig = {
   logging: true,
 };
 
-export const userRepository = new Repository<User>(
+const userRepository = new Repository<User>(
   DatabaseTableName.users,
   pgClient,
   repositoryConfig
 );
-export const articleRepository = new Repository<Article>(
+const articleRepository = new Repository<Article>(
   DatabaseTableName.articles,
   pgClient,
   repositoryConfig
 );
-export const tagRepository = new Repository<Tag>(
+const tagRepository = new Repository<Tag>(
   DatabaseTableName.tags,
   pgClient,
   repositoryConfig
 );
-export const articleTagRepository = new Repository<ArticleTag>(
+const articleTagRepository = new Repository<ArticleTag>(
   DatabaseTableName.article_tag,
   pgClient,
   repositoryConfig
 );
-export const userSocialRepository = new Repository<UserSocial>(
+const userSocialRepository = new Repository<UserSocial>(
   DatabaseTableName.user_socials,
   pgClient,
   repositoryConfig
 );
-export const userSessionRepository = new Repository<UserSession>(
+const userSessionRepository = new Repository<UserSession>(
   DatabaseTableName.user_sessions,
   pgClient,
   repositoryConfig

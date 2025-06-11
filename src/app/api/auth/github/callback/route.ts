@@ -1,7 +1,7 @@
 import { GithubOAuthService } from "@/backend/services/oauth/GithubOAuthService";
 import { RepositoryException } from "@/backend/services/RepositoryException";
 import * as sessionActions from "@/backend/services/session.actions";
-import * as userActions from "@/backend/services/user.repository";
+import * as userActions from "@/backend/services/user.action";
 import { NextResponse } from "next/server";
 
 const githubOAuthService = new GithubOAuthService();

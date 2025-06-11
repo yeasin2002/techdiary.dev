@@ -2,18 +2,6 @@ import { persistenceRepository } from "@/backend/persistence/persistence-reposit
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
-  // [
-  //   {
-  //     "key": "article_id",
-  //     "operator": "=",
-  //     "value": "317eb5cf-9ef5-4ef1-9da7-78007dd83149"
-  //   },
-  //   {
-  //     "key": "tag_id",
-  //     "operator": "not in",
-  //     "value": []
-  //   }
-  // ]
   return NextResponse.json({
     handle: await persistenceRepository.articleTagPivot.delete({
       where: {
