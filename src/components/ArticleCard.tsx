@@ -40,7 +40,7 @@ const ArticleCard = ({
   likes,
   comments,
 }: ArticleCardProps) => {
-  const { lang, _t } = useTranslation();
+  const { lang } = useTranslation();
 
   const articleUrl = useMemo(() => {
     return `/@${author.username}/${handle}`;

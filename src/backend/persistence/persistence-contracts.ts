@@ -6,6 +6,7 @@ export enum DatabaseTableName {
   series = "series",
   series_items = "series_items",
   bookmarks = "bookmarks",
+  reactions = "reactions",
   tags = "tags",
   article_tag = "article_tag",
 }

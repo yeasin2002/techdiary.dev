@@ -124,9 +124,9 @@ export const authID = cache(async (): Promise<string | null> => {
   const _cookies = await cookies();
   const userId = _cookies.get(USER_SESSION_KEY.SESSION_USER_ID)?.value ?? null;
 
-  if (!userId) {
-    throw new Error("Unauthorized");
-  }
+  // if (!userId) {
+  //   throw new Error("Unauthorized");
+  // }
 
   return userId;
 });

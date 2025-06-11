@@ -66,12 +66,19 @@ const bookmarkRepository = new Repository<Bookmark>(
   repositoryConfig
 );
 
+const reactionRepository = new Repository<Bookmark>(
+  DatabaseTableName.bookmarks,
+  pgClient,
+  repositoryConfig
+);
+
 export const persistenceRepository = {
   user: userRepository,
   userSocial: userSocialRepository,
   userSession: userSessionRepository,
   article: articleRepository,
   bookmark: bookmarkRepository,
+  reaction: reactionRepository,
   articleTagPivot: articleTagRepository,
   tags: tagRepository,
   series: seriesRepository,

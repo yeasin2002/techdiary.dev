@@ -124,6 +124,21 @@ export const bookmarksTable = pgTable("bookmarks", {
   updated_at: timestamp("updated_at"),
 });
 
+// [ { reaction_type: 'LOVE', count: 0, is_reacted: true } ]
+
+export const reactionsTable = pgTable("reactions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  user_id: uuid("user_id")
+    .notNull()
+    .references(() => usersTable.id, { onDelete: "cascade" })
+    .notNull(),
+  resource_id: uuid("resource_id").notNull(),
+  resource_type: varchar("resource_type", { length: 50 }).notNull(), // ARTICLE, COMMENT
+  reaction_type: varchar("reaction_type", { length: 50 }).notNull(), // LIKE, DISLIKE, LOVE, etc.
+  created_at: timestamp("created_at"),
+  updated_at: timestamp("updated_at"),
+});
+
 export const commentsTable = pgTable("comments", {
   id: uuid("id").defaultRandom().primaryKey(),
   body: text("body").notNull(),

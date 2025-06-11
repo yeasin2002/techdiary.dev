@@ -1,26 +1,14 @@
-import { persistenceRepository } from "@/backend/persistence/persistence-repositories";
 import { NextResponse } from "next/server";
+import * as reactionActions from "@/backend/services/reaction.actions";
 
-export async function GET(request: Request) {
-  return NextResponse.json({
-    handle: await persistenceRepository.articleTagPivot.delete({
-      where: {
-        AND: [
-          {
-            key: "article_id",
-            operator: "=",
-            value: "317eb5cf-9ef5-4ef1-9da7-78007dd83149",
-          },
-          {
-            key: "tag_id",
-            operator: "not in",
-            value: [
-              "060f882f-e40e-415b-bc06-ed618f77d9bc",
-              "2e27c4b0-226d-41ed-ae3f-3f9ac493b6a7",
-            ],
-          },
-        ],
-      },
-    }),
+export async function GET() {
+  const response = await reactionActions.getReactions({
+    resource_id: "00e2ed46-b113-4f4f-899f-ae8477ecd5a4",
+    resource_type: "ARTICLE",
+  });
+
+  return NextResponse.json(response, {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
   });
 }
