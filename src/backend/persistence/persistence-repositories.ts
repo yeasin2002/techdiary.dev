@@ -2,6 +2,7 @@ import { Repository } from "sqlkit";
 import {
   Article,
   ArticleTag,
+  Bookmark,
   Series,
   SeriesItem,
   Tag,
@@ -59,11 +60,18 @@ const seriesItemsRepository = new Repository<SeriesItem>(
   repositoryConfig
 );
 
+const bookmarkRepository = new Repository<Bookmark>(
+  DatabaseTableName.bookmarks,
+  pgClient,
+  repositoryConfig
+);
+
 export const persistenceRepository = {
   user: userRepository,
   userSocial: userSocialRepository,
   userSession: userSessionRepository,
   article: articleRepository,
+  bookmark: bookmarkRepository,
   articleTagPivot: articleTagRepository,
   tags: tagRepository,
   series: seriesRepository,

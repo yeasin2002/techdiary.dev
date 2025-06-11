@@ -113,3 +113,10 @@ export interface ArticleTag {
   article?: Article;
   tag?: Tag;
 }
+
+export interface Bookmark {
+  id: string;
+  resource_id: string;
+  resource_type: "ARTICLE" | "COMMENT";
+  user_id: string;
+}
