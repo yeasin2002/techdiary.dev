@@ -10,12 +10,11 @@ export const UserRepositoryInput = {
     profile_photo: z.string().url(),
     bio: z.string().optional().nullable(),
   }),
-  updateUserProfileInput: z.object({
-    id: z.string(),
+  updateMyProfileInput: z.object({
     name: z.string(),
-    username: z.string(),
-    email: z.string().email(),
-    profile_photo: z.string().url(),
+    username: z.string().optional(),
+    email: z.string().email().optional(),
+    profile_photo: z.string().url().optional(),
     education: z.string().optional(),
     designation: z.string().optional(),
     bio: z.string().optional(),

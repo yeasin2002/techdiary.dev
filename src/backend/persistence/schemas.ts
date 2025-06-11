@@ -112,6 +112,18 @@ export const articlesTable = pgTable("articles", {
   updated_at: timestamp("updated_at"),
 });
 
+export const bookmarksTable = pgTable("bookmarks", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  user_id: uuid("user_id")
+    .notNull()
+    .references(() => usersTable.id, { onDelete: "cascade" })
+    .notNull(),
+  resource_id: uuid("resource_id").notNull(),
+  resource_type: varchar("resource_type", { length: 50 }).notNull(), // ARTICLE, COMMENT
+  created_at: timestamp("created_at"),
+  updated_at: timestamp("updated_at"),
+});
+
 export const commentsTable = pgTable("comments", {
   id: uuid("id").defaultRandom().primaryKey(),
   body: text("body").notNull(),
@@ -138,7 +150,7 @@ export const tags = pgTable("tags", {
 });
 
 export const articleTagsTable = pgTable("article_tag", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   article_id: uuid("article_id")
     .notNull()
     .references(() => articlesTable.id, { onDelete: "cascade" }),

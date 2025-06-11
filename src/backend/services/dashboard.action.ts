@@ -20,7 +20,7 @@ SELECT (SELECT Count(*)
 `;
 
 export async function myArticleMatrix() {
-  const sessionUserId = await sessionActions.getSessionUserId();
+  const sessionUserId = await sessionActions.authID();
 
   const totalPostsQuery = await pgClient?.executeSQL<any>(query, [
     sessionUserId!,

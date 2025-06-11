@@ -1,7 +1,7 @@
 import { zodErrorToString } from "@/lib/utils";
 import { z } from "zod";
 
-export class RepositoryException extends Error {
+export class ActionException extends Error {
   constructor(message?: string, options?: ErrorOptions) {
     super(message, options);
     this.message = message ?? "Validation error";
@@ -12,8 +12,8 @@ export class RepositoryException extends Error {
   }
 }
 
-export const handleRepositoryException = (error: any) => {
-  if (error instanceof RepositoryException) {
+export const handleActionException = (error: any) => {
+  if (error instanceof ActionException) {
     return error.toString();
   }
 
@@ -22,6 +22,6 @@ export const handleRepositoryException = (error: any) => {
   }
 
   if (error instanceof z.ZodError) {
-    throw new RepositoryException(zodErrorToString(error));
+    throw new ActionException(zodErrorToString(error));
   }
 };

@@ -8,7 +8,7 @@ import { cache } from "react";
 import { eq } from "sqlkit";
 import { z } from "zod";
 import { persistenceRepository } from "../persistence/persistence-repositories";
-import { handleRepositoryException } from "./RepositoryException";
+import { handleActionException } from "./RepositoryException";
 import { SessionResult, USER_SESSION_KEY } from "./action-type";
 import { UserSessionInput } from "./inputs/session.input";
 
@@ -52,7 +52,7 @@ export async function createLoginSession(
       sameSite: "lax",
     });
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
   }
 }
 
@@ -120,7 +120,7 @@ export const getSession = cache(async (): Promise<SessionResult> => {
  * Get the current session user ID.
  * @returns - The current session user ID.
  */
-export const getSessionUserId = cache(async (): Promise<string | null> => {
+export const authID = cache(async (): Promise<string | null> => {
   const _cookies = await cookies();
   const userId = _cookies.get(USER_SESSION_KEY.SESSION_USER_ID)?.value ?? null;
 

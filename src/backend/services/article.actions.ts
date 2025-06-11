@@ -11,21 +11,18 @@ import { z } from "zod";
 import { Article, User } from "../models/domain-models";
 import { DatabaseTableName } from "../persistence/persistence-contracts";
 import { persistenceRepository } from "../persistence/persistence-repositories";
-import {
-  handleRepositoryException,
-  RepositoryException,
-} from "./RepositoryException";
+import { handleActionException, ActionException } from "./RepositoryException";
 import { ArticleRepositoryInput } from "./inputs/article.input";
-import { getSessionUserId } from "./session.actions";
+import { authID } from "./session.actions";
 import { syncTagsWithArticles } from "./tag.action";
 
 export async function createMyArticle(
   _input: z.infer<typeof ArticleRepositoryInput.createMyArticleInput>
 ) {
   try {
-    const sessionUserId = await getSessionUserId();
+    const sessionUserId = await authID();
     if (!sessionUserId) {
-      throw new RepositoryException("Unauthorized");
+      throw new ActionException("Unauthorized");
     }
 
     const input =
@@ -38,7 +35,7 @@ export async function createMyArticle(
     const handle = await getUniqueArticleHandle(titleToUse);
 
     if (!handle) {
-      throw new RepositoryException(
+      throw new ActionException(
         "Failed to generate a unique handle for the article"
       );
     }
@@ -58,7 +55,7 @@ export async function createMyArticle(
     return article?.rows?.[0];
   } catch (error) {
     console.error("Article creation error:", error);
-    handleRepositoryException(error);
+    handleActionException(error);
     return null;
   }
 }
@@ -142,7 +139,7 @@ export const getUniqueArticleHandle = async (
     // Return with the next number in sequence
     return `${baseHandle}-${highestNumber}`;
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
     throw error;
   }
 };
@@ -152,7 +149,7 @@ export const getUniqueArticleHandle = async (
  *
  * @param _input - The article update data, validated against ArticleRepositoryInput.updateArticleInput schema
  * @returns Promise<Article> - The updated article
- * @throws {RepositoryException} If article update fails, article not found, or validation fails
+ * @throws {ActionException} If article update fails, article not found, or validation fails
  */
 export async function updateArticle(
   _input: z.infer<typeof ArticleRepositoryInput.updateArticleInput>
@@ -177,7 +174,7 @@ export async function updateArticle(
 
     return article?.rows?.[0];
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
   }
 }
 
@@ -185,9 +182,9 @@ export async function updateMyArticle(
   _input: z.infer<typeof ArticleRepositoryInput.updateMyArticleInput>
 ) {
   try {
-    const sessionUserId = await getSessionUserId();
+    const sessionUserId = await authID();
     if (!sessionUserId) {
-      throw new RepositoryException("Unauthorized");
+      throw new ActionException("Unauthorized");
     }
 
     const input =
@@ -216,7 +213,7 @@ export async function updateMyArticle(
 
     return article?.rows?.[0];
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
   }
 }
 
@@ -225,7 +222,7 @@ export async function updateMyArticle(
  *
  * @param article_id - The unique identifier of the article to delete
  * @returns Promise<Article> - The deleted article
- * @throws {RepositoryException} If article deletion fails or article not found
+ * @throws {ActionException} If article deletion fails or article not found
  */
 export async function deleteArticle(article_id: string) {
   try {
@@ -235,7 +232,7 @@ export async function deleteArticle(article_id: string) {
 
     return deletedArticles?.rows?.[0];
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
   }
 }
 
@@ -244,7 +241,7 @@ export async function deleteArticle(article_id: string) {
  *
  * @param limit - Maximum number of articles to return (default: 5)
  * @returns Promise<Article[]> - Array of recent articles with author information
- * @throws {RepositoryException} If query fails
+ * @throws {ActionException} If query fails
  */
 // export async function findRecentArticles(
 //   limit: number = 5
@@ -276,7 +273,7 @@ export async function deleteArticle(article_id: string) {
  *
  * @param _input - Feed parameters including page and limit, validated against ArticleRepositoryInput.feedInput schema
  * @returns Promise<{ data: Article[], total: number }> - Paginated articles with total count
- * @throws {RepositoryException} If query fails or validation fails
+ * @throws {ActionException} If query fails or validation fails
  */
 export async function articleFeed(
   _input: z.infer<typeof ArticleRepositoryInput.feedInput>
@@ -321,7 +318,7 @@ export async function articleFeed(
 
     return response;
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
   }
 }
 
@@ -372,7 +369,7 @@ export async function userArticleFeed(
 
     return response;
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
   }
 }
 
@@ -411,12 +408,12 @@ export async function articleDetailByHandle(article_handle: string) {
     });
 
     if (!article) {
-      throw new RepositoryException("Article not found");
+      throw new ActionException("Article not found");
     }
 
     return article;
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
   }
 }
 
@@ -455,22 +452,22 @@ export async function articleDetailByUUID(uuid: string) {
     });
 
     if (!article) {
-      throw new RepositoryException("Article not found");
+      throw new ActionException("Article not found");
     }
 
     return article;
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
   }
 }
 
 export async function myArticles(
   input: z.infer<typeof ArticleRepositoryInput.myArticleInput>
 ) {
-  const sessionUserId = await getSessionUserId();
+  const sessionUserId = await authID();
 
   if (!sessionUserId) {
-    throw new RepositoryException("Unauthorized");
+    throw new ActionException("Unauthorized");
   }
 
   try {
@@ -490,7 +487,7 @@ export async function myArticles(
     });
     return articles;
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
   }
 }
 
@@ -504,7 +501,7 @@ export async function setArticlePublished(
   article_id: string,
   is_published: boolean
 ) {
-  const sessionUserId = await getSessionUserId();
+  const sessionUserId = await authID();
   try {
     const articles = await persistenceRepository.article.update({
       where: and(
@@ -518,6 +515,6 @@ export async function setArticlePublished(
     });
     return articles?.rows?.[0];
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
   }
 }

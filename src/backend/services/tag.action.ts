@@ -4,7 +4,7 @@ import { and, eq, inArray, like } from "sqlkit";
 import { z } from "zod";
 import { persistenceRepository } from "../persistence/persistence-repositories";
 import { TagRepositoryInput } from "./inputs/tag.input";
-import { handleRepositoryException } from "./RepositoryException";
+import { handleActionException } from "./RepositoryException";
 
 export const getTags = async (
   _input: z.infer<typeof TagRepositoryInput.findAllInput>
@@ -17,7 +17,7 @@ export const getTags = async (
         : undefined,
     });
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
   }
 };
 
@@ -36,7 +36,7 @@ export const createTag = async (
 
     return response.rows[0];
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
   }
 };
 
@@ -86,6 +86,6 @@ export const syncTagsWithArticles = async (
       inputTagIds: input.tag_ids,
     });
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
   }
 };

@@ -1,5 +1,5 @@
 import { GithubOAuthService } from "@/backend/services/oauth/GithubOAuthService";
-import { RepositoryException } from "@/backend/services/RepositoryException";
+import { ActionException } from "@/backend/services/RepositoryException";
 import * as sessionActions from "@/backend/services/session.actions";
 import * as userActions from "@/backend/services/user.action";
 import { NextResponse } from "next/server";
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
       },
     });
   } catch (error) {
-    if (error instanceof RepositoryException) {
+    if (error instanceof ActionException) {
       return NextResponse.json({ error: error.toString() }, { status: 400 });
     }
     if (error instanceof Error) {

@@ -4,10 +4,11 @@ import { and, desc, eq } from "sqlkit";
 import { z } from "zod";
 import { User } from "../models/domain-models";
 import { persistenceRepository } from "../persistence/persistence-repositories";
-import { handleRepositoryException } from "./RepositoryException";
+import { ActionException, handleActionException } from "./RepositoryException";
 import { UserRepositoryInput } from "./inputs/user.input";
 import { drizzleClient } from "@/backend/persistence/clients";
 import { usersTable } from "@/backend/persistence/schemas";
+import { authID } from "./session.actions";
 
 /**
  * Creates or syncs a user account from a social login provider.
@@ -69,7 +70,7 @@ export async function bootSocialUser(
       userSocial,
     };
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
   }
 }
 
@@ -80,15 +81,20 @@ export async function bootSocialUser(
  * @returns Promise<User> - The updated user
  * @throws {RepositoryException} If update fails or validation fails
  */
-export async function updateUserProfile(
-  _input: z.infer<typeof UserRepositoryInput.updateUserProfileInput>
+export async function updateMyProfile(
+  _input: z.infer<typeof UserRepositoryInput.updateMyProfileInput>
 ) {
   try {
+    const sessionUser = await authID();
+    if (!sessionUser) {
+      throw new ActionException(`User not authenticated`);
+    }
+
     const input =
-      await UserRepositoryInput.updateUserProfileInput.parseAsync(_input);
+      await UserRepositoryInput.updateMyProfileInput.parseAsync(_input);
 
     const updatedUser = await persistenceRepository.user.update({
-      where: eq("id", input.id),
+      where: eq("id", sessionUser!),
       data: {
         name: input.name,
         username: input.username,
@@ -107,7 +113,7 @@ export async function updateUserProfile(
 
     return updatedUser?.rows?.[0];
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
   }
 }
 
@@ -126,7 +132,7 @@ export async function getUserById(id: string): Promise<User | null> {
     });
     return user;
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
     return null;
   }
 }
@@ -150,7 +156,7 @@ export async function getUserByUsername(
     });
     return user;
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
     return null;
   }
 }
@@ -170,7 +176,7 @@ export async function getUserByEmail(email: string): Promise<User | null> {
     });
     return user;
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
     return null;
   }
 }
@@ -198,7 +204,7 @@ export async function getUsers(page: number = 1, limit: number = 10) {
       ],
     });
   } catch (error) {
-    handleRepositoryException(error);
+    handleActionException(error);
     return null;
   }
 }
