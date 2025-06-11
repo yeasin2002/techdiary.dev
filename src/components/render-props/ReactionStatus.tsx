@@ -20,8 +20,6 @@ interface Props {
   }) => React.ReactNode;
 }
 
-// All possible reactions
-
 const ReactionStatus: React.FC<Props> = ({
   resource_id,
   resource_type,
@@ -42,7 +40,66 @@ const ReactionStatus: React.FC<Props> = ({
         resource_type,
         reaction_type,
       }),
-    onSuccess: () => {
+    onMutate: async (reaction_type: REACTION_TYPE) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: ["reaction", resource_id, resource_type],
+      });
+
+      // Snapshot the previous value
+      const previousReactions = queryClient.getQueryData<ReactionStatusModel[]>(
+        ["reaction", resource_id, resource_type]
+      );
+
+      // Optimistically update to the new value
+      queryClient.setQueryData<ReactionStatusModel[]>(
+        ["reaction", resource_id, resource_type],
+        (old = []) => {
+          const existingReaction = old.find(
+            (r) => r.reaction_type === reaction_type
+          );
+
+          if (existingReaction) {
+            // If reaction exists, toggle it (remove if active, or toggle status)
+            if (existingReaction.is_reacted) {
+              // Remove the reaction
+              return old.filter((r) => r.reaction_type !== reaction_type);
+            } else {
+              // Activate the reaction
+              return old.map((r) =>
+                r.reaction_type === reaction_type
+                  ? { ...r, is_active: true, count: r.count + 1 }
+                  : r
+              );
+            }
+          } else {
+            // Add new reaction
+            return [
+              ...old,
+              {
+                reaction_type,
+                is_reacted: true,
+                count: 1,
+                resource_id,
+                resource_type,
+              } as ReactionStatusModel,
+            ];
+          }
+        }
+      );
+
+      // Return a context object with the snapshotted value
+      return { previousReactions };
+    },
+    onError: (err, reaction_type, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      queryClient.setQueryData(
+        ["reaction", resource_id, resource_type],
+        context?.previousReactions
+      );
+    },
+    onSettled: () => {
+      // Always refetch after error or success to ensure we have the latest data
       queryClient.invalidateQueries({
         queryKey: ["reaction", resource_id, resource_type],
       });
@@ -54,7 +111,7 @@ const ReactionStatus: React.FC<Props> = ({
   };
 
   const getReaction = (reaction_type: REACTION_TYPE) => {
-    return query?.data?.find((r) => r.reaction_type == reaction_type);
+    return query?.data?.find((r) => r.reaction_type === reaction_type);
   };
 
   return render({
