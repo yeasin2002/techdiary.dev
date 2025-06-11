@@ -32,23 +32,6 @@ const BookmarkStatus: React.FC<Props> = ({
     mutationFn: () =>
       bookmarkAction.toggleResourceBookmark({ resource_id, resource_type }),
 
-    // Optimistic update before mutation
-    onMutate: async () => {
-      // Cancel any ongoing fetch to prevent race conditions
-      await status.refetch(); // optional for consistency
-      const previousBookmarked = bookmarked;
-
-      // Optimistically toggle state
-      setBookmarked((prev) => !prev);
-
-      return { previousBookmarked };
-    },
-
-    // Revert if there's an error
-    onError: (_err, _vars, context) => {
-      setBookmarked(context?.previousBookmarked ?? false);
-    },
-
     // Ensure state is accurate after success
     onSuccess: (data) => {
       setBookmarked(data?.bookmarked ?? false);
@@ -56,6 +39,7 @@ const BookmarkStatus: React.FC<Props> = ({
   });
 
   const toggle = () => {
+    setBookmarked((state) => !state);
     mutation.mutate();
   };
 
