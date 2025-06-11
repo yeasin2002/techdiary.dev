@@ -3,6 +3,7 @@ import {
   Article,
   ArticleTag,
   Bookmark,
+  Reaction,
   Series,
   SeriesItem,
   Tag,
@@ -66,8 +67,8 @@ const bookmarkRepository = new Repository<Bookmark>(
   repositoryConfig
 );
 
-const reactionRepository = new Repository<Bookmark>(
-  DatabaseTableName.bookmarks,
+const reactionRepository = new Repository<Reaction>(
+  DatabaseTableName.reactions,
   pgClient,
   repositoryConfig
 );

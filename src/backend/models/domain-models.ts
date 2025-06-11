@@ -121,3 +121,26 @@ export interface Bookmark {
   user_id: string;
   created_at: Date;
 }
+
+export type REACTION_TYPE =
+  | "LOVE"
+  | "UNICORN"
+  | "WOW"
+  | "FIRE"
+  | "CRY"
+  | "HAHA";
+
+export interface Reaction {
+  resource_id: string;
+  resource_type: "ARTICLE" | "COMMENT";
+  reaction_type: REACTION_TYPE;
+  user_id: string;
+  created_at: Date;
+}
+
+export interface ReactionStatus {
+  count: number;
+  is_reacted: boolean;
+  reaction_type?: REACTION_TYPE;
+  reactor_user_ids?: string[];
+}

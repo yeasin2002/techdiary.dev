@@ -7,8 +7,9 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import UserInformationCard from "./UserInformationCard";
-import BookmarkStatus from "./BookmarkStatus";
+import BookmarkStatus from "./render-props/BookmarkStatus";
 import clsx from "clsx";
+import ReactionStatus from "./render-props/ReactionStatus";
 
 interface ArticleCardProps {
   id: string;
@@ -148,6 +149,18 @@ const ArticleCard = ({
             <span className="text-xs font-medium">{comments}</span>
           </button>
         </div>
+
+        <ReactionStatus
+          resource_type="ARTICLE"
+          resource_id={id}
+          render={({ reactions, toggle }) => {
+            return reactions.map((r) => (
+              <button onClick={() => toggle(r.reaction_type!)}>
+                {r.reaction_type} ({r.count})
+              </button>
+            ));
+          }}
+        />
 
         <BookmarkStatus
           resource_type="ARTICLE"
