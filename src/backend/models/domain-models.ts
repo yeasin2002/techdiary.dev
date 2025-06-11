@@ -119,4 +119,5 @@ export interface Bookmark {
   resource_id: string;
   resource_type: "ARTICLE" | "COMMENT";
   user_id: string;
+  created_at: Date;
 }

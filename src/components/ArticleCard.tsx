@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import UserInformationCard from "./UserInformationCard";
+import BookmarkStatus from "./BookmarkStatus";
+import clsx from "clsx";
 
 interface ArticleCardProps {
   id: string;
@@ -38,7 +40,7 @@ const ArticleCard = ({
   likes,
   comments,
 }: ArticleCardProps) => {
-  const { lang } = useTranslation();
+  const { lang, _t } = useTranslation();
 
   const articleUrl = useMemo(() => {
     return `/@${author.username}/${handle}`;
@@ -108,7 +110,8 @@ const ArticleCard = ({
           </Link>
         )}
       </div>
-      {/* <div className="mt-4 flex items-center justify-between">
+
+      <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button className="flex items-center gap-1.5 text-sm text-neutral-500 transition-all duration-300 hover:text-neutral-800 focus:outline-none">
             <svg
@@ -145,23 +148,34 @@ const ArticleCard = ({
             <span className="text-xs font-medium">{comments}</span>
           </button>
         </div>
-        <button className="text-neutral-400 hover:text-neutral-800 transition-colors duration-300">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width={24}
-            height={24}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-bookmark h-4 w-4"
-          >
-            <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-          </svg>
-        </button>
-      </div> */}
+
+        <BookmarkStatus
+          resource_type="ARTICLE"
+          resource_id={id}
+          render={({ bookmarked, toggle }) => (
+            <button
+              onClick={toggle}
+              className={clsx(
+                "transition-colors duration-300 flex cursor-pointer px-2 py-1 rounded-sm hover:bg-primary/20",
+                { "bg-primary/20": bookmarked }
+              )}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={clsx("size-6 stroke-2 fill-transparent", {
+                  "!stroke-current": !bookmarked,
+                  "!fill-current": bookmarked,
+                })}
+              >
+                <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+              </svg>
+            </button>
+          )}
+        />
+      </div>
     </div>
   );
 };

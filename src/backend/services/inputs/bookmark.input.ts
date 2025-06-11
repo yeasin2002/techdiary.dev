@@ -5,4 +5,11 @@ export const BookmarkActionInput = {
     resource_id: z.string(),
     resource_type: z.enum(["ARTICLE", "COMMENT"]),
   }),
+  myBookmarks: z.object({
+    resource_type: z.enum(["ARTICLE", "COMMENT"]).optional(),
+  }),
+  bookmarkStatusInput: z.object({
+    resource_id: z.string(),
+    resource_type: z.enum(["ARTICLE", "COMMENT"]),
+  }),
 };
