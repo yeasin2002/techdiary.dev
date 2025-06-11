@@ -4,7 +4,6 @@ import * as articleActions from "@/backend/services/article.actions";
 import * as seriesActions from "@/backend/services/series.action";
 import ArticleCard from "@/components/ArticleCard";
 import SeriesCard from "@/components/SeriesCard";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VisibilitySensor from "@/components/VisibilitySensor";
 import { readingTime } from "@/lib/utils";
 import getFileUrl from "@/utils/getFileUrl";
@@ -50,19 +49,6 @@ const ArticleFeed = () => {
 
   return (
     <>
-      <div className="mb-6">
-        <Tabs
-          defaultValue="articles"
-          onValueChange={(value) => setFeedType(value as "articles" | "series")}
-          className="w-full"
-        >
-          <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="articles">Articles</TabsTrigger>
-            <TabsTrigger value="series">Series</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-
       <div className="flex flex-col gap-10 mt-2">
         {isLoading && (
           <>
@@ -97,33 +83,7 @@ const ArticleFeed = () => {
               />
             ))}
 
-        {feedType === "series" &&
-          seriesFeedQuery.data?.pages
-            .flatMap((page) => page?.nodes)
-            .map((series) => (
-              <SeriesCard
-                key={series?.id}
-                id={series?.id.toString()!}
-                handle={series?.handle ?? ""}
-                title={series?.title ?? ""}
-                description={series?.description ?? ""}
-                coverImage={getFileUrl(series?.cover_image!)}
-                creator={{
-                  id: series?.owner?.id ?? "",
-                  name: series?.owner?.name ?? "",
-                  avatar: series?.owner?.profile_photo ?? "",
-                  username: series?.owner?.username ?? "",
-                }}
-                articleCount={series?.article_count || 0}
-              />
-            ))}
-
         <div className="my-10">
-          {activeFeedQuery.isFetchingNextPage && (
-            <div className="flex justify-center">
-              <Loader className="animate-spin" />
-            </div>
-          )}
           <VisibilitySensor
             visible={activeFeedQuery.hasNextPage}
             onLoadmore={async () => {
