@@ -1,3 +1,5 @@
+"use server";
+
 import { asc, eq } from "sqlkit";
 import { z } from "zod";
 import { persistenceRepository } from "../persistence/persistence-repositories";
