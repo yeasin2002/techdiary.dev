@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const UserRepositoryInput = {
+export const UserActionInput = {
   syncSocialUserInput: z.object({
     service: z.enum(["github"]),
     service_uid: z.string(),

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { User } from "../models/domain-models";
 import { persistenceRepository } from "../persistence/persistence-repositories";
 import { ActionException, handleActionException } from "./RepositoryException";
-import { UserRepositoryInput } from "./inputs/user.input";
+import { UserActionInput } from "./inputs/user.input";
 import { drizzleClient } from "@/backend/persistence/clients";
 import { usersTable } from "@/backend/persistence/schemas";
 import { authID } from "./session.actions";
@@ -19,11 +19,10 @@ import { authID } from "./session.actions";
  * @throws {RepositoryException} If user creation/sync fails or validation fails
  */
 export async function bootSocialUser(
-  _input: z.infer<typeof UserRepositoryInput.syncSocialUserInput>
+  _input: z.infer<typeof UserActionInput.syncSocialUserInput>
 ) {
   try {
-    const input =
-      await UserRepositoryInput.syncSocialUserInput.parseAsync(_input);
+    const input = await UserActionInput.syncSocialUserInput.parseAsync(_input);
     let [user] = await persistenceRepository.user.find({
       where: eq("email", input.email),
       columns: ["id", "name", "username", "email"],
@@ -82,7 +81,7 @@ export async function bootSocialUser(
  * @throws {RepositoryException} If update fails or validation fails
  */
 export async function updateMyProfile(
-  _input: z.infer<typeof UserRepositoryInput.updateMyProfileInput>
+  _input: z.infer<typeof UserActionInput.updateMyProfileInput>
 ) {
   try {
     const sessionUser = await authID();
@@ -90,8 +89,7 @@ export async function updateMyProfile(
       throw new ActionException(`User not authenticated`);
     }
 
-    const input =
-      await UserRepositoryInput.updateMyProfileInput.parseAsync(_input);
+    const input = await UserActionInput.updateMyProfileInput.parseAsync(_input);
 
     const updatedUser = await persistenceRepository.user.update({
       where: eq("id", sessionUser!),
