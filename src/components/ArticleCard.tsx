@@ -121,6 +121,7 @@ const ArticleCard = ({
               <div className="flex gap-1">
                 {reactions.map((r) => (
                   <button
+                    key={r.reaction_type}
                     className={clsx(
                       "px-2 py-1 flex gap-1 cursor-pointer rounded-sm hover:bg-primary/20",
                       { "bg-primary/20": r.is_reacted }
