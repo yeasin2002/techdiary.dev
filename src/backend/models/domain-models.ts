@@ -123,12 +123,12 @@ export interface Bookmark {
 }
 
 export type REACTION_TYPE =
-  | "LOVE"
-  | "UNICORN"
-  | "WOW"
-  | "FIRE"
-  | "CRY"
-  | "HAHA";
+  | "LOVE" // ✅
+  | "UNICORN" // ✅
+  | "WOW" // ✅
+  | "FIRE" // ✅
+  | "CRY" // ✅
+  | "HAHA"; // ✅
 
 export interface Reaction {
   resource_id: string;

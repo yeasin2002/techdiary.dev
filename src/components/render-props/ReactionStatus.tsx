@@ -1,11 +1,10 @@
-import React from "react";
-import * as reactionActions from "@/backend/services/reaction.actions";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   REACTION_TYPE,
   ReactionStatus as ReactionStatusModel,
 } from "@/backend/models/domain-models";
-import { useImmer } from "use-immer";
+import * as reactionActions from "@/backend/services/reaction.actions";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import React from "react";
 
 interface Props {
   resource_type: "ARTICLE" | "COMMENT";
@@ -27,38 +26,6 @@ const ReactionStatus: React.FC<Props> = ({
   render,
 }) => {
   const queryClient = useQueryClient();
-  const [reactions, setReactions] = useImmer<ReactionStatusModel[]>([
-    {
-      count: 0,
-      is_reacted: false,
-      reaction_type: "CRY",
-    },
-    {
-      count: 0,
-      is_reacted: false,
-      reaction_type: "FIRE",
-    },
-    {
-      count: 0,
-      is_reacted: false,
-      reaction_type: "HAHA",
-    },
-    {
-      count: 0,
-      is_reacted: false,
-      reaction_type: "LOVE",
-    },
-    {
-      count: 0,
-      is_reacted: false,
-      reaction_type: "UNICORN",
-    },
-    {
-      count: 0,
-      is_reacted: false,
-      reaction_type: "WOW",
-    },
-  ]);
 
   const query = useQuery({
     queryKey: ["reaction", resource_id, resource_type],
@@ -74,7 +41,6 @@ const ReactionStatus: React.FC<Props> = ({
         reaction_type,
       }),
     async onMutate(reaction_type) {
-      // cancel
       await queryClient.cancelQueries({
         queryKey: ["reaction", resource_id, resource_type],
       });

@@ -113,52 +113,30 @@ const ArticleCard = ({
       </div>
 
       <div className="mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button className="flex items-center gap-1.5 text-sm text-neutral-500 transition-all duration-300 hover:text-neutral-800 focus:outline-none">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width={24}
-              height={24}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-heart h-4 w-4 transition-all duration-300"
-            >
-              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-            </svg>
-            <span className="text-xs font-medium">{likes}</span>
-          </button>
-          <button className="flex items-center gap-1.5 text-sm text-neutral-500 transition-all duration-300 hover:text-neutral-800">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width={24}
-              height={24}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-message-square h-4 w-4"
-            >
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-            <span className="text-xs font-medium">{comments}</span>
-          </button>
-        </div>
-
         <ReactionStatus
           resource_type="ARTICLE"
           resource_id={id}
           render={({ reactions, toggle }) => {
-            return reactions.map((r) => (
-              <button onClick={() => toggle(r.reaction_type!)}>
-                {r.reaction_type} ({r.count})
-              </button>
-            ));
+            return (
+              <div className="flex gap-1">
+                {reactions.map((r) => (
+                  <button
+                    className={clsx(
+                      "px-2 py-1 flex gap-1 cursor-pointer rounded-sm hover:bg-primary/20",
+                      { "bg-primary/20": r.is_reacted }
+                    )}
+                    onClick={() => toggle(r.reaction_type!)}
+                  >
+                    <img
+                      src={`/reactions/${r.reaction_type}.svg`}
+                      alt={`reaction-${id}-${r.reaction_type}`}
+                      className="size-5 flex-none"
+                    />
+                    <span>{r.count}</span>
+                  </button>
+                ))}
+              </div>
+            );
           }}
         />
 
@@ -178,7 +156,7 @@ const ArticleCard = ({
                 viewBox="0 0 24 24"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className={clsx("size-6 stroke-2 fill-transparent", {
+                className={clsx("size-5 stroke-2 fill-transparent", {
                   "!stroke-current": !bookmarked,
                   "!fill-current": bookmarked,
                 })}
