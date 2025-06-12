@@ -9,6 +9,7 @@ import { UserActionInput } from "./inputs/user.input";
 import { drizzleClient } from "@/backend/persistence/clients";
 import { usersTable } from "@/backend/persistence/schemas";
 import { authID } from "./session.actions";
+import { filterUndefined } from "@/lib/utils";
 
 /**
  * Creates or syncs a user account from a social login provider.
@@ -83,38 +84,32 @@ export async function bootSocialUser(
 export async function updateMyProfile(
   _input: z.infer<typeof UserActionInput.updateMyProfileInput>
 ) {
-  try {
-    const sessionUser = await authID();
-    if (!sessionUser) {
-      throw new ActionException(`User not authenticated`);
-    }
-
-    const input = await UserActionInput.updateMyProfileInput.parseAsync(_input);
-
-    console.log(input.social_links);
-
-    const updatedUser = await persistenceRepository.user.update({
-      where: eq("id", sessionUser!),
-      data: {
-        name: input.name,
-        username: input.username,
-        email: input.email,
-        profile_photo: input.profile_photo,
-        education: input.education,
-        designation: input.designation,
-        bio: input.bio,
-        website_url: input.websiteUrl,
-        location: input.location,
-        social_links: input.social_links,
-        profile_readme: input.profile_readme,
-        skills: input.skills,
-      },
-    });
-
-    return updatedUser?.rows?.[0];
-  } catch (error) {
-    handleActionException(error);
+  const sessionUser = await authID();
+  if (!sessionUser) {
+    throw new ActionException(`User not authenticated`);
   }
+
+  const input = await UserActionInput.updateMyProfileInput.parseAsync(_input);
+
+  const updatedUser = await persistenceRepository.user.update({
+    where: eq("id", sessionUser!),
+    data: filterUndefined<User>({
+      name: input.name,
+      username: input.username,
+      email: input.email,
+      profile_photo: input.profile_photo,
+      education: input.education,
+      designation: input.designation,
+      bio: input.bio,
+      website_url: input.websiteUrl,
+      location: input.location,
+      social_links: input.social_links,
+      profile_readme: input.profile_readme,
+      skills: input.skills,
+    }),
+  });
+
+  return updatedUser?.rows?.[0];
 }
 
 /**

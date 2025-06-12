@@ -34,7 +34,11 @@ const SocialMediaForm: React.FC<Props> = ({ user }) => {
       payload: z.infer<typeof UserActionInput.updateMyProfileInput>
     ) => userActions.updateMyProfile(payload),
     onSuccess: () => {
-      toast(_t("Social links updated successfully"));
+      toast.success(_t("Social links updated successfully"));
+    },
+    onError: (error) => {
+      toast.error(_t("Failed to update social links"));
+      console.error("Error updating social links:", error);
     },
   });
 

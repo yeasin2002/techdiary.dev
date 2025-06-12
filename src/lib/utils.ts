@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { z } from "zod";
+import { z, ZodAnyDef, ZodObject } from "zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -102,3 +102,11 @@ export const removeNullOrUndefinedFromObject = (obj: any) => {
   });
   return newObj;
 };
+
+export function filterUndefined<T>(
+  mapping: Partial<Record<keyof T, any>>
+): Partial<Record<string, any>> {
+  return Object.fromEntries(
+    Object.entries(mapping).filter(([_, value]) => value !== undefined)
+  ) as Partial<Record<string, any>>;
+}

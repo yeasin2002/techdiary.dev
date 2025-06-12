@@ -11,8 +11,8 @@ const SettingsPage = async () => {
   const current_user = await userActions.getUserById(auth_id!);
 
   return (
-    <div>
-      <pre>{JSON.stringify(current_user, null, 2)}</pre>
+    <>
+      {/* <pre>{JSON.stringify(current_user, null, 2)}</pre> */}
       <Tabs defaultValue="general">
         <TabsList>
           <TabsTrigger value="general">{_t("General")}</TabsTrigger>
@@ -36,10 +36,14 @@ const SettingsPage = async () => {
           )}
         </TabsContent>
         <TabsContent value="profile_readme">
-          <ReadmeForm />
+          {current_user && (
+            <div className="max-w-2xl my-10">
+              <ReadmeForm user={current_user} />
+            </div>
+          )}
         </TabsContent>
       </Tabs>
-    </div>
+    </>
   );
 };
 
