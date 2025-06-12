@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Toaster } from "@/components/ui/sonner";
 import "../styles/app.css";
 
 import * as sessionActions from "@/backend/services/session.actions";
@@ -37,7 +38,10 @@ const RootLayout: React.FC<PropsWithChildren> = async ({ children }) => {
     <html lang="en" suppressHydrationWarning>
       <body style={fontKohinoorBanglaRegular.style}>
         <I18nProvider currentLanguage={_cookies.get("language")?.value || "en"}>
-          <CommonProviders session={session}>{children}</CommonProviders>
+          <CommonProviders session={session}>
+            {children}
+            <Toaster />
+          </CommonProviders>
         </I18nProvider>
       </body>
     </html>

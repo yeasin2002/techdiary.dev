@@ -28,7 +28,11 @@ const SettingsPage = async () => {
           )}
         </TabsContent>
         <TabsContent value="social">
-          <SocialMediaForm />
+          {current_user && (
+            <div className="max-w-2xl my-10">
+              <SocialMediaForm user={current_user} />
+            </div>
+          )}
         </TabsContent>
         <TabsContent value="profile_readme">
           <ReadmeForm />

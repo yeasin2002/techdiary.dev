@@ -9,7 +9,14 @@ export interface User {
   bio: string;
   website_url: string;
   location: string;
-  social_links: any;
+  social_links: {
+    github?: string;
+    x?: string;
+    linkedin?: string;
+    facebook?: string;
+    instagram?: string;
+    youtube?: string;
+  };
   profile_readme: string;
   skills: string;
   created_at: Date;
@@ -123,12 +130,12 @@ export interface Bookmark {
 }
 
 export type REACTION_TYPE =
-  | "LOVE" // ✅
-  | "UNICORN" // ✅
-  | "WOW" // ✅
-  | "FIRE" // ✅
-  | "CRY" // ✅
-  | "HAHA"; // ✅
+  | "LOVE"
+  | "UNICORN"
+  | "WOW"
+  | "FIRE"
+  | "CRY"
+  | "HAHA";
 
 export interface Reaction {
   resource_id: string;

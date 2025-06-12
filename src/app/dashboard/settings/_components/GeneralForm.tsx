@@ -22,6 +22,7 @@ import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import z from "zod";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 // fields
 // name -> ✅
@@ -46,6 +47,9 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
     mutationFn: (
       payload: z.infer<typeof UserActionInput.updateMyProfileInput>
     ) => userActions.updateMyProfile(payload),
+    onSuccess: () => {
+      toast(_t("Profile updated successfully"));
+    },
   });
   const form = useForm({
     defaultValues: {
@@ -195,7 +199,10 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
           )}
         />
 
-        <Button type="submit" disabled={mutation.isPending}>
+        <Button
+          type="submit"
+          disabled={mutation.isPending || !form.formState.isValid}
+        >
           {mutation.isPending && <Loader2 className="animate-spin" />}
           {_t("Save")}
         </Button>
