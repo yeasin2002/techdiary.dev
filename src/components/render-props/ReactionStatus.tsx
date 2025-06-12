@@ -5,6 +5,7 @@ import {
   REACTION_TYPE,
   ReactionStatus as ReactionStatusModel,
 } from "@/backend/models/domain-models";
+import { useImmer } from "use-immer";
 
 interface Props {
   resource_type: "ARTICLE" | "COMMENT";
@@ -26,6 +27,38 @@ const ReactionStatus: React.FC<Props> = ({
   render,
 }) => {
   const queryClient = useQueryClient();
+  const [reactions, setReactions] = useImmer<ReactionStatusModel[]>([
+    {
+      count: 0,
+      is_reacted: false,
+      reaction_type: "CRY",
+    },
+    {
+      count: 0,
+      is_reacted: false,
+      reaction_type: "FIRE",
+    },
+    {
+      count: 0,
+      is_reacted: false,
+      reaction_type: "HAHA",
+    },
+    {
+      count: 0,
+      is_reacted: false,
+      reaction_type: "LOVE",
+    },
+    {
+      count: 0,
+      is_reacted: false,
+      reaction_type: "UNICORN",
+    },
+    {
+      count: 0,
+      is_reacted: false,
+      reaction_type: "WOW",
+    },
+  ]);
 
   const query = useQuery({
     queryKey: ["reaction", resource_id, resource_type],
@@ -40,66 +73,42 @@ const ReactionStatus: React.FC<Props> = ({
         resource_type,
         reaction_type,
       }),
-    onMutate: async (reaction_type: REACTION_TYPE) => {
-      // Cancel any outgoing refetches
+    async onMutate(reaction_type) {
+      // cancel
       await queryClient.cancelQueries({
         queryKey: ["reaction", resource_id, resource_type],
       });
 
-      // Snapshot the previous value
-      const previousReactions = queryClient.getQueryData<ReactionStatusModel[]>(
-        ["reaction", resource_id, resource_type]
-      );
+      const oldReactions = queryClient.getQueryData([
+        "reaction",
+        resource_id,
+        resource_type,
+      ]);
 
-      // Optimistically update to the new value
-      queryClient.setQueryData<ReactionStatusModel[]>(
+      queryClient.setQueryData(
         ["reaction", resource_id, resource_type],
-        (old = []) => {
-          const existingReaction = old.find(
-            (r) => r.reaction_type === reaction_type
-          );
-
-          if (existingReaction) {
-            // If reaction exists, toggle it (remove if active, or toggle status)
-            if (existingReaction.is_reacted) {
-              // Remove the reaction
-              return old.filter((r) => r.reaction_type !== reaction_type);
-            } else {
-              // Activate the reaction
-              return old.map((r) =>
-                r.reaction_type === reaction_type
-                  ? { ...r, is_active: true, count: r.count + 1 }
-                  : r
-              );
-            }
+        (old: ReactionStatusModel[]) => {
+          const index = old.findIndex((r) => r.reaction_type == reaction_type);
+          if (old[index].is_reacted) {
+            old[index].is_reacted = false;
+            --old[index].count;
           } else {
-            // Add new reaction
-            return [
-              ...old,
-              {
-                reaction_type,
-                is_reacted: true,
-                count: 1,
-                resource_id,
-                resource_type,
-              } as ReactionStatusModel,
-            ];
+            old[index].is_reacted = true;
+            ++old[index].count;
           }
+          return old;
         }
       );
 
-      // Return a context object with the snapshotted value
-      return { previousReactions };
+      return { oldReactions };
     },
-    onError: (err, reaction_type, context) => {
-      // If the mutation fails, use the context returned from onMutate to roll back
+    onError: (_, __, context) => {
       queryClient.setQueryData(
         ["reaction", resource_id, resource_type],
-        context?.previousReactions
+        context?.oldReactions
       );
     },
     onSettled: () => {
-      // Always refetch after error or success to ensure we have the latest data
       queryClient.invalidateQueries({
         queryKey: ["reaction", resource_id, resource_type],
       });
