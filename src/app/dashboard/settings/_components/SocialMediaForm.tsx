@@ -42,12 +42,12 @@ const SocialMediaForm: React.FC<Props> = ({ user }) => {
     mode: "all",
     defaultValues: {
       social_links: {
-        github: user.social_links.github,
-        x: user.social_links.x,
-        linkedin: user.social_links.linkedin,
-        facebook: user.social_links.facebook,
-        instagram: user.social_links.instagram,
-        youtube: user.social_links.youtube,
+        github: user?.social_links?.github,
+        x: user?.social_links?.x,
+        linkedin: user?.social_links?.linkedin,
+        facebook: user?.social_links?.facebook,
+        instagram: user?.social_links?.instagram,
+        youtube: user?.social_links?.youtube,
       },
     },
     resolver: zodResolver(UserActionInput.updateMyProfileInput),

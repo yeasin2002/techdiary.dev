@@ -12,6 +12,7 @@ const SettingsPage = async () => {
 
   return (
     <div>
+      <pre>{JSON.stringify(current_user, null, 2)}</pre>
       <Tabs defaultValue="general">
         <TabsList>
           <TabsTrigger value="general">{_t("General")}</TabsTrigger>

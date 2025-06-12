@@ -91,6 +91,8 @@ export async function updateMyProfile(
 
     const input = await UserActionInput.updateMyProfileInput.parseAsync(_input);
 
+    console.log(input.social_links);
+
     const updatedUser = await persistenceRepository.user.update({
       where: eq("id", sessionUser!),
       data: {

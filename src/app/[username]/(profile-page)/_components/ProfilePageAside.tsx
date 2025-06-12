@@ -134,7 +134,7 @@ const ProfilePageAside: React.FC<ProfilePageAsideProps> = ({ profile }) => {
           </Link>
         )}
 
-        {profile?.social_links?.stackOverflow && (
+        {/* {profile?.social_links?.stackOverflow && (
           <Link
             href={profile?.social_links?.stackOverflow}
             target="_blank"
@@ -152,7 +152,7 @@ const ProfilePageAside: React.FC<ProfilePageAsideProps> = ({ profile }) => {
           >
             <Medium size={30} />
           </Link>
-        )}
+        )} */}
 
         {profile?.social_links?.linkedin && (
           <a
@@ -164,9 +164,9 @@ const ProfilePageAside: React.FC<ProfilePageAsideProps> = ({ profile }) => {
           </a>
         )}
 
-        {profile?.social_links?.twitter && (
+        {profile?.social_links?.x && (
           <Link
-            href={profile?.social_links?.twitter}
+            href={profile?.social_links?.x}
             target="_blank"
             className=" text-forground-muted"
           >
@@ -184,7 +184,7 @@ const ProfilePageAside: React.FC<ProfilePageAsideProps> = ({ profile }) => {
           </Link>
         )}
 
-        {profile?.social_links?.behance && (
+        {/* {profile?.social_links?.behance && (
           <a
             href={profile?.social_links?.behance}
             target="_blank"
@@ -212,7 +212,7 @@ const ProfilePageAside: React.FC<ProfilePageAsideProps> = ({ profile }) => {
           >
             <Twitch size={30} />
           </Link>
-        )}
+        )} */}
 
         {profile?.social_links?.youtube && (
           <a
