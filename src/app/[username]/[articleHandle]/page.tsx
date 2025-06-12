@@ -13,6 +13,9 @@ import { notFound } from "next/navigation";
 import type { Article, WithContext } from "schema-dts";
 import { eq } from "sqlkit";
 import ArticleSidebar from "./_components/ArticleSidebar";
+import ReactionStatus from "@/components/render-props/ReactionStatus";
+import clsx from "clsx";
+import ArticleReaction from "./_components/ArticleReaction";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -149,6 +152,8 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
           <div className="my-6">
             <h1 className="text-2xl font-bold">{article?.title ?? ""}</h1>
           </div>
+
+          <ArticleReaction article_id={article.id} />
 
           <div className="mx-auto content-typography">{parsedHTML}</div>
         </div>
