@@ -156,7 +156,13 @@ const ArticleCard = ({
           resource_id={id}
           render={({ bookmarked, toggle }) => (
             <button
-              onClick={toggle}
+              onClick={() => {
+                if (!session?.user) {
+                  loginPopup.show();
+                  return;
+                }
+                toggle();
+              }}
               className={clsx(
                 "transition-colors duration-300 flex cursor-pointer px-2 py-1 rounded-sm hover:bg-primary/20",
                 { "bg-primary/20": bookmarked }
