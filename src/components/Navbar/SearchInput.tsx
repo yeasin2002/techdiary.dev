@@ -4,61 +4,81 @@ import { useTranslation } from "@/i18n/use-translation";
 import { meilisearchClient } from "@/lib/meilisearch.client";
 // import { meilisearchClient } from "@/lib/meilisearch.client";
 import "instantsearch.css/themes/satellite.css";
-import { instantMeiliSearch } from "@meilisearch/instant-meilisearch";
-import { InfiniteHits, InstantSearch, SearchBox } from "react-instantsearch";
 
-import { env } from "@/env";
+import { useMutation } from "@tanstack/react-query";
 import React from "react";
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../ui/command";
+import { useRouter } from "next/navigation";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 
 const SearchInput = () => {
   const { _t } = useTranslation();
+  const router = useRouter();
+  const [searchTerm, setSearchTerm] = React.useState("");
   const index = meilisearchClient.index("articles");
 
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
 
-  const { searchClient } = instantMeiliSearch(
-    env.NEXT_PUBLIC_MEILISEARCH_API_HOST,
-    env.NEXT_PUBLIC_MEILISEARCH_SEARCH_API_KEY
-  );
+  const debouncedSearch = useDebouncedCallback((query: string) => {
+    mutation.mutate(query);
+  }, 500);
 
-  // useEffect(() => {
-  //   index
-  //     .search("", {
-  //       limit: 100,
-  //       attributesToRetrieve: ["id", "title", "user", "cover_image"],
-  //     })
-  //     .then((res) => {
-  //       console.log("Search index initialized:", res);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error initializing search index:", error);
-  //     });
-  // }, []);
-  {
-    /* <div className="relative hidden w-full max-w-xl lg:block">
-        <div className="search">
-          <input
-            type="text"
-            placeholder={_t("Type to search")}
-            className="w-full rounded border border-border bg-muted p-2 focus:outline-none focus:ring-2 focus:ring-primary dark:border-slate-600 dark:bg-slate-800"
-            v-model="query"
-          />
-        </div>
-      </div> */
-  }
+  const mutation = useMutation({
+    mutationKey: ["searchIndex"],
+    mutationFn: async (query: string) => {
+      const response = await index.search(query, {
+        limit: 10,
+        attributesToRetrieve: ["id", "title", "user", "handle"],
+      });
+      return response.hits;
+    },
+  });
+
+  const handleSelect = (hit: any) => {
+    // Handle the selection of a search result
+    console.log("Selected hit:", hit);
+    router.push(`/@${hit.user.username}/${hit.handle}`);
+    setOpen(false);
+  };
+
   return (
-    <InstantSearch indexName="articles" searchClient={searchClient as any}>
-      <SearchBox />
-      <InfiniteHits hitComponent={Hit} />
-    </InstantSearch>
+    <>
+      <div className="hidden w-full max-w-xl lg:block">
+        <button
+          className="w-full h-9 rounded border border-border bg-muted p-2 focus:outline-none focus:ring-2 focus:ring-primary dark:border-slate-600 dark:bg-slate-800"
+          onClick={() => setOpen(true)}
+        >
+          <p className="text-muted-foreground text-sm">
+            {_t("Type to search")}...
+          </p>
+        </button>
+      </div>
+      <CommandDialog open={open} onOpenChange={setOpen} shouldFilter={false}>
+        <CommandInput
+          onValueChange={(value) => debouncedSearch(value)}
+          placeholder={_t("Search...")}
+        />
+        <CommandList>
+          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandGroup heading={_t("Results")}>
+            {mutation.data?.map((hit) => (
+              <CommandItem onSelect={() => handleSelect(hit)} key={hit.id}>
+                <span>{hit.title}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
+    </>
   );
 };
 
 export default SearchInput;
-
-const Hit = ({ hit }: any) => (
-  <article key={hit.id}>
-    <h1>{hit.title}</h1>
-  </article>
-);
