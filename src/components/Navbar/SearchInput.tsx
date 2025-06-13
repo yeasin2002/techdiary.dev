@@ -16,13 +16,15 @@ import {
   CommandItem,
   CommandList,
 } from "../ui/command";
+import { useAtom } from "jotai";
+import { searchBarAtom } from "@/store/search-bar.atom";
 
 const SearchInput = () => {
   const { _t } = useTranslation();
   const router = useRouter();
   const index = meilisearchClient.index("articles");
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useAtom(searchBarAtom);
 
   const debouncedSearch = useDebouncedCallback((query: string) => {
     mutation.mutate(query);
