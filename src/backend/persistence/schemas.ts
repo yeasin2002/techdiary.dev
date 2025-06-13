@@ -143,8 +143,8 @@ export const reactionsTable = pgTable("reactions", {
 export const commentsTable = pgTable("comments", {
   id: uuid("id").defaultRandom().primaryKey(),
   body: text("body").notNull(),
-  commentable_type: varchar("commentable_type").notNull(),
-  commentable_id: uuid("commentable_id").notNull(),
+  resource_id: uuid("resource_id").notNull(), // article_id or series_item_id
+  resource_type: varchar("resource_type", { length: 50 }).notNull(), // ARTICLE, SERIES_ITEM
   user_id: uuid("user_id")
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),

@@ -130,6 +130,15 @@ export interface Bookmark {
   created_at: Date;
 }
 
+export interface Comment {
+  id: string;
+  resource_id: string;
+  resource_type: "ARTICLE" | "COMMENT";
+  body?: string;
+  user_id: string;
+  created_at: Date;
+}
+
 export type REACTION_TYPE =
   | "LOVE"
   | "UNICORN"
