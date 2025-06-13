@@ -2,14 +2,16 @@
 
 import { useTranslation } from "@/i18n/use-translation";
 import { formattedTime } from "@/lib/utils";
+import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
+import BookmarkStatus from "./render-props/BookmarkStatus";
+import ReactionStatus from "./render-props/ReactionStatus";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import UserInformationCard from "./UserInformationCard";
-import BookmarkStatus from "./render-props/BookmarkStatus";
-import clsx from "clsx";
-import ReactionStatus from "./render-props/ReactionStatus";
+import { useLoginPopup } from "./app-login-popup";
+import { useSession } from "@/store/session.atom";
 
 interface ArticleCardProps {
   id: string;
@@ -42,6 +44,8 @@ const ArticleCard = ({
   comments,
 }: ArticleCardProps) => {
   const { lang } = useTranslation();
+  const session = useSession();
+  const loginPopup = useLoginPopup();
 
   const articleUrl = useMemo(() => {
     return `/@${author.username}/${handle}`;
@@ -126,7 +130,13 @@ const ArticleCard = ({
                       "px-2 py-1 flex gap-1 cursor-pointer rounded-sm hover:bg-primary/20",
                       { "bg-primary/20": r.is_reacted }
                     )}
-                    onClick={() => toggle(r.reaction_type!)}
+                    onClick={() => {
+                      if (!session?.user) {
+                        loginPopup.show();
+                        return;
+                      }
+                      toggle(r.reaction_type!);
+                    }}
                   >
                     <img
                       src={`/reactions/${r.reaction_type}.svg`}
