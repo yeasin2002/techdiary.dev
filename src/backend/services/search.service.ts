@@ -1,10 +1,10 @@
 import { env } from "@/env";
-import { meilisearchAdminClient } from "@/lib/meilisearch.client";
 import { and, eq, neq } from "sqlkit";
 import { persistenceRepository } from "../persistence/persistence-repositories";
+import { meilisearchClient } from "@/lib/meilisearch.admin.client";
 
-const index = meilisearchAdminClient.index("articles");
-meilisearchAdminClient
+const index = meilisearchClient.index("articles");
+meilisearchClient
   .updateIndex("articles", {
     primaryKey: "id",
   })
@@ -22,6 +22,7 @@ export const syncAllArticles = async () => {
       where: and(eq("is_published", true), neq("approved_at", null)),
       joins: [
         {
+          as: "user",
           type: "left",
           table: "users",
           on: {
@@ -42,7 +43,6 @@ export const syncAllArticles = async () => {
       count: articles.length,
       timestamp: new Date().toISOString(),
       index: "articles",
-      environment: env.NODE_ENV,
     };
   } catch (error) {
     console.error("Error syncing articles:", error);
@@ -87,7 +87,6 @@ export const syncArticleById = async (articleId: string) => {
       article,
       timestamp: new Date().toISOString(),
       index: "articles",
-      environment: env.NODE_ENV,
     };
   } catch (error) {
     console.error(`Error syncing article ${articleId}:`, error);
@@ -101,7 +100,6 @@ export const deleteArticleById = async (articleId: string) => {
       response,
       timestamp: new Date().toISOString(),
       index: "articles",
-      environment: env.NODE_ENV,
     };
   } catch (error) {
     console.error(`Error deleting article ${articleId}:`, error);
