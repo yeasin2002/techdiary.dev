@@ -5,7 +5,9 @@ import { meilisearchClient } from "@/lib/meilisearch.client";
 // import { meilisearchClient } from "@/lib/meilisearch.client";
 import "instantsearch.css/themes/satellite.css";
 
+import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import React from "react";
 import {
   CommandDialog,
@@ -15,14 +17,10 @@ import {
   CommandItem,
   CommandList,
 } from "../ui/command";
-import { useRouter } from "next/navigation";
-import { useDebounce } from "@/hooks/use-debounce";
-import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 
 const SearchInput = () => {
   const { _t } = useTranslation();
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = React.useState("");
   const index = meilisearchClient.index("articles");
 
   const [open, setOpen] = React.useState(false);
