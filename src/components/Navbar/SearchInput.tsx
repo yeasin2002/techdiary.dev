@@ -2,7 +2,6 @@
 
 import { useTranslation } from "@/i18n/use-translation";
 import { meilisearchClient } from "@/lib/meilisearch.client";
-import "instantsearch.css/themes/satellite.css";
 
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { useMutation } from "@tanstack/react-query";
