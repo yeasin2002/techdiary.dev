@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useTranslation } from "@/i18n/use-translation";
 import { useQuery } from "@tanstack/react-query";
 import { LoaderIcon } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 
 const MatrixReport = () => {
   const { _t } = useTranslation();
