@@ -16,6 +16,7 @@ import ArticleSidebar from "./_components/ArticleSidebar";
 import ReactionStatus from "@/components/render-props/ReactionStatus";
 import clsx from "clsx";
 import ArticleReaction from "./_components/ArticleReaction";
+import { CommentSection } from "@/components/comment-section";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -157,6 +158,8 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
 
           <div className="mx-auto content-typography">{parsedHTML}</div>
         </div>
+
+        <CommentSection />
       </HomepageLayout>
     </>
   );
