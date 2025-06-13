@@ -1,15 +1,10 @@
 import { env } from "@/env";
-import { Meilisearch } from "meilisearch";
+import { meilisearchAdminClient } from "@/lib/meilisearch.client";
 import { and, eq, neq } from "sqlkit";
 import { persistenceRepository } from "../persistence/persistence-repositories";
 
-const meilisearchClient = new Meilisearch({
-  host: env.MEILISEARCH_API_HOST,
-  apiKey: env.MEILISEARCH_ADMIN_API_KEY,
-});
-
-const index = meilisearchClient.index("articles");
-meilisearchClient
+const index = meilisearchAdminClient.index("articles");
+meilisearchAdminClient
   .updateIndex("articles", {
     primaryKey: "id",
   })
