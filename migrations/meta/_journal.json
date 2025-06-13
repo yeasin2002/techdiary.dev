@@ -15,6 +15,13 @@
       "when": 1749664449582,
       "tag": "0001_unknown_dark_beast",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1749750483821,
+      "tag": "0002_unusual_mentallo",
+      "breakpoints": true
     }
   ]
 }

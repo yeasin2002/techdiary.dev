@@ -1,0 +1,1 @@
+ALTER TABLE "articles" ADD COLUMN "delete_scheduled_at" timestamp;

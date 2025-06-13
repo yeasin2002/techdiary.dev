@@ -72,6 +72,7 @@ export interface Article {
   user?: User | null;
   metadata?: ArticleMetadata | null;
   author_id: string;
+  delete_scheduled_at: Date | null;
   created_at: Date;
   updated_at: Date;
 }

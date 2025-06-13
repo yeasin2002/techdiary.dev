@@ -10,6 +10,9 @@ export const env = createEnv({
     GITHUB_CLIENT_SECRET: z.string(),
     GITHUB_CALLBACK_URL: z.string(),
     DATABASE_URL: z.string(),
+    MEILISEARCH_API_HOST: z.string().url(),
+    MEILISEARCH_ADMIN_API_KEY: z.string(),
+    MEILISEARCH_SEARCH_API_KEY: z.string(),
   },
   client: {
     // NEXT_PUBLIC_PUBLISHABLE_KEY: z.string().min(1),

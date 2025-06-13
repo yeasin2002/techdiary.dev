@@ -104,6 +104,7 @@ export const articlesTable = pgTable("articles", {
   is_published: boolean("is_published").default(false),
   published_at: timestamp("published_at"),
   approved_at: timestamp("approved_at"),
+  delete_scheduled_at: timestamp("delete_scheduled_at"),
   metadata: jsonb("metadata"),
   author_id: uuid("author_id")
     .notNull()
