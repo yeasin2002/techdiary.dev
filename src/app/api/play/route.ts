@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const comments = await getComments({
-    resource_id: "05553726-5168-41f3-b2d1-5d27cf5c8beb",
+    resource_id: "16196e73-275a-4af5-9186-39a5fec4244e",
     resource_type: "ARTICLE",
   });
 

@@ -1,3 +1,10 @@
+-- Thanks claude 🥰 for the help with this function
+-- Function to recursively fetch comments and their replies up to a certain level
+-- This function retrieves comments for a given resource and organizes them in a nested structure
+-- It uses recursion to fetch replies to comments, limiting the depth to 3 levels
+-- Function: public.get_comments(p_resource_id uuid, p_resource_type character varying, p_parent_id uuid DEFAULT NULL::uuid, p_current_level integer DEFAULT 0)
+
+
 CREATE OR REPLACE FUNCTION public.get_comments(
   p_resource_id uuid, 
   p_resource_type character varying, 
@@ -52,7 +59,7 @@ BEGIN
                     'id', u.id,
                     'name', u.name,
                     'email', u.email,
-                    'username', u.username  -- Fixed: was 'useruser'
+                    'username', u.username
                 ),
                 'replies', get_comments(p_resource_id, p_resource_type, c.id, p_current_level + 1)
             ) ORDER BY c.created_at
