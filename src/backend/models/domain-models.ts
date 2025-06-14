@@ -139,6 +139,20 @@ export interface Comment {
   created_at: Date;
 }
 
+export interface CommentPresentation {
+  id: string;
+  body?: string;
+  level?: number;
+  created_at?: Date;
+  author?: {
+    id: string;
+    name: string;
+    username: string;
+    email: string;
+  };
+  replies?: CommentPresentation[];
+}
+
 export type REACTION_TYPE =
   | "LOVE"
   | "UNICORN"

@@ -4,12 +4,13 @@ import { authID } from "./session.actions";
 import { ActionException } from "./RepositoryException";
 import { persistenceRepository } from "../persistence/persistence-repositories";
 import { eq } from "sqlkit";
+import { CommentPresentation } from "../models/domain-models";
 
 const sql = String.raw;
 
 export const getComments = async (
   _input: z.infer<typeof CommentActionInput.getComments>
-) => {
+): Promise<CommentPresentation[]> => {
   const input = CommentActionInput.getComments.parse(_input);
 
   const query = sql`
