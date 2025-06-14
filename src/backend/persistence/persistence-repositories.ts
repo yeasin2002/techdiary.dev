@@ -9,6 +9,7 @@ import {
   Tag,
   User,
   UserSession,
+  Comment,
   UserSocial,
 } from "../models/domain-models";
 import { pgClient } from "./clients";
@@ -73,12 +74,19 @@ const reactionRepository = new Repository<Reaction>(
   repositoryConfig
 );
 
+const commentRepository = new Repository<Comment>(
+  DatabaseTableName.comments,
+  pgClient,
+  repositoryConfig
+);
+
 export const persistenceRepository = {
   user: userRepository,
   userSocial: userSocialRepository,
   userSession: userSessionRepository,
   article: articleRepository,
   bookmark: bookmarkRepository,
+  comment: commentRepository,
   reaction: reactionRepository,
   articleTagPivot: articleTagRepository,
   tags: tagRepository,
