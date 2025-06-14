@@ -6,14 +6,13 @@
 
 
 CREATE OR REPLACE FUNCTION public.get_comments(
-  p_resource_id uuid, 
-  p_resource_type character varying, 
-  p_parent_id uuid DEFAULT NULL::uuid, 
-  p_current_level integer DEFAULT 0
+    p_resource_id uuid, 
+    p_resource_type character varying, 
+    p_parent_id uuid DEFAULT NULL::uuid, 
+    p_current_level integer DEFAULT 0
 )
 RETURNS json
 LANGUAGE plpgsql
-
 AS $function$
 DECLARE
     result JSON;
@@ -35,7 +34,7 @@ BEGIN
                     'username', u.username
                 ),
                 'replies', get_comments(p_resource_id, p_resource_type, c.id, 1)
-            ) ORDER BY c.created_at
+            ) ORDER BY c.created_at DESC  -- Changed to DESC
         ) INTO result
         FROM comments c
         JOIN users u ON c.user_id = u.id
@@ -62,7 +61,7 @@ BEGIN
                     'username', u.username
                 ),
                 'replies', get_comments(p_resource_id, p_resource_type, c.id, p_current_level + 1)
-            ) ORDER BY c.created_at
+            ) ORDER BY c.created_at DESC  -- Changed to DESC
         ) INTO result
         FROM comments c
         JOIN users u ON c.user_id = u.id

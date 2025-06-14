@@ -165,7 +165,7 @@ const CommentEditor = (props: {
 const CommentItem = (props: { comment: CommentPresentation }) => {
   return (
     <div>
-      <pre className=" font-normal">{props.comment.body}</pre>
+      <pre className="font-normal">{props.comment.body}</pre>
 
       {props.comment.replies?.map((c) => <CommentItem comment={c} />)}
     </div>
