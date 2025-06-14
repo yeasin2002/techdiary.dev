@@ -96,14 +96,14 @@ export const CommentSection = (props: {
         />
       </div>
 
-      <pre>{JSON.stringify(query.data, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(query.data, null, 2)}</pre> */}
 
       {/* Comments List */}
-      {/* <div className="space-y-4">
-        {sampleComments.map((comment) => (
-          <CommentItem key={comment.id} comment={comment} onReply={addReply} />
+      <div className="space-y-4">
+        {query?.data?.map((comment) => (
+          <CommentItem key={comment.id} comment={comment} />
         ))}
-      </div> */}
+      </div>
     </div>
   );
 };
@@ -159,5 +159,13 @@ const CommentEditor = (props: {
         </ul>
       </div>
     </form>
+  );
+};
+
+const CommentItem = (props: { comment: CommentPresentation }) => {
+  return (
+    <div>
+      <pre className=" font-normal">{props.comment.body}</pre>
+    </div>
   );
 };
