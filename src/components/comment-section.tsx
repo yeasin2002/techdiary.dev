@@ -1,17 +1,19 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import * as commentActions from "@/backend/services/comment.action";
-import { Button } from "./ui/button";
 import { CommentPresentation } from "@/backend/models/domain-models";
-import { useSession } from "@/store/session.atom";
-import { useLoginPopup } from "./app-login-popup";
-import { Textarea } from "./ui/textarea";
-import _t from "@/i18n/_t";
+import * as commentActions from "@/backend/services/comment.action";
 import { useTranslation } from "@/i18n/use-translation";
-import { Loader } from "lucide-react";
-import React from "react";
-import _ from "lodash";
+import { formattedTime } from "@/lib/utils";
+import { useSession } from "@/store/session.atom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import clsx from "clsx";
+import { ChevronDown, ChevronUp, MessageSquare } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import { useImmer } from "use-immer";
+import { useLoginPopup } from "./app-login-popup";
+import { ResourceReactionable } from "./render-props/ResourceReactionable";
+import { Textarea } from "./ui/textarea";
+import ResourceReaction from "./ResourceReaction";
 
 export const CommentSection = (props: {
   resource_id: string;
@@ -96,10 +98,8 @@ export const CommentSection = (props: {
         />
       </div>
 
-      {/* <pre>{JSON.stringify(query.data, null, 2)}</pre> */}
-
       {/* Comments List */}
-      <div className="space-y-4">
+      <div className="space-y-10">
         {query?.data?.map((comment) => (
           <CommentItem key={comment.id} comment={comment} />
         ))}
@@ -163,11 +163,133 @@ const CommentEditor = (props: {
 };
 
 const CommentItem = (props: { comment: CommentPresentation }) => {
-  return (
-    <div>
-      <pre className="font-normal">{props.comment.body}</pre>
+  const { _t } = useTranslation();
+  const session = useSession();
+  const appLoginPopup = useLoginPopup();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [showReplyBox, setShowReplyBox] = useState(false);
+  const [replies, setReplies] = useImmer<CommentPresentation[]>(
+    props.comment.replies ?? []
+  );
 
-      {props.comment.replies?.map((c) => <CommentItem comment={c} />)}
+  const level = useMemo(() => props.comment.level ?? 0, [props.comment]);
+
+  const mutation = useMutation({
+    mutationFn: (body: string) =>
+      commentActions.createMyComment({
+        body,
+        resource_id: props.comment.id,
+        resource_type: "COMMENT",
+      }),
+    onMutate: (body) => {
+      if (!session?.user) {
+        appLoginPopup.show();
+        return;
+      }
+
+      setReplies((draft) => {
+        draft.unshift({
+          id: crypto.randomUUID(),
+          body,
+          level: (props.comment.level ?? 0) + 1,
+          author: {
+            id: session?.user?.id || "temp-user-id",
+            name: session?.user?.name || "Temp User",
+            username: session?.user?.username || "tempuser",
+            email: session?.user?.email || "tempuser@example.com",
+          },
+          replies: [],
+          created_at: new Date(),
+        } satisfies CommentPresentation);
+      });
+    },
+  });
+
+  const levelMargin = useMemo(
+    () => Math.min(level, 8) * 12,
+    [props.comment.level]
+  );
+  return (
+    <div
+      data-comment-id={props.comment.id}
+      className="group"
+      style={{ marginLeft: `${levelMargin}px` }}
+    >
+      {/* <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+        <button className="flex items-center gap-1 hover:text-foreground">
+          <span className="font-medium">@{props.comment.author?.username}</span>
+        </button>
+        <span>•</span>
+        <span>{formattedTime(new Date(props.comment.created_at!))}</span>
+      </div> */}
+      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="flex items-center gap-1 hover:text-foreground"
+        >
+          {isCollapsed ? (
+            <ChevronUp className="h-3 w-3" />
+          ) : (
+            <ChevronDown className="h-3 w-3" />
+          )}
+          <span className="font-medium">@{props.comment.author?.username}</span>
+        </button>
+        <span>•</span>
+        <span>{formattedTime(new Date(props.comment.created_at!))}</span>
+      </div>
+
+      {!isCollapsed && (
+        <>
+          {/* Comment Content */}
+          <div className="mb-2">
+            <div className="prose prose-sm max-w-none text-foreground">
+              {props.comment.body}
+            </div>
+          </div>
+
+          {/* Comment Attachments */}
+          {/* {comment.attachments && comment.attachments.length > 0 && (
+            <AttachmentDisplay attachments={comment.attachments} />
+          )} */}
+
+          {/* Comment Actions */}
+          <div className="flex items-center gap-4 mb-3">
+            {level < 2 && (
+              <button
+                className="text-sm flex items-center hover:underline cursor-pointer"
+                onClick={() => setShowReplyBox(!showReplyBox)}
+              >
+                <MessageSquare className="size-3 mr-1" />
+                <span>{_t("Reply")}</span>
+              </button>
+            )}
+
+            <ResourceReaction
+              resource_type="COMMENT"
+              resource_id={props.comment.id}
+            />
+          </div>
+
+          {/* Reply Box */}
+          {showReplyBox && (
+            <div className="mb-4 ml-4">
+              <CommentEditor
+                onSubmit={(value) => {
+                  mutation.mutate(value);
+                  setShowReplyBox(false);
+                }}
+                isLoading={false}
+                placeholder={`Reply to ${props.comment.author?.username}`}
+              />
+            </div>
+          )}
+
+          {/* Nested Replies */}
+          {replies?.map((reply) => (
+            <CommentItem key={reply.id} comment={reply} />
+          ))}
+        </>
+      )}
     </div>
   );
 };

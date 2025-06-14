@@ -14,7 +14,7 @@ interface Props {
   }) => React.ReactNode;
 }
 
-const BookmarkStatus: React.FC<Props> = ({
+export const ResourceBookmarkable: React.FC<Props> = ({
   resource_id,
   resource_type,
   render,
@@ -51,5 +51,3 @@ const BookmarkStatus: React.FC<Props> = ({
 
   return <>{render({ toggle, bookmarked })}</>;
 };
-
-export default BookmarkStatus;
