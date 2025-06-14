@@ -53,7 +53,7 @@ const ArticleCard = ({
 
   return (
     <div data-article-id={id} className="flex flex-col p-4 sm:p-5 group">
-      <HoverCard>
+      <HoverCard openDelay={0}>
         <HoverCardTrigger>
           <div className="mb-4 flex items-center">
             <div className="relative rounded-full overflow-hidden border border-neutral-200 bg-neutral-100 transition-transform duration-300 size-8 opacity-100">
