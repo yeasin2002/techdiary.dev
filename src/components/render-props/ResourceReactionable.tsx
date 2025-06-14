@@ -3,8 +3,10 @@ import {
   ReactionStatus as ReactionStatusModel,
 } from "@/backend/models/domain-models";
 import * as reactionActions from "@/backend/services/reaction.actions";
+import { useSession } from "@/store/session.atom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React from "react";
+import { useLoginPopup } from "../app-login-popup";
 
 interface Props {
   resource_type: "ARTICLE" | "COMMENT";
@@ -26,6 +28,8 @@ export const ResourceReactionable: React.FC<Props> = ({
   render,
 }) => {
   const queryClient = useQueryClient();
+  const session = useSession();
+  const appLoginPopup = useLoginPopup();
 
   const query = useQuery({
     queryKey: ["reaction", resource_id, resource_type],
@@ -41,6 +45,9 @@ export const ResourceReactionable: React.FC<Props> = ({
         reaction_type,
       }),
     async onMutate(reaction_type) {
+      if (!session?.user) {
+        return appLoginPopup.show();
+      }
       await queryClient.cancelQueries({
         queryKey: ["reaction", resource_id, resource_type],
       });
