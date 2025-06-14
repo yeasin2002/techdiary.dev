@@ -159,7 +159,7 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
           <div className="mx-auto content-typography">{parsedHTML}</div>
         </div>
 
-        <CommentSection />
+        <CommentSection resource_type="ARTICLE" resource_id={article.id} />
       </HomepageLayout>
     </>
   );

@@ -1,3 +1,5 @@
+"use server";
+
 import z from "zod";
 import { CommentActionInput } from "./inputs/comment.input";
 import { authID } from "./session.actions";
