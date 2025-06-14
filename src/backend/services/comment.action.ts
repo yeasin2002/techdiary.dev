@@ -13,14 +13,14 @@ export const getComments = async (
   const input = CommentActionInput.getComments.parse(_input);
 
   const query = sql`
-    SELECT get_comments($1, $2);
+    SELECT get_comments($1, $2) as comments
   `;
 
   const execution_response: any = await pgClient?.executeSQL(query, [
     input.resource_id,
     input.resource_type,
   ]);
-  return execution_response?.rows?.[0]?.get_comments;
+  return execution_response?.rows?.[0]?.comments || [];
 };
 
 export const createMyComment = async (
