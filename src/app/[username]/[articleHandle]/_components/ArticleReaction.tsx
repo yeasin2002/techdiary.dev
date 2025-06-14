@@ -1,6 +1,6 @@
 "use client";
 
-import ReactionStatus from "@/components/render-props/ReactionStatus";
+import { ResourceReactionable } from "@/components/render-props/ResourceReactionable";
 import clsx from "clsx";
 import React from "react";
 
@@ -10,7 +10,7 @@ interface Props {
 
 const ArticleReaction: React.FC<Props> = ({ article_id }) => {
   return (
-    <ReactionStatus
+    <ResourceReactionable
       resource_type="ARTICLE"
       resource_id={article_id}
       render={({ reactions, toggle }) => {

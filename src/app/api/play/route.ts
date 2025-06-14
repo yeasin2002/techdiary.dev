@@ -1,11 +1,13 @@
+import { getComments } from "@/backend/services/comment.action";
 import { NextResponse } from "next/server";
-// import * as reactionActions from "@/backend/services/reaction.actions";
-import * as searchService from "@/backend/services/search.service";
 
 export async function GET() {
-  const response = await searchService.syncAllArticles();
+  const comments = await getComments({
+    resource_id: "16196e73-275a-4af5-9186-39a5fec4244e",
+    resource_type: "ARTICLE",
+  });
 
-  return NextResponse.json(response, {
+  return NextResponse.json(comments, {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });

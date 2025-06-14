@@ -1,29 +1,77 @@
+"use server";
+
 import z from "zod";
 import { CommentActionInput } from "./inputs/comment.input";
+import { authID } from "./session.actions";
+import { ActionException } from "./RepositoryException";
+import { persistenceRepository } from "../persistence/persistence-repositories";
+import { eq } from "sqlkit";
+import { CommentPresentation } from "../models/domain-models";
+
+const sql = String.raw;
 
 export const getComments = async (
-  resourceId: string,
-  resourceType: "ARTICLE" | "COMMENT"
-) => {
-  // Fetch comments from the database based on resourceId and resourceType
-  // const comments = await db
-  //   .select()
-  //   .from(commentsTable)
-  //   .where(commentsTable.resource_id.eq(resourceId))
-  //   .and(commentsTable.resource_type.eq(resourceType))
-  //   .orderBy(commentsTable.created_at.desc());
-  // return comments;
-  return []; // Placeholder for actual database query
+  _input: z.infer<typeof CommentActionInput.getComments>
+): Promise<CommentPresentation[]> => {
+  const input = CommentActionInput.getComments.parse(_input);
+
+  const query = sql`
+    SELECT get_comments($1, $2) as comments
+  `;
+
+  const execution_response: any = await pgClient?.executeSQL(query, [
+    input.resource_id,
+    input.resource_type,
+  ]);
+  return execution_response?.rows?.[0]?.comments || [];
 };
 
-export const createComment = async (
+export const createMyComment = async (
   input: z.infer<typeof CommentActionInput.create>
 ) => {
+  const sessionId = await authID();
+  if (!sessionId) {
+    throw new ActionException("Unauthorized: No session ID found");
+  }
   const { resource_id, resource_type, body } = input;
 
-  // Create the comment in the database
+  switch (resource_type) {
+    case "ARTICLE":
+      // Validate that the resource exists
+      const [exists] = await persistenceRepository.article.find({
+        where: eq("id", resource_id),
+        limit: 1,
+        columns: ["id"],
+      });
+      if (!exists) {
+        throw new ActionException("Resource not found");
+      }
+      break;
+    case "COMMENT":
+      // Validate that the parent comment exists
+      const [parentExists] = await persistenceRepository.comment.find({
+        where: eq("id", resource_id),
+        limit: 1,
+        columns: ["id"],
+      });
+      if (!parentExists) {
+        throw new ActionException("Parent comment not found");
+      }
+      break;
+    default:
+      throw new ActionException("Invalid resource type");
+  }
 
-  // return newComment[0];
+  const created = await persistenceRepository.comment.insert([
+    {
+      body,
+      resource_id,
+      resource_type,
+      user_id: sessionId,
+    },
+  ]);
+
+  return created?.rows?.[0];
 };
 
 export const deleteComment = async (

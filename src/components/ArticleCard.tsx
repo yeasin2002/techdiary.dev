@@ -2,16 +2,16 @@
 
 import { useTranslation } from "@/i18n/use-translation";
 import { formattedTime } from "@/lib/utils";
+import { useSession } from "@/store/session.atom";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
-import BookmarkStatus from "./render-props/BookmarkStatus";
-import ReactionStatus from "./render-props/ReactionStatus";
+import { useLoginPopup } from "./app-login-popup";
+import { ResourceBookmarkable } from "./render-props/ResourceBookmarkable";
+import ResourceReaction from "./ResourceReaction";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import UserInformationCard from "./UserInformationCard";
-import { useLoginPopup } from "./app-login-popup";
-import { useSession } from "@/store/session.atom";
 
 interface ArticleCardProps {
   id: string;
@@ -117,41 +117,9 @@ const ArticleCard = ({
       </div>
 
       <div className="mt-4 flex items-center justify-between">
-        <ReactionStatus
-          resource_type="ARTICLE"
-          resource_id={id}
-          render={({ reactions, toggle }) => {
-            return (
-              <div className="flex gap-1">
-                {reactions.map((r) => (
-                  <button
-                    key={r.reaction_type}
-                    className={clsx(
-                      "px-2 py-1 flex gap-1 cursor-pointer rounded-sm hover:bg-primary/20",
-                      { "bg-primary/20": r.is_reacted }
-                    )}
-                    onClick={() => {
-                      if (!session?.user) {
-                        loginPopup.show();
-                        return;
-                      }
-                      toggle(r.reaction_type!);
-                    }}
-                  >
-                    <img
-                      src={`/reactions/${r.reaction_type}.svg`}
-                      alt={`reaction-${id}-${r.reaction_type}`}
-                      className="size-5 flex-none"
-                    />
-                    <span>{r.count}</span>
-                  </button>
-                ))}
-              </div>
-            );
-          }}
-        />
+        <ResourceReaction resource_type="ARTICLE" resource_id={id} />
 
-        <BookmarkStatus
+        <ResourceBookmarkable
           resource_type="ARTICLE"
           resource_id={id}
           render={({ bookmarked, toggle }) => (

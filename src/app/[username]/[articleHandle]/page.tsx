@@ -2,6 +2,7 @@ import HomeLeftSidebar from "@/app/(home)/_components/HomeLeftSidebar";
 import { persistenceRepository } from "@/backend/persistence/persistence-repositories";
 import * as articleActions from "@/backend/services/article.actions";
 import AppImage from "@/components/AppImage";
+import { CommentSection } from "@/components/comment-section";
 import HomepageLayout from "@/components/layout/HomepageLayout";
 import { readingTime, removeMarkdownSyntax } from "@/lib/utils";
 import getFileUrl from "@/utils/getFileUrl";
@@ -12,10 +13,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Article, WithContext } from "schema-dts";
 import { eq } from "sqlkit";
-import ArticleSidebar from "./_components/ArticleSidebar";
-import ReactionStatus from "@/components/render-props/ReactionStatus";
-import clsx from "clsx";
 import ArticleReaction from "./_components/ArticleReaction";
+import ArticleSidebar from "./_components/ArticleSidebar";
+import ResourceReaction from "@/components/ResourceReaction";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -153,10 +153,12 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
             <h1 className="text-2xl font-bold">{article?.title ?? ""}</h1>
           </div>
 
-          <ArticleReaction article_id={article.id} />
+          <ResourceReaction resource_type="ARTICLE" resource_id={article.id} />
 
           <div className="mx-auto content-typography">{parsedHTML}</div>
         </div>
+
+        <CommentSection resource_type="ARTICLE" resource_id={article.id} />
       </HomepageLayout>
     </>
   );

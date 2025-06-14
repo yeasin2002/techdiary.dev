@@ -20,7 +20,7 @@ interface Props {
   }) => React.ReactNode;
 }
 
-const ReactionStatus: React.FC<Props> = ({
+export const ResourceReactionable: React.FC<Props> = ({
   resource_id,
   resource_type,
   render,
@@ -100,5 +100,3 @@ const ReactionStatus: React.FC<Props> = ({
     toggle,
   });
 };
-
-export default ReactionStatus;
