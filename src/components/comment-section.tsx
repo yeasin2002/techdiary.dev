@@ -6,14 +6,12 @@ import { useTranslation } from "@/i18n/use-translation";
 import { formattedTime } from "@/lib/utils";
 import { useSession } from "@/store/session.atom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import clsx from "clsx";
 import { ChevronDown, ChevronUp, MessageSquare } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { useImmer } from "use-immer";
 import { useLoginPopup } from "./app-login-popup";
-import { ResourceReactionable } from "./render-props/ResourceReactionable";
-import { Textarea } from "./ui/textarea";
 import ResourceReaction from "./ResourceReaction";
+import { Textarea } from "./ui/textarea";
 
 export const CommentSection = (props: {
   resource_id: string;
@@ -24,13 +22,14 @@ export const CommentSection = (props: {
   const appLoginPopup = useLoginPopup();
   const session = useSession();
   const mutation = useMutation({
-    mutationFn: (newComment: { body: string }) =>
+    mutationFn: (payload: { body: string; comment_id: string }) =>
       commentActions.createMyComment({
         resource_id: props.resource_id,
         resource_type: props.resource_type,
-        body: newComment.body,
+        body: payload.body,
+        comment_id: payload.comment_id,
       }),
-    onMutate: async (newComment) => {
+    onMutate: async (payload) => {
       if (!session?.user) {
         appLoginPopup.show();
         return;
@@ -52,8 +51,8 @@ export const CommentSection = (props: {
         (old: any) => {
           return [
             {
-              id: crypto.randomUUID(), // Generate a temporary ID for optimistic update
-              body: newComment.body,
+              id: payload.comment_id || crypto.randomUUID(),
+              body: payload.body,
               level: 0,
               author: {
                 id: session?.user?.id || "temp-user-id",
@@ -83,15 +82,16 @@ export const CommentSection = (props: {
     refetchOnReconnect: false,
   });
 
+  const generated_comment_id = useMemo(() => crypto.randomUUID(), []);
   return (
     <div className="max-w-4xl mx-auto p-4">
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-4">Comments</h2>
+        <h2 className="text-lg font-semibold mb-4">{_t("Comments")}</h2>
 
         {/* New Comment Box */}
         <CommentEditor
           onSubmit={(body) => {
-            mutation.mutate({ body });
+            mutation.mutate({ body, comment_id: generated_comment_id });
           }}
           isLoading={mutation.isPending}
           placeholder={_t("What are your thoughts?")}
@@ -173,15 +173,16 @@ const CommentItem = (props: { comment: CommentPresentation }) => {
   );
 
   const level = useMemo(() => props.comment.level ?? 0, [props.comment]);
-
+  const generated_comment_id = useMemo(() => crypto.randomUUID(), []);
   const mutation = useMutation({
-    mutationFn: (body: string) =>
+    mutationFn: (payload: { body: string; comment_id: string }) =>
       commentActions.createMyComment({
-        body,
+        comment_id: payload.comment_id,
+        body: payload.body,
         resource_id: props.comment.id,
         resource_type: "COMMENT",
       }),
-    onMutate: (body) => {
+    onMutate: (payload) => {
       if (!session?.user) {
         appLoginPopup.show();
         return;
@@ -189,8 +190,8 @@ const CommentItem = (props: { comment: CommentPresentation }) => {
 
       setReplies((draft) => {
         draft.unshift({
-          id: crypto.randomUUID(),
-          body,
+          id: payload.comment_id,
+          body: payload.body,
           level: (props.comment.level ?? 0) + 1,
           author: {
             id: session?.user?.id || "temp-user-id",
@@ -206,7 +207,7 @@ const CommentItem = (props: { comment: CommentPresentation }) => {
   });
 
   const levelMargin = useMemo(
-    () => Math.min(level, 8) * 12,
+    () => Math.min(level, 8) * 30,
     [props.comment.level]
   );
   return (
@@ -215,13 +216,6 @@ const CommentItem = (props: { comment: CommentPresentation }) => {
       className="group"
       style={{ marginLeft: `${levelMargin}px` }}
     >
-      {/* <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-        <button className="flex items-center gap-1 hover:text-foreground">
-          <span className="font-medium">@{props.comment.author?.username}</span>
-        </button>
-        <span>•</span>
-        <span>{formattedTime(new Date(props.comment.created_at!))}</span>
-      </div> */}
       <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
@@ -247,11 +241,6 @@ const CommentItem = (props: { comment: CommentPresentation }) => {
             </div>
           </div>
 
-          {/* Comment Attachments */}
-          {/* {comment.attachments && comment.attachments.length > 0 && (
-            <AttachmentDisplay attachments={comment.attachments} />
-          )} */}
-
           {/* Comment Actions */}
           <div className="flex items-center gap-4 mb-3">
             {level < 2 && (
@@ -263,7 +252,6 @@ const CommentItem = (props: { comment: CommentPresentation }) => {
                 <span>{_t("Reply")}</span>
               </button>
             )}
-
             <ResourceReaction
               resource_type="COMMENT"
               resource_id={props.comment.id}
@@ -275,7 +263,10 @@ const CommentItem = (props: { comment: CommentPresentation }) => {
             <div className="mb-4 ml-4">
               <CommentEditor
                 onSubmit={(value) => {
-                  mutation.mutate(value);
+                  mutation.mutate({
+                    body: value,
+                    comment_id: generated_comment_id,
+                  });
                   setShowReplyBox(false);
                 }}
                 isLoading={false}

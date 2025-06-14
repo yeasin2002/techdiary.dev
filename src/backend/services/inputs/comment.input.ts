@@ -6,6 +6,7 @@ export const CommentActionInput = {
     resource_type: z.enum(["ARTICLE", "COMMENT"]),
   }),
   create: z.object({
+    comment_id: z.string().uuid().optional().nullable(),
     resource_id: z.string().uuid(),
     resource_type: z.enum(["ARTICLE", "COMMENT"]),
     body: z.string().min(1).max(5000),
