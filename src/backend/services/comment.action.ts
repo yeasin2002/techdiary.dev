@@ -64,6 +64,7 @@ export const createMyComment = async (
 
   const created = await persistenceRepository.comment.insert([
     {
+      id: input.comment_id ?? crypto.randomUUID(),
       body,
       resource_id,
       resource_type,

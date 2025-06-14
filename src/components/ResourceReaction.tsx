@@ -27,7 +27,7 @@ const ResourceReaction = ({
                 <button
                   key={reaction.reaction_type}
                   onClick={() => toggle(reaction.reaction_type!)}
-                  className={`p-1 flex items-center gap-1 cursor-pointer rounded-sm hover:bg-primary/20 ${
+                  className={`p-1 w-10 h-6 flex items-center gap-1 cursor-pointer rounded-sm hover:bg-primary/20 ${
                     reaction.is_reacted ? "bg-primary/20" : ""
                   }`}
                 >
@@ -40,11 +40,14 @@ const ResourceReaction = ({
                 </button>
               ))}
             <HoverCard openDelay={0}>
-              <HoverCardTrigger asChild>
-                <button className="p-1 border flex-none flex items-center gap-1 cursor-pointer rounded-sm hover:bg-primary/20">
-                  <FaceIcon />
-                </button>
-              </HoverCardTrigger>
+              {reactions.length !== reactions.filter((r) => r.count).length && (
+                <HoverCardTrigger asChild>
+                  <button className="p-1 border w-10 h-6 flex-none grid place-content-center cursor-pointer rounded-sm hover:bg-primary/20">
+                    <FaceIcon />
+                  </button>
+                </HoverCardTrigger>
+              )}
+
               <HoverCardContent>
                 <div className="flex items-center gap-2 flex-wrap">
                   {reactions.map((reaction) => (
