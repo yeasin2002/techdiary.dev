@@ -66,7 +66,7 @@ const SearchInput = () => {
         />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading={_t("Results")}>
+          <CommandGroup>
             {mutation.data?.map((hit) => (
               <CommandItem onSelect={() => handleSelect(hit)} key={hit.id}>
                 <span>{hit.title}</span>
