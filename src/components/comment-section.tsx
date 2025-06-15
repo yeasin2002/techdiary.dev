@@ -133,7 +133,6 @@ export const CommentSection = (props: {
             key={comment.id}
             comment={comment}
             mutating={mutation.isPending}
-            mutatingId={mutation.isPending ? comment.id : undefined}
           />
         ))}
       </div>
