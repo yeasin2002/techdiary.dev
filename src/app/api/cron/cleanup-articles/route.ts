@@ -11,18 +11,18 @@ export async function POST(request: NextRequest) {
 
     // Execute the cleanup
     const result = await deleteExpiredArticles();
-    
+
     return NextResponse.json({
       success: true,
       message: `Successfully deleted ${result.deletedCount} expired articles`,
-      deletedArticles: result.deletedArticles,
+      deletedCount: result.deletedCount,
     });
   } catch (error) {
     console.error("Error in cleanup-articles cron job:", error);
     return NextResponse.json(
-      { 
-        error: "Internal server error", 
-        message: error instanceof Error ? error.message : "Unknown error" 
+      {
+        error: "Internal server error",
+        message: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );
@@ -33,18 +33,18 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   try {
     const result = await deleteExpiredArticles();
-    
+
     return NextResponse.json({
       success: true,
       message: `Successfully deleted ${result.deletedCount} expired articles`,
-      deletedArticles: result.deletedArticles,
+      count: result.deletedCount,
     });
   } catch (error) {
     console.error("Error in cleanup-articles manual execution:", error);
     return NextResponse.json(
-      { 
-        error: "Internal server error", 
-        message: error instanceof Error ? error.message : "Unknown error" 
+      {
+        error: "Internal server error",
+        message: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );
