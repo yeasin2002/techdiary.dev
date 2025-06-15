@@ -27,7 +27,7 @@ export const useServerFile = () => {
       method: "POST",
       body: JSON.stringify({ keys }),
     });
-    const signResponse = await signApi.json();
+    const signResponse = (await signApi.json()) as any;
 
     const putResponses = await Promise.all(
       signResponse.data.signedUrls.map((signedUrl: string, index: number) =>
