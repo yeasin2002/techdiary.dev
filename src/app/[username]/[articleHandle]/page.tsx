@@ -18,6 +18,7 @@ import { notFound } from "next/navigation";
 import type { Article, WithContext } from "schema-dts";
 import { eq } from "sqlkit";
 import ArticleSidebar from "./_components/ArticleSidebar";
+import ResourceBookmark from "@/components/ResourceBookmark";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -155,7 +156,16 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
             <h1 className="text-2xl font-bold">{article?.title ?? ""}</h1>
           </div>
 
-          <ResourceReaction resource_type="ARTICLE" resource_id={article.id} />
+          <div className="flex items-center justify-between mb-4">
+            <ResourceReaction
+              resource_type="ARTICLE"
+              resource_id={article.id}
+            />
+            <ResourceBookmark
+              resource_type="ARTICLE"
+              resource_id={article.id}
+            />
+          </div>
 
           <div className="mx-auto content-typography">{parsedHTML}</div>
         </div>
