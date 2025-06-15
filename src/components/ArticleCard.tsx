@@ -3,16 +3,14 @@
 import { useTranslation } from "@/i18n/use-translation";
 import { formattedTime } from "@/lib/utils";
 import { useSession } from "@/store/session.atom";
-import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
 import { useLoginPopup } from "./app-login-popup";
-import { ResourceBookmarkable } from "./render-props/ResourceBookmarkable";
+import ResourceBookmark from "./ResourceBookmark";
 import ResourceReaction from "./ResourceReaction";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import UserInformationCard from "./UserInformationCard";
-import ResourceBookmark from "./ResourceBookmark";
 
 interface ArticleCardProps {
   id: string;
