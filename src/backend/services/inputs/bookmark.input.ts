@@ -6,7 +6,9 @@ export const BookmarkActionInput = {
     resource_type: z.enum(["ARTICLE", "COMMENT"]),
   }),
   myBookmarks: z.object({
-    resource_type: z.enum(["ARTICLE", "COMMENT"]).optional(),
+    limit: z.number().min(1).max(100).default(2),
+    offset: z.number().min(0).default(0),
+    page: z.number().min(1).default(1),
   }),
   bookmarkStatusInput: z.object({
     resource_id: z.string(),

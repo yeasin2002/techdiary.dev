@@ -130,6 +130,27 @@ export interface Bookmark {
   created_at: Date;
 }
 
+export interface BookmarkArticlePresentation {
+  id: string;
+  resource_id: string;
+  resource_type: "ARTICLE" | "COMMENT";
+  user_id: string;
+  created_at: Date;
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    email: string;
+    profile_photo: string;
+  };
+  article: {
+    id: string;
+    title: string;
+    path: string;
+    cover_image?: IServerFile | null;
+  };
+}
+
 export interface Comment {
   id: string;
   resource_id: string;
