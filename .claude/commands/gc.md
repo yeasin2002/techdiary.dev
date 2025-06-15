@@ -30,7 +30,6 @@ Follow these steps:
 - Never commit if there are no changes
 - Check for sensitive information before committing
 - Follow the project's existing commit message patterns
-- Include the Claude Code attribution in commit messages
 - Be concise and focus on the main changes
 
 $ARGUMENTS can be used to provide additional context or specific instructions for the commit message.
