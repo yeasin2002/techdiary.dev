@@ -13,6 +13,32 @@ import { useLoginPopup } from "./app-login-popup";
 import ResourceReaction from "./ResourceReaction";
 import { Textarea } from "./ui/textarea";
 
+const Context = React.createContext<
+  { mutatingId?: string; setMutatingId: (id?: string) => void } | undefined
+>(undefined);
+
+export const CommentSectionProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const [mutatingId, setMutatingId] = useState<string | undefined>(undefined);
+  return (
+    <Context.Provider value={{ mutatingId, setMutatingId }}>
+      {children}
+    </Context.Provider>
+  );
+};
+export const useCommentSection = () => {
+  const context = React.useContext(Context);
+  if (!context) {
+    throw new Error(
+      "useCommentSectionContext must be used within a CommentSectionProvider"
+    );
+  }
+  return context;
+};
+
 export const CommentSection = (props: {
   resource_id: string;
   resource_type: "ARTICLE" | "COMMENT";
@@ -20,6 +46,7 @@ export const CommentSection = (props: {
   const { _t } = useTranslation();
   const queryClient = useQueryClient();
   const appLoginPopup = useLoginPopup();
+  const { setMutatingId } = useCommentSection();
   const session = useSession();
   const mutation = useMutation({
     mutationFn: (payload: { body: string; comment_id: string }) =>
@@ -34,6 +61,7 @@ export const CommentSection = (props: {
         appLoginPopup.show();
         return;
       }
+      setMutatingId(payload.comment_id);
 
       // Optimistically update the UI by adding the new comment to the list
       await queryClient.cancelQueries({
@@ -82,7 +110,7 @@ export const CommentSection = (props: {
     refetchOnReconnect: false,
   });
 
-  const generated_comment_id = useMemo(() => crypto.randomUUID(), []);
+  const generated_comment_id = () => crypto.randomUUID();
   return (
     <div className="max-w-4xl mx-auto p-4">
       <div className="mb-6">
@@ -91,7 +119,7 @@ export const CommentSection = (props: {
         {/* New Comment Box */}
         <CommentEditor
           onSubmit={(body) => {
-            mutation.mutate({ body, comment_id: generated_comment_id });
+            mutation.mutate({ body, comment_id: generated_comment_id() });
           }}
           isLoading={mutation.isPending}
           placeholder={_t("What are your thoughts?")}
@@ -101,7 +129,11 @@ export const CommentSection = (props: {
       {/* Comments List */}
       <div className="space-y-10">
         {query?.data?.map((comment) => (
-          <CommentItem key={comment.id} comment={comment} />
+          <CommentItem
+            key={comment.id}
+            comment={comment}
+            mutating={mutation.isPending}
+          />
         ))}
       </div>
     </div>
@@ -162,18 +194,22 @@ const CommentEditor = (props: {
   );
 };
 
-const CommentItem = (props: { comment: CommentPresentation }) => {
+const CommentItem = (props: {
+  comment: CommentPresentation;
+  mutating?: boolean;
+}) => {
   const { _t } = useTranslation();
   const session = useSession();
   const appLoginPopup = useLoginPopup();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showReplyBox, setShowReplyBox] = useState(false);
+  const { mutatingId, setMutatingId } = useCommentSection();
   const [replies, setReplies] = useImmer<CommentPresentation[]>(
     props.comment.replies ?? []
   );
 
   const level = useMemo(() => props.comment.level ?? 0, [props.comment]);
-  const generated_comment_id = useMemo(() => crypto.randomUUID(), []);
+  const generated_comment_id = () => crypto.randomUUID();
   const mutation = useMutation({
     mutationFn: (payload: { body: string; comment_id: string }) =>
       commentActions.createMyComment({
@@ -203,6 +239,13 @@ const CommentItem = (props: { comment: CommentPresentation }) => {
           created_at: new Date(),
         } satisfies CommentPresentation);
       });
+      console.log("Mutating comment with ID:", payload.comment_id);
+
+      setMutatingId(payload.comment_id);
+    },
+    onError: (error) => {
+      // reverse the optimistic update if there's an error
+      // Optionally, you can show an error message to the user
     },
   });
 
@@ -242,21 +285,28 @@ const CommentItem = (props: { comment: CommentPresentation }) => {
           </div>
 
           {/* Comment Actions */}
-          <div className="flex items-center gap-4 mb-3">
-            {level < 2 && (
-              <button
-                className="text-sm flex items-center hover:underline cursor-pointer"
-                onClick={() => setShowReplyBox(!showReplyBox)}
-              >
-                <MessageSquare className="size-3 mr-1" />
-                <span>{_t("Reply")}</span>
-              </button>
-            )}
-            <ResourceReaction
-              resource_type="COMMENT"
-              resource_id={props.comment.id}
-            />
-          </div>
+
+          {props.mutating && mutatingId == props.comment.id ? (
+            <p className="text-muted-foreground text-sm mb-3">
+              {_t("Pending")}...
+            </p>
+          ) : (
+            <div className="flex items-center gap-4 mb-3">
+              {level < 2 && (
+                <button
+                  className="text-sm flex items-center hover:underline cursor-pointer"
+                  onClick={() => setShowReplyBox(!showReplyBox)}
+                >
+                  <MessageSquare className="size-3 mr-1" />
+                  <span>{_t("Reply")}</span>
+                </button>
+              )}
+              <ResourceReaction
+                resource_type="COMMENT"
+                resource_id={props.comment.id}
+              />
+            </div>
+          )}
 
           {/* Reply Box */}
           {showReplyBox && (
@@ -265,7 +315,7 @@ const CommentItem = (props: { comment: CommentPresentation }) => {
                 onSubmit={(value) => {
                   mutation.mutate({
                     body: value,
-                    comment_id: generated_comment_id,
+                    comment_id: generated_comment_id(),
                   });
                   setShowReplyBox(false);
                 }}
@@ -277,7 +327,11 @@ const CommentItem = (props: { comment: CommentPresentation }) => {
 
           {/* Nested Replies */}
           {replies?.map((reply) => (
-            <CommentItem key={reply.id} comment={reply} />
+            <CommentItem
+              key={reply.id}
+              comment={reply}
+              mutating={mutation.isPending}
+            />
           ))}
         </>
       )}
