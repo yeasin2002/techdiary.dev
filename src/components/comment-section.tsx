@@ -101,7 +101,12 @@ export const CommentSection = (props: {
       {/* Comments List */}
       <div className="space-y-10">
         {query?.data?.map((comment) => (
-          <CommentItem key={comment.id} comment={comment} />
+          <CommentItem
+            key={comment.id}
+            comment={comment}
+            mutating={mutation.isPending}
+            mutatingId={mutation.isPending ? comment.id : undefined}
+          />
         ))}
       </div>
     </div>
@@ -162,7 +167,11 @@ const CommentEditor = (props: {
   );
 };
 
-const CommentItem = (props: { comment: CommentPresentation }) => {
+const CommentItem = (props: {
+  comment: CommentPresentation;
+  mutating?: boolean;
+  mutatingId?: string;
+}) => {
   const { _t } = useTranslation();
   const session = useSession();
   const appLoginPopup = useLoginPopup();
@@ -204,6 +213,10 @@ const CommentItem = (props: { comment: CommentPresentation }) => {
         } satisfies CommentPresentation);
       });
     },
+    onError: (error) => {
+      // reverse the optimistic update if there's an error
+      // Optionally, you can show an error message to the user
+    },
   });
 
   const levelMargin = useMemo(
@@ -242,21 +255,28 @@ const CommentItem = (props: { comment: CommentPresentation }) => {
           </div>
 
           {/* Comment Actions */}
-          <div className="flex items-center gap-4 mb-3">
-            {level < 2 && (
-              <button
-                className="text-sm flex items-center hover:underline cursor-pointer"
-                onClick={() => setShowReplyBox(!showReplyBox)}
-              >
-                <MessageSquare className="size-3 mr-1" />
-                <span>{_t("Reply")}</span>
-              </button>
-            )}
-            <ResourceReaction
-              resource_type="COMMENT"
-              resource_id={props.comment.id}
-            />
-          </div>
+
+          {props.mutating && props.mutatingId == props.comment.id ? (
+            <p className="text-muted-foreground text-sm mb-3">
+              {_t("Pending")}...
+            </p>
+          ) : (
+            <div className="flex items-center gap-4 mb-3">
+              {level < 2 && (
+                <button
+                  className="text-sm flex items-center hover:underline cursor-pointer"
+                  onClick={() => setShowReplyBox(!showReplyBox)}
+                >
+                  <MessageSquare className="size-3 mr-1" />
+                  <span>{_t("Reply")}</span>
+                </button>
+              )}
+              <ResourceReaction
+                resource_type="COMMENT"
+                resource_id={props.comment.id}
+              />
+            </div>
+          )}
 
           {/* Reply Box */}
           {showReplyBox && (
@@ -277,7 +297,12 @@ const CommentItem = (props: { comment: CommentPresentation }) => {
 
           {/* Nested Replies */}
           {replies?.map((reply) => (
-            <CommentItem key={reply.id} comment={reply} />
+            <CommentItem
+              key={reply.id}
+              comment={reply}
+              mutating={mutation.isPending}
+              mutatingId={mutation.isPending ? reply.id : undefined}
+            />
           ))}
         </>
       )}

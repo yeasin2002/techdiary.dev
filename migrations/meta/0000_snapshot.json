@@ -1,5 +1,5 @@
 {
-  "id": "df7084a1-1c3d-4fa9-bc8a-aec9fbc6f26d",
+  "id": "ac9572ba-b268-46e2-8276-3fccefb6a2fc",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -135,6 +135,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "delete_scheduled_at": {
+          "name": "delete_scheduled_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
         "metadata": {
           "name": "metadata",
           "type": "jsonb",
@@ -263,15 +269,15 @@
           "primaryKey": false,
           "notNull": true
         },
-        "commentable_type": {
-          "name": "commentable_type",
-          "type": "varchar",
+        "resource_id": {
+          "name": "resource_id",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "commentable_id": {
-          "name": "commentable_id",
-          "type": "uuid",
+        "resource_type": {
+          "name": "resource_type",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": true
         },
@@ -280,12 +286,6 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
-        },
-        "parent_id": {
-          "name": "parent_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -316,13 +316,70 @@
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.reactions": {
+      "name": "reactions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
-        "comments_parent_id_comments_id_fk": {
-          "name": "comments_parent_id_comments_id_fk",
-          "tableFrom": "comments",
-          "tableTo": "comments",
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resource_id": {
+          "name": "resource_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resource_type": {
+          "name": "resource_type",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reaction_type": {
+          "name": "reaction_type",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "reactions_user_id_users_id_fk": {
+          "name": "reactions_user_id_users_id_fk",
+          "tableFrom": "reactions",
+          "tableTo": "users",
           "columnsFrom": [
-            "parent_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
