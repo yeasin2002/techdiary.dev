@@ -11,6 +11,13 @@ export const env = createEnv({
     GITHUB_CALLBACK_URL: z.string(),
     DATABASE_URL: z.string(),
     MEILISEARCH_ADMIN_API_KEY: z.string(),
+
+    // S3
+    S3_ENDPOINT: z.string().min(1),
+    S3_REGION: z.string().min(1),
+    S3_ACCESS_KEY_ID: z.string().min(1),
+    S3_ACCESS_SECRET: z.string().min(1),
+    S3_BUCKET: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_MEILISEARCH_API_HOST: z.string().url(),
@@ -29,5 +36,11 @@ export const env = createEnv({
     MEILISEARCH_ADMIN_API_KEY: process.env.MEILISEARCH_ADMIN_API_KEY,
     NEXT_PUBLIC_MEILISEARCH_SEARCH_API_KEY:
       process.env.NEXT_PUBLIC_MEILISEARCH_SEARCH_API_KEY,
+
+    S3_ENDPOINT: process.env.S3_ENDPOINT,
+    S3_REGION: process.env.S3_REGION,
+    S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID,
+    S3_ACCESS_SECRET: process.env.S3_ACCESS_SECRET,
+    S3_BUCKET: process.env.S3_BUCKET,
   },
 });
