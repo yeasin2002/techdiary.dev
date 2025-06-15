@@ -16,6 +16,7 @@ CREATE TABLE "articles" (
 	"is_published" boolean DEFAULT false,
 	"published_at" timestamp,
 	"approved_at" timestamp,
+	"delete_scheduled_at" timestamp,
 	"metadata" jsonb,
 	"author_id" uuid NOT NULL,
 	"created_at" timestamp,
@@ -34,12 +35,21 @@ CREATE TABLE "bookmarks" (
 CREATE TABLE "comments" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"body" text NOT NULL,
-	"commentable_type" varchar NOT NULL,
-	"commentable_id" uuid NOT NULL,
+	"resource_id" uuid NOT NULL,
+	"resource_type" varchar(50) NOT NULL,
 	"user_id" uuid NOT NULL,
-	"parent_id" uuid,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "reactions" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"resource_id" uuid NOT NULL,
+	"resource_type" varchar(50) NOT NULL,
+	"reaction_type" varchar(50) NOT NULL,
+	"created_at" timestamp,
+	"updated_at" timestamp
 );
 --> statement-breakpoint
 CREATE TABLE "series_items" (
@@ -124,7 +134,7 @@ ALTER TABLE "article_tag" ADD CONSTRAINT "article_tag_tag_id_tags_id_fk" FOREIGN
 ALTER TABLE "articles" ADD CONSTRAINT "articles_author_id_users_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "bookmarks" ADD CONSTRAINT "bookmarks_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "comments" ADD CONSTRAINT "comments_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "comments" ADD CONSTRAINT "comments_parent_id_comments_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."comments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "reactions" ADD CONSTRAINT "reactions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "series_items" ADD CONSTRAINT "series_items_series_id_series_id_fk" FOREIGN KEY ("series_id") REFERENCES "public"."series"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "series_items" ADD CONSTRAINT "series_items_article_id_articles_id_fk" FOREIGN KEY ("article_id") REFERENCES "public"."articles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "series" ADD CONSTRAINT "series_owner_id_users_id_fk" FOREIGN KEY ("owner_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

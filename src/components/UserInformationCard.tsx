@@ -15,24 +15,26 @@ interface Props {
 const UserInformationCard: React.FC<Props> = ({ userId }) => {
   const { _t } = useTranslation();
   const session = useSession();
-  const userQuery = useQuery({
+  const query = useQuery({
     queryKey: ["user", userId],
     queryFn: () => userActions.getUserById(userId),
   });
-  const profileData = {
-    avatarUrl: userQuery.data?.profile_photo,
-    name: userQuery.data?.name,
-    title: userQuery.data?.designation,
-    bio: userQuery.data?.bio,
-    location: userQuery.data?.location,
-    joinDate: userQuery.data?.created_at,
-    education: userQuery.data?.education,
-  };
 
-  if (userQuery.isFetching)
+  if (query.isPending)
     return (
       <>
-        <div className="h-80 animate-pulse bg-muted rounded-sm"></div>
+        <div className="h-45 relative flex flex-col gap-2">
+          <div className="flex gap-4 items-center">
+            <div className="size-[56px] bg-gray-200 dark:bg-gray-800 animate-pulse flex-none rounded-full" />
+            <div className="flex-1 flex flex-col gap-2">
+              <div className="h-4 bg-gray-200 dark:bg-gray-800 animate-pulse" />
+              <div className="h-3 bg-gray-200 dark:bg-gray-800 w-8/12 animate-pulse" />
+            </div>
+          </div>
+
+          <div className="h-3 bg-gray-200 dark:bg-gray-800 animate-pulse" />
+          <div className="h-5 bg-gray-200 dark:bg-gray-800 animate-pulse" />
+        </div>
       </>
     );
 
@@ -43,8 +45,8 @@ const UserInformationCard: React.FC<Props> = ({ userId }) => {
         {/* Avatar */}
         <div className="relative mr-4">
           <Image
-            src={profileData.avatarUrl ?? ""}
-            alt={profileData.name ?? ""}
+            src={query.data?.profile_photo ?? ""}
+            alt={query.data?.name ?? ""}
             width={56}
             height={56}
             className="w-14 h-14 rounded-full object-cover border-2 border-white/90 shadow-md"
@@ -53,8 +55,10 @@ const UserInformationCard: React.FC<Props> = ({ userId }) => {
 
         {/* Name */}
         <div>
-          <h2 className="text-xl font-bold">{profileData.name}</h2>
-          <p className="text-sm text-muted-foreground">kingrayhan</p>
+          <h2 className="text-xl font-bold">{query.data?.name}</h2>
+          <p className="text-sm text-muted-foreground">
+            {query.data?.username}
+          </p>
         </div>
       </div>
 
@@ -76,26 +80,26 @@ const UserInformationCard: React.FC<Props> = ({ userId }) => {
 
         {/* Bio */}
         <p className="text-sm leading-relaxed text-muted-foreground">
-          {profileData.bio}
+          {query.data?.bio}
         </p>
 
         {/* Profile Details */}
         <div className="space-y-3">
           {/* Location */}
-          {profileData.location && (
+          {query.data?.location && (
             <div className="flex flex-col">
               <p className="font-semibold">{_t("Location")}</p>
               <p className="text-sm text-muted-foreground">
-                {profileData.location}
+                {query.data?.location}
               </p>
             </div>
           )}
 
-          {profileData.education && (
+          {query.data?.education && (
             <div className="flex flex-col">
               <p className="font-semibold">{_t("Education")}</p>
               <p className="text-sm text-muted-foreground">
-                {profileData.education}
+                {query.data?.education}
               </p>
             </div>
           )}

@@ -161,6 +161,14 @@ export type REACTION_TYPE =
   | "CRY"
   | "HAHA";
 
+export enum DIRECTORY_NAME {
+  ARTICLE_COVER = "article-cover",
+  ARTICLE_CONTENT = "article-content",
+  USER_PROFILE = "user-profile",
+  USER_PROFILE_README_CONTENT = "user-profile-readme-content",
+  COMMENT_ATTACHMENT = "comment-attachment",
+}
+
 export interface Reaction {
   resource_id: string;
   resource_type: "ARTICLE" | "COMMENT";

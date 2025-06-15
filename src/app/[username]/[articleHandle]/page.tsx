@@ -2,8 +2,12 @@ import HomeLeftSidebar from "@/app/(home)/_components/HomeLeftSidebar";
 import { persistenceRepository } from "@/backend/persistence/persistence-repositories";
 import * as articleActions from "@/backend/services/article.actions";
 import AppImage from "@/components/AppImage";
-import { CommentSection } from "@/components/comment-section";
+import {
+  CommentSection,
+  CommentSectionProvider,
+} from "@/components/comment-section";
 import HomepageLayout from "@/components/layout/HomepageLayout";
+import ResourceReaction from "@/components/ResourceReaction";
 import { readingTime, removeMarkdownSyntax } from "@/lib/utils";
 import getFileUrl from "@/utils/getFileUrl";
 import { markdocParser } from "@/utils/markdoc-parser";
@@ -13,9 +17,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Article, WithContext } from "schema-dts";
 import { eq } from "sqlkit";
-import ArticleReaction from "./_components/ArticleReaction";
 import ArticleSidebar from "./_components/ArticleSidebar";
-import ResourceReaction from "@/components/ResourceReaction";
+import ResourceBookmark from "@/components/ResourceBookmark";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -153,12 +156,23 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
             <h1 className="text-2xl font-bold">{article?.title ?? ""}</h1>
           </div>
 
-          <ResourceReaction resource_type="ARTICLE" resource_id={article.id} />
+          <div className="flex items-center justify-between mb-4">
+            <ResourceReaction
+              resource_type="ARTICLE"
+              resource_id={article.id}
+            />
+            <ResourceBookmark
+              resource_type="ARTICLE"
+              resource_id={article.id}
+            />
+          </div>
 
           <div className="mx-auto content-typography">{parsedHTML}</div>
         </div>
 
-        <CommentSection resource_type="ARTICLE" resource_id={article.id} />
+        <CommentSectionProvider>
+          <CommentSection resource_type="ARTICLE" resource_id={article.id} />
+        </CommentSectionProvider>
       </HomepageLayout>
     </>
   );

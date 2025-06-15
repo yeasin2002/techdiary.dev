@@ -3,12 +3,11 @@
 import { useTranslation } from "@/i18n/use-translation";
 import { formattedTime } from "@/lib/utils";
 import { useSession } from "@/store/session.atom";
-import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
 import { useLoginPopup } from "./app-login-popup";
-import { ResourceBookmarkable } from "./render-props/ResourceBookmarkable";
+import ResourceBookmark from "./ResourceBookmark";
 import ResourceReaction from "./ResourceReaction";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import UserInformationCard from "./UserInformationCard";
@@ -118,39 +117,7 @@ const ArticleCard = ({
 
       <div className="mt-4 flex items-center justify-between">
         <ResourceReaction resource_type="ARTICLE" resource_id={id} />
-
-        <ResourceBookmarkable
-          resource_type="ARTICLE"
-          resource_id={id}
-          render={({ bookmarked, toggle }) => (
-            <button
-              onClick={() => {
-                if (!session?.user) {
-                  loginPopup.show();
-                  return;
-                }
-                toggle();
-              }}
-              className={clsx(
-                "transition-colors duration-300 flex cursor-pointer px-2 py-1 rounded-sm hover:bg-primary/20",
-                { "bg-primary/20": bookmarked }
-              )}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={clsx("size-5 stroke-2 fill-transparent", {
-                  "!stroke-current": !bookmarked,
-                  "!fill-current": bookmarked,
-                })}
-              >
-                <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-              </svg>
-            </button>
-          )}
-        />
+        <ResourceBookmark resource_type="ARTICLE" resource_id={id} />
       </div>
     </div>
   );

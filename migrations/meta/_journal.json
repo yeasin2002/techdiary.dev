@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1749652091718,
-      "tag": "0000_flowery_mindworm",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1749664449582,
-      "tag": "0001_unknown_dark_beast",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1749750483821,
-      "tag": "0002_unusual_mentallo",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1749844974418,
-      "tag": "0003_quiet_swarm",
+      "when": 1749963240267,
+      "tag": "0000_chilly_archangel",
       "breakpoints": true
     }
   ]
