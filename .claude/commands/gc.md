@@ -31,5 +31,6 @@ Follow these steps:
 - Check for sensitive information before committing
 - Follow the project's existing commit message patterns
 - Be concise and focus on the main changes
+- Do not make claude as a co-author unless explicitly requested
 
 $ARGUMENTS can be used to provide additional context or specific instructions for the commit message.
