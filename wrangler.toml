@@ -6,8 +6,8 @@ main = "src/workers/cron-worker.ts"
 [triggers]
 crons = [
   # Run article cleanup every day at 2:00 AM UTC
-  "0 2 * * *",
-  # "* * * * *", # Uncomment for production use
+  # "0 2 * * *",
+  "* * * * *", # Uncomment for production use
 ]
 
 # Environment variables for the cron worker
