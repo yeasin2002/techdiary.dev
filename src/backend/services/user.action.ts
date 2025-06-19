@@ -10,6 +10,8 @@ import { drizzleClient } from "@/backend/persistence/clients";
 import { usersTable } from "@/backend/persistence/schemas";
 import { authID } from "./session.actions";
 import { filterUndefined } from "@/lib/utils";
+import { ActionResult } from "next/dist/server/app-render/types";
+import { ActionResponse } from "../models/action-contracts";
 
 /**
  * Creates or syncs a user account from a social login provider.
@@ -66,11 +68,11 @@ export async function bootSocialUser(
     }
 
     return {
-      user,
-      userSocial,
+      success: true as const,
+      data: { user, userSocial },
     };
   } catch (error) {
-    handleActionException(error);
+    return handleActionException(error);
   }
 }
 

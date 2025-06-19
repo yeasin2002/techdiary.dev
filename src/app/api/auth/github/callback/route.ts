@@ -1,5 +1,4 @@
 import { GithubOAuthService } from "@/backend/services/oauth/GithubOAuthService";
-import { ActionException } from "@/backend/services/RepositoryException";
 import * as sessionActions from "@/backend/services/session.actions";
 import * as userActions from "@/backend/services/user.action";
 import { NextResponse } from "next/server";
@@ -7,57 +6,58 @@ import { NextResponse } from "next/server";
 const githubOAuthService = new GithubOAuthService();
 
 export async function GET(request: Request) {
-  try {
-    const url = new URL(request.url);
-    const code = url.searchParams.get("code");
-    const state = url.searchParams.get("state");
-    const afterAuthRedirect = await sessionActions.getAfterAuthRedirect();
+  const url = new URL(request.url);
+  const code = url.searchParams.get("code");
+  const state = url.searchParams.get("state");
+  const afterAuthRedirect = await sessionActions.getAfterAuthRedirect();
 
-    if (code === null || state === null) {
-      return NextResponse.json({ error: "Please restart the process." });
-    }
+  if (code === null || state === null) {
+    return NextResponse.json({ error: "Please restart the process." });
+  }
 
-    const githubUser = await githubOAuthService.getUserInfo(code!, state!);
+  const githubUser = await githubOAuthService.getUserInfo(code!, state!);
+  if (!githubUser.success) {
+    return NextResponse.json(
+      { error: githubUser.error, type: `Can't fetch github user` },
+      { status: 500 }
+    );
+  }
 
-    const bootedSocialUser = await userActions.bootSocialUser({
-      service: "github",
-      service_uid: githubUser.id.toString(),
-      name: githubUser.name,
-      username: githubUser.login,
-      email: githubUser.email,
-      profile_photo: githubUser.avatar_url,
-      bio: githubUser.bio,
-    });
+  const bootedSocialUser = await userActions.bootSocialUser({
+    service: "github",
+    service_uid: githubUser?.data.id?.toString(),
+    name: githubUser?.data?.login,
+    username: githubUser?.data?.login,
+    email: githubUser?.data.email,
+    profile_photo: githubUser?.data?.avatar_url,
+    bio: githubUser?.data?.bio ?? "",
+  });
 
-    await sessionActions.createLoginSession({
-      user_id: bootedSocialUser?.user.id!,
-      request,
-    });
+  if (!bootedSocialUser.success) {
+    return NextResponse.json(
+      { error: bootedSocialUser.error },
+      { status: 500 }
+    );
+  }
 
-    if (afterAuthRedirect) {
-      return new Response(null, {
-        status: 302,
-        headers: {
-          Location: afterAuthRedirect ?? "/",
-        },
-      });
-    }
+  await sessionActions.createLoginSession({
+    user_id: bootedSocialUser.data?.user.id!,
+    request,
+  });
 
+  if (afterAuthRedirect) {
     return new Response(null, {
       status: 302,
       headers: {
-        Location: "/",
+        Location: afterAuthRedirect ?? "/",
       },
     });
-  } catch (error) {
-    if (error instanceof ActionException) {
-      return NextResponse.json({ error: error.toString() }, { status: 400 });
-    }
-    if (error instanceof Error) {
-      return NextResponse.json(
-        { error: "Something went wrong" },
-        { status: 500 }
-      );
-    }
   }
+
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: "/",
+    },
+  });
 }

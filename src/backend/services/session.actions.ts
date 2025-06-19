@@ -21,14 +21,14 @@ import { UserSessionInput } from "./inputs/session.input";
  */
 export async function createLoginSession(
   _input: z.infer<typeof UserSessionInput.createLoginSessionInput>
-): Promise<void> {
+) {
   const _cookies = await cookies();
   const token = generateRandomString(120);
   try {
     const input =
       await UserSessionInput.createLoginSessionInput.parseAsync(_input);
     const agent = userAgent(input.request);
-    await persistenceRepository.userSession.insert([
+    const insertData = await persistenceRepository.userSession.insert([
       {
         token,
         user_id: input.user_id,
@@ -51,8 +51,12 @@ export async function createLoginSession(
       maxAge: 60 * 60 * 24 * 30,
       sameSite: "lax",
     });
+    return {
+      success: true as const,
+      data: insertData.rows,
+    };
   } catch (error) {
-    handleActionException(error);
+    return handleActionException(error);
   }
 }
 
