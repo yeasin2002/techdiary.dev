@@ -18,6 +18,8 @@ export const env = createEnv({
     S3_ACCESS_KEY_ID: z.string().min(1),
     S3_ACCESS_SECRET: z.string().min(1),
     S3_BUCKET: z.string().min(1),
+
+    CRON_SECRET: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_MEILISEARCH_API_HOST: z.string().url(),
@@ -42,5 +44,7 @@ export const env = createEnv({
     S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID,
     S3_ACCESS_SECRET: process.env.S3_ACCESS_SECRET,
     S3_BUCKET: process.env.S3_BUCKET,
+
+    CRON_SECRET: process.env.CRON_SECRET,
   },
 });
