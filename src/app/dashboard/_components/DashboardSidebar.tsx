@@ -41,11 +41,11 @@ const DashboardSidebar = () => {
     //   url: "/notifications",
     //   icon: BellIcon,
     // },
-    // {
-    //   title: _t("Bookmarks"),
-    //   url: "/bookmarks",
-    //   icon: Bookmark,
-    // },
+    {
+      title: _t("Bookmarks"),
+      url: "/bookmarks",
+      icon: Bookmark,
+    },
     {
       title: _t("Settings"),
       url: "/settings",
