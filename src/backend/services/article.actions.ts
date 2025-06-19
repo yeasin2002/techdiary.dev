@@ -16,6 +16,7 @@ import { ArticleRepositoryInput } from "./inputs/article.input";
 import { authID } from "./session.actions";
 import { syncTagsWithArticles } from "./tag.action";
 import { addDays } from "date-fns";
+import { ActionResponse } from "../models/action-contracts";
 
 export async function createMyArticle(
   _input: z.infer<typeof ArticleRepositoryInput.createMyArticleInput>
@@ -184,7 +185,9 @@ export async function updateMyArticle(
   }
 }
 
-export const scheduleArticleDelete = async (article_id: string) => {
+export const scheduleArticleDelete = async (
+  article_id: string
+): Promise<ActionResponse<unknown>> => {
   try {
     const session_userID = await authID();
     if (!session_userID) {

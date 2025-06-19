@@ -1,4 +1,6 @@
+import { ActionResponse } from "@/backend/models/action-contracts";
 import { clsx, type ClassValue } from "clsx";
+import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 import { z, ZodAnyDef, ZodObject } from "zod";
 
@@ -110,3 +112,49 @@ export function filterUndefined<T>(
     Object.entries(mapping).filter(([_, value]) => value !== undefined)
   ) as Partial<Record<string, any>>;
 }
+
+// Improved with automatic type inference
+export const actionPromisify = async <T = any>(
+  action: Promise<ActionResponse<T>>
+): Promise<T> => {
+  const promise = new Promise<T>(async (resolve, reject) => {
+    try {
+      const resolvedAction = await action;
+
+      if (!resolvedAction) {
+        reject("Action returned undefined");
+        return;
+      }
+
+      if (!resolvedAction.success) {
+        // @ts-ignore
+        reject(resolvedAction.error ?? "Unknown error occurred");
+        return;
+      }
+
+      if (resolvedAction.success) {
+        resolve(resolvedAction.data);
+        return;
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        reject(error.message);
+      } else {
+        reject("An unexpected error occurred");
+      }
+    }
+  });
+
+  // if (options?.withToast) {
+  //   toast.promise(promise, {
+  //     loading: options?.messages?.loading ?? "Loading...",
+  //     success: options?.messages?.success ?? "Success!",
+  //     error: (errorMsg: string) => errorMsg || "Operation failed",
+  //   });
+  // }
+
+  return promise;
+};
+
+export const sleep = (ms: number) =>
+  new Promise((resolve) => setTimeout(() => resolve("Hello"), ms));

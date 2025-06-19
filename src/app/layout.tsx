@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/components/toast";
 import "../styles/app.css";
 
 import * as sessionActions from "@/backend/services/session.actions";

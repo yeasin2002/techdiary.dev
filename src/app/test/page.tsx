@@ -1,13 +1,22 @@
 "use client";
 
-import { useLoginPopup } from "@/components/app-login-popup";
-import React from "react";
+import { myBookmarks } from "@/backend/services/bookmark.action";
+import { toast } from "@/components/toast";
+import { actionPromisify, sleep } from "@/lib/utils";
 
 const Page = () => {
-  const pp = useLoginPopup();
   return (
     <div>
-      <button onClick={() => pp.show()}>open</button>
+      <button
+        onClick={async () => {
+          const res = await toast.promise(
+            myBookmarks({ limit: 1, page: 1, offset: 0 })
+          );
+          toast.success(res!);
+        }}
+      >
+        open
+      </button>
     </div>
   );
 };

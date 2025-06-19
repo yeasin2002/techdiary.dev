@@ -12,6 +12,7 @@ import { ThemeProvider } from "next-themes";
 import { AppConfirmProvider } from "../app-confirm";
 import { AppAlertProvider } from "../app-alert";
 import { AppLoginPopupProvider } from "../app-login-popup";
+import { Toaster } from "../toast";
 
 interface Props {
   session: SessionResult;
@@ -28,7 +29,10 @@ const CommonProviders: React.FC<PropsWithChildren<Props>> = ({
           <AppConfirmProvider>
             <AppAlertProvider>
               <AppLoginPopupProvider>
-                <ThemeProvider attribute="data-theme">{children}</ThemeProvider>
+                <ThemeProvider attribute="data-theme">
+                  <Toaster />
+                  {children}
+                </ThemeProvider>
               </AppLoginPopupProvider>
             </AppAlertProvider>
           </AppConfirmProvider>

@@ -7,8 +7,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import VisibilitySensor from "@/components/VisibilitySensor";
@@ -21,7 +19,7 @@ import {
   PlusIcon,
 } from "@radix-ui/react-icons";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { TrashIcon } from "lucide-react";
 import Link from "next/link";
 
@@ -38,6 +36,10 @@ const ArticleList = () => {
       return _page + 1 <= _totalPages ? _page + 1 : null;
     },
   });
+
+  // const deleteMutation = useMutation({
+  //   mutationFn: ac
+  // })
 
   const appConfirm = useAppConfirm();
 
