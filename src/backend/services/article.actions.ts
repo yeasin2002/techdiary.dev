@@ -15,6 +15,7 @@ import { handleActionException, ActionException } from "./RepositoryException";
 import { ArticleRepositoryInput } from "./inputs/article.input";
 import { authID } from "./session.actions";
 import { syncTagsWithArticles } from "./tag.action";
+import { addDays } from "date-fns";
 
 export async function createMyArticle(
   _input: z.infer<typeof ArticleRepositoryInput.createMyArticleInput>
@@ -144,40 +145,6 @@ export const getUniqueArticleHandle = async (
   }
 };
 
-/**
- * Updates an existing article in the database.
- *
- * @param _input - The article update data, validated against ArticleRepositoryInput.updateArticleInput schema
- * @returns Promise<Article> - The updated article
- * @throws {ActionException} If article update fails, article not found, or validation fails
- */
-export async function updateArticle(
-  _input: z.infer<typeof ArticleRepositoryInput.updateArticleInput>
-) {
-  try {
-    const input =
-      await ArticleRepositoryInput.updateArticleInput.parseAsync(_input);
-    const article = await persistenceRepository.article.update({
-      where: eq("id", input.article_id),
-      data: {
-        title: input.title,
-        handle: input.handle
-          ? await getUniqueArticleHandle(input.handle, input.article_id)
-          : undefined,
-        excerpt: input.excerpt,
-        body: input.body,
-        cover_image: input.cover_image,
-        is_published: input.is_published,
-        published_at: input.is_published ? new Date() : null,
-      },
-    });
-
-    return article?.rows?.[0];
-  } catch (error) {
-    handleActionException(error);
-  }
-}
-
 export async function updateMyArticle(
   _input: z.infer<typeof ArticleRepositoryInput.updateMyArticleInput>
 ) {
@@ -216,6 +183,36 @@ export async function updateMyArticle(
     handleActionException(error);
   }
 }
+
+export const scheduleArticleDelete = async (article_id: string) => {
+  try {
+    const session_userID = await authID();
+    if (!session_userID) {
+      throw new ActionException("Unauthorized");
+    }
+
+    const [permissibleArticle] = await persistenceRepository.article.find({
+      where: and(eq("id", article_id), eq("author_id", session_userID)),
+    });
+
+    if (!permissibleArticle) {
+      throw new ActionException("Unauthorized");
+    }
+
+    const updated = await persistenceRepository.article.update({
+      where: and(eq("id", article_id), eq("author_id", session_userID)),
+      data: {
+        delete_scheduled_at: addDays(new Date(), 7),
+      },
+    });
+    return {
+      success: true as const,
+      data: updated.rows[0],
+    };
+  } catch (error) {
+    return handleActionException(error);
+  }
+};
 
 /**
  * Deletes an article from the database.

@@ -22,6 +22,7 @@ import {
 } from "@radix-ui/react-icons";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { TrashIcon } from "lucide-react";
 import Link from "next/link";
 
 const ArticleList = () => {
@@ -82,17 +83,17 @@ const ArticleList = () => {
 
               <div className="flex items-center gap-10 justify-between">
                 <div className="flex gap-4 items-center">
-                  {!article.approved_at && (
+                  {/* {!article.approved_at && (
                     <p className="bg-yellow-400/30 rounded-sm px-2 py-1 text-sm">
                       🚧 {_t("অনুমোদনাধীন")}
                     </p>
-                  )}
+                  )} */}
 
-                  {article.approved_at && (
+                  {/* {article.approved_at && (
                     <p className="bg-green-400/30 rounded-sm px-2 py-1 text-sm">
                       ✅ {_t("অনুমোদিত")}
                     </p>
-                  )}
+                  )} */}
 
                   {!article.is_published && (
                     <p className="bg-yellow-400/30 rounded-sm px-2 py-1 text-sm">
@@ -166,6 +167,19 @@ const ArticleList = () => {
                             : _t("Publish article")}
                         </span>
                       </button>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        appConfirm.show({
+                          title: _t("Sure to delete?"),
+                          labels: {
+                            confirm: _t("Delete"),
+                          },
+                        });
+                      }}
+                    >
+                      <TrashIcon />
+                      {_t("Delete")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
