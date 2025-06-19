@@ -217,6 +217,36 @@ export const scheduleArticleDelete = async (
   }
 };
 
+export const restoreShceduleDeletedArticle = async (
+  article_id: string
+): Promise<ActionResponse<unknown>> => {
+  try {
+    const session_userID = await authID();
+    if (!session_userID) {
+      throw new ActionException("Unauthorized");
+    }
+
+    const [permissibleArticle] = await persistenceRepository.article.find({
+      where: and(eq("id", article_id), eq("author_id", session_userID)),
+    });
+
+    if (!permissibleArticle) {
+      throw new ActionException("Unauthorized");
+    }
+
+    const updated = await persistenceRepository.article.update({
+      where: and(eq("id", article_id), eq("author_id", session_userID)),
+      data: { delete_scheduled_at: null },
+    });
+    return {
+      success: true as const,
+      data: updated.rows[0],
+    };
+  } catch (error) {
+    return handleActionException(error);
+  }
+};
+
 /**
  * Deletes an article from the database.
  *

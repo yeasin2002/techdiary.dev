@@ -1,8 +1,8 @@
 import { ActionResponse } from "@/backend/models/action-contracts";
 import { clsx, type ClassValue } from "clsx";
-import { toast } from "sonner";
+import toast from "react-hot-toast";
 import { twMerge } from "tailwind-merge";
-import { z, ZodAnyDef, ZodObject } from "zod";
+import { z } from "zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -115,7 +115,15 @@ export function filterUndefined<T>(
 
 // Improved with automatic type inference
 export const actionPromisify = async <T = any>(
-  action: Promise<ActionResponse<T>>
+  action: Promise<ActionResponse<T>>,
+  options?: {
+    enableToast?: boolean;
+    toastOptions?: {
+      loading?: string;
+      success?: string;
+      error?: string;
+    };
+  }
 ): Promise<T> => {
   const promise = new Promise<T>(async (resolve, reject) => {
     try {
@@ -145,13 +153,13 @@ export const actionPromisify = async <T = any>(
     }
   });
 
-  // if (options?.withToast) {
-  //   toast.promise(promise, {
-  //     loading: options?.messages?.loading ?? "Loading...",
-  //     success: options?.messages?.success ?? "Success!",
-  //     error: (errorMsg: string) => errorMsg || "Operation failed",
-  //   });
-  // }
+  if (options?.enableToast) {
+    toast.promise(promise, {
+      loading: options?.toastOptions?.loading ?? "Loading...",
+      success: options?.toastOptions?.success ?? "Success!",
+      error: (errorMsg: string) => errorMsg || "Operation failed",
+    });
+  }
 
   return promise;
 };

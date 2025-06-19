@@ -11,15 +11,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import VisibilitySensor from "@/components/VisibilitySensor";
 import { useTranslation } from "@/i18n/use-translation";
-import { formattedTime } from "@/lib/utils";
+import { actionPromisify, formattedTime } from "@/lib/utils";
 import {
   CardStackIcon,
   DotsHorizontalIcon,
   Pencil1Icon,
   PlusIcon,
+  ReloadIcon,
 } from "@radix-ui/react-icons";
 
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { differenceInHours } from "date-fns";
 import { TrashIcon } from "lucide-react";
 import Link from "next/link";
 
@@ -37,9 +39,28 @@ const ArticleList = () => {
     },
   });
 
-  // const deleteMutation = useMutation({
-  //   mutationFn: ac
-  // })
+  const deleteMutation = useMutation({
+    mutationFn: (article_id: string) =>
+      actionPromisify(articleActions.scheduleArticleDelete(article_id), {
+        enableToast: true,
+      }),
+    onSuccess() {
+      // TODO: optimistic update
+      feedInfiniteQuery.refetch();
+    },
+  });
+
+  const restoreMutation = useMutation({
+    mutationFn: (article_id: string) =>
+      actionPromisify(
+        articleActions.restoreShceduleDeletedArticle(article_id),
+        { enableToast: true }
+      ),
+    onSuccess() {
+      // TODO: optimistic update
+      feedInfiniteQuery.refetch();
+    },
+  });
 
   const appConfirm = useAppConfirm();
 
@@ -76,6 +97,17 @@ const ArticleList = () => {
                 >
                   {article.title}
                 </Link>
+                {article?.delete_scheduled_at && (
+                  <p className="text-destructive">
+                    Article will be deleted within{" "}
+                    {differenceInHours(
+                      new Date(article?.delete_scheduled_at!),
+                      new Date()
+                    )}{" "}
+                    hours
+                  </p>
+                )}
+
                 {article.is_published && (
                   <p className="text-sm text-muted-foreground">
                     {_t("Published on")} {formattedTime(article.published_at!)}
@@ -170,19 +202,33 @@ const ArticleList = () => {
                         </span>
                       </button>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        appConfirm.show({
-                          title: _t("Sure to delete?"),
-                          labels: {
-                            confirm: _t("Delete"),
-                          },
-                        });
-                      }}
-                    >
-                      <TrashIcon />
-                      {_t("Delete")}
-                    </DropdownMenuItem>
+                    {article.delete_scheduled_at ? (
+                      <DropdownMenuItem
+                        onClick={() => {
+                          restoreMutation.mutate(article.id);
+                        }}
+                      >
+                        <ReloadIcon />
+                        {_t("Restore")}
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem
+                        onClick={() => {
+                          appConfirm.show({
+                            title: _t("Sure to delete?"),
+                            labels: {
+                              confirm: _t("Delete"),
+                            },
+                            onConfirm() {
+                              deleteMutation.mutate(article.id);
+                            },
+                          });
+                        }}
+                      >
+                        <TrashIcon />
+                        {_t("Delete")}
+                      </DropdownMenuItem>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
