@@ -136,18 +136,19 @@ export interface BookmarkArticlePresentation {
   resource_type: "ARTICLE" | "COMMENT";
   user_id: string;
   created_at: Date;
-  user: {
-    id: string;
-    name: string;
-    username: string;
-    email: string;
-    profile_photo: string;
-  };
+
   article: {
     id: string;
     title: string;
     path: string;
     cover_image?: IServerFile | null;
+    author: {
+      id: string;
+      name: string;
+      username: string;
+      email: string;
+      profile_photo: string;
+    };
   };
 }
 

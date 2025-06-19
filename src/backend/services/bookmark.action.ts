@@ -7,6 +7,7 @@ import { pgClient } from "../persistence/clients";
 import { BookmarkActionInput } from "./inputs/bookmark.input";
 import { ActionException, handleActionException } from "./RepositoryException";
 import { authID } from "./session.actions";
+import { BookmarkArticlePresentation } from "../models/domain-models";
 
 const sql = String.raw;
 
@@ -81,7 +82,7 @@ export async function myBookmarks(
       sessionUserId,
       resourceType,
     ]);
-    const totalCount = countResult?.rows[0]?.totalCount || 0;
+    const totalCount = countResult?.rows[0]?.totalcount;
     const totalPages = Math.ceil(totalCount / input.limit);
 
     const bookmarksQuery = sql`
@@ -116,9 +117,9 @@ export async function myBookmarks(
     ]);
 
     return {
-      nodes: bookmarks?.rows,
+      nodes: bookmarks?.rows as BookmarkArticlePresentation[],
       meta: {
-        totalCount,
+        totalCount: Number(totalCount),
         currentPage: input.page,
         hasNextPage: input.page < totalPages,
         totalPages,
