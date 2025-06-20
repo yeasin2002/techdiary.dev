@@ -146,9 +146,8 @@ const ArticleList = () => {
               )}
             >
               <div className="flex flex-col">
-                <p>{article.handle}</p>
                 <Link
-                  className="text-forground text-lg"
+                  className="text-forground text-md md:text-xl"
                   href={`/dashboard/articles/${article?.id}`}
                 >
                   {article.title}
