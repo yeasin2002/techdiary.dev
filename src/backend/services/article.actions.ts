@@ -185,9 +185,7 @@ export async function updateMyArticle(
   }
 }
 
-export const scheduleArticleDelete = async (
-  article_id: string
-): Promise<ActionResponse<unknown>> => {
+export const scheduleArticleDelete = async (article_id: string) => {
   try {
     const session_userID = await authID();
     if (!session_userID) {

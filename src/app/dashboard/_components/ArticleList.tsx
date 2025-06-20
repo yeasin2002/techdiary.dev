@@ -20,13 +20,19 @@ import {
   ReloadIcon,
 } from "@radix-ui/react-icons";
 
-import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { differenceInHours } from "date-fns";
 import { TrashIcon } from "lucide-react";
 import Link from "next/link";
 
 const ArticleList = () => {
   const { _t } = useTranslation();
+  const queryClient = useQueryClient();
+  const appConfirm = useAppConfirm();
   const feedInfiniteQuery = useInfiniteQuery({
     queryKey: ["dashboard-articles"],
     queryFn: ({ pageParam }) =>
@@ -62,8 +68,6 @@ const ArticleList = () => {
     },
   });
 
-  const appConfirm = useAppConfirm();
-
   return (
     <div>
       <div className="flex items-center gap-2 justify-between">
@@ -98,7 +102,7 @@ const ArticleList = () => {
                   {article.title}
                 </Link>
                 {article?.delete_scheduled_at && (
-                  <p className="text-destructive">
+                  <p className="text-destructive text-sm">
                     Article will be deleted within{" "}
                     {differenceInHours(
                       new Date(article?.delete_scheduled_at!),
