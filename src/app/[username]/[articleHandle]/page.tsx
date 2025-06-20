@@ -77,7 +77,7 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
     author: {
       "@type": "Person",
       name: article?.user?.name,
-      image: article?.user?.profile_photo,
+      image: getFileUrl(article?.user?.profile_photo),
       url: `https://www.techdiary.dev/@${article?.user?.username}`,
     },
     articleBody: removeMarkdownSyntax(article?.body ?? "", 300),
@@ -117,7 +117,7 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
           <div className="mb-4 flex items-center my-4">
             <div className="relative rounded-full overflow-hidden border transition-transform duration-300 size-10">
               <Image
-                src={article?.user?.profile_photo ?? ""}
+                src={getFileUrl(article?.user?.profile_photo) ?? ""}
                 alt={article?.user?.username ?? ""}
                 width={40}
                 height={40}

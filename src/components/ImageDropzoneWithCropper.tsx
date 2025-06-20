@@ -16,19 +16,19 @@ import React, { useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { DIRECTORY_NAME } from "@/backend/models/domain-models";
+import { DIRECTORY_NAME, IServerFile } from "@/backend/models/domain-models";
 import { useToggle } from "@/hooks/use-toggle";
 import getFileUrl from "@/utils/getFileUrl";
 
 interface DropzoneWithCropperProps {
-  preFileKey?: string | null;
+  prefillFile?: IServerFile | null;
   disabled?: boolean;
   label?: string;
   Icon?: React.ReactNode;
   enableCropper?: boolean;
   uploadDirectory?: DIRECTORY_NAME;
   uploadUniqueFileName?: boolean;
-  onUploadComplete?: (fileKey: string) => void;
+  onUploadComplete?: (serverFile: IServerFile) => void;
   onFileDeleteComplete?: () => void;
   aspectRatio?: number;
 }
@@ -42,7 +42,7 @@ const ImageDropzoneWithCropper: React.FC<DropzoneWithCropperProps> = ({
   uploadUniqueFileName = true,
   onUploadComplete,
   onFileDeleteComplete,
-  preFileKey,
+  prefillFile,
   aspectRatio = 1,
 }) => {
   const { uploadFile, uploading, deleteFile, deleting } = useServerFile();
@@ -56,7 +56,7 @@ const ImageDropzoneWithCropper: React.FC<DropzoneWithCropperProps> = ({
         "Are you sure you want to delete this file? This action cannot be undone."
       )
     ) {
-      deleteFile([preFileKey!]).then(() => {
+      deleteFile([prefillFile?.key!]).then(() => {
         onFileDeleteComplete?.();
       });
     }
@@ -101,7 +101,10 @@ const ImageDropzoneWithCropper: React.FC<DropzoneWithCropperProps> = ({
               directory: uploadDirectory ?? DIRECTORY_NAME.UNCATEGORIES,
               generateUniqueFileName: uploadUniqueFileName,
             }).then((res) => {
-              onUploadComplete?.(res.data?.keys[0] ?? "");
+              onUploadComplete?.({
+                provider: "r2",
+                key: res.data?.keys[0]!,
+              });
             });
           }
         }
@@ -169,7 +172,10 @@ const ImageDropzoneWithCropper: React.FC<DropzoneWithCropperProps> = ({
                           generateUniqueFileName: uploadUniqueFileName,
                         })
                           .then((files) => {
-                            onUploadComplete?.(files?.data?.keys[0] ?? "");
+                            onUploadComplete?.({
+                              provider: "r2",
+                              key: files?.data?.keys[0]!,
+                            });
                             modelHandler.close();
                           })
                           .catch((err) => {
@@ -193,7 +199,7 @@ const ImageDropzoneWithCropper: React.FC<DropzoneWithCropperProps> = ({
         </DialogContent>
       </Dialog>
       {/* Dropzone */}
-      {!preFileKey && (
+      {!prefillFile && (
         <div
           {...getRootProps()}
           style={{
@@ -226,7 +232,7 @@ const ImageDropzoneWithCropper: React.FC<DropzoneWithCropperProps> = ({
       )}
 
       {/* Prefilled file */}
-      {preFileKey && (
+      {prefillFile && (
         <div
           className="relative w-full h-full overflow-hidden bg-primary rounded-md"
           style={{
@@ -234,7 +240,7 @@ const ImageDropzoneWithCropper: React.FC<DropzoneWithCropperProps> = ({
           }}
         >
           <img
-            src={getFileUrl({ key: preFileKey!, provider: "r2" })}
+            src={getFileUrl(prefillFile)}
             alt="Prefilled file"
             className="object-cover w-full h-full"
           />

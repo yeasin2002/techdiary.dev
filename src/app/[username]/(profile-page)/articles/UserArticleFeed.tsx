@@ -6,6 +6,7 @@ import React, { useMemo } from "react";
 import ArticleCard from "@/components/ArticleCard";
 import { readingTime } from "@/lib/utils";
 import VisibilitySensor from "@/components/VisibilitySensor";
+import getFileUrl from "@/utils/getFileUrl";
 
 interface UserArticleFeedProps {
   userId: string;
@@ -47,6 +48,7 @@ const UserArticleFeed: React.FC<UserArticleFeedProps> = ({ userId }) => {
 
       {feedArticles?.map((article) => (
         <ArticleCard
+          key={article?.id}
           id={article?.id ?? ""}
           title={article?.title ?? ""}
           handle={article?.handle ?? ""}
@@ -54,14 +56,11 @@ const UserArticleFeed: React.FC<UserArticleFeedProps> = ({ userId }) => {
           author={{
             id: article?.user?.id ?? "",
             name: article?.user?.name ?? "",
-            avatar: article?.user?.profile_photo ?? "",
+            avatar: getFileUrl(article?.user?.profile_photo) ?? "",
             username: article?.user?.username ?? "",
           }}
           publishedAt={article?.created_at.toDateString() ?? ""}
           readingTime={readingTime(article?.body ?? "")}
-          likes={0}
-          comments={0}
-          key={article?.id}
         />
       ))}
 

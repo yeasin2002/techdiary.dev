@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from "@/i18n/use-translation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import React from "react";
+import React, { useRef } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import z from "zod";
 import { Loader2, User2 } from "lucide-react";
@@ -44,6 +44,7 @@ interface Props {
 
 const GeneralForm: React.FC<Props> = ({ user }) => {
   const { _t } = useTranslation();
+  const formRef = useRef<HTMLFormElement>(null);
   const mutation = useMutation({
     mutationFn: (
       payload: z.infer<typeof UserActionInput.updateMyProfileInput>
@@ -59,7 +60,7 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
       bio: user?.bio,
       email: user?.email,
       websiteUrl: user.website_url,
-      profile_photo: user.profile_photo_url,
+      profile_photo: user.profile_photo,
       education: user.education,
       designation: user.designation,
       location: user.location,
@@ -75,7 +76,11 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        ref={formRef}
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-4"
+      >
         <FormField
           control={form.control}
           name="profile_photo"
@@ -88,12 +93,23 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
                     enableCropper
                     label=" "
                     Icon={<User2 />}
-                    onUploadComplete={(key) => {
-                      form.setValue("profile_photo", key, {
+                    onUploadComplete={(file) => {
+                      form.setValue("profile_photo", file, {
                         shouldValidate: true,
                       });
+                      setTimeout(() => {
+                        formRef.current?.requestSubmit();
+                      }, 0);
                     }}
-                    preFileKey={field.value}
+                    onFileDeleteComplete={() => {
+                      form.setValue("profile_photo", null, {
+                        shouldValidate: true,
+                      });
+                      setTimeout(() => {
+                        formRef.current?.requestSubmit();
+                      }, 0);
+                    }}
+                    prefillFile={field.value}
                     uploadDirectory={DIRECTORY_NAME.USER_AVATARS}
                   />
                 </div>

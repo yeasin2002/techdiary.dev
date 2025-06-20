@@ -3,8 +3,7 @@ export interface User {
   name: string;
   username: string;
   email: string;
-  profile_photo_url?: string;
-  profile_photo?: IServerFile;
+  profile_photo?: IServerFile | null;
   education: string;
   designation: string;
   bio: string;
@@ -47,7 +46,7 @@ export interface UserSession {
 
 export interface IServerFile {
   key: string;
-  provider: "cloudinary" | "direct";
+  provider: "cloudinary" | "direct" | "r2";
 }
 
 export interface ArticleMetadata {
