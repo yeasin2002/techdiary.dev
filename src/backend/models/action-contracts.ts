@@ -1,4 +1,4 @@
-export type ActionResponse<T = any> =
+export type ActionResponse<T> =
   | {
       success: true | boolean;
       data: T;

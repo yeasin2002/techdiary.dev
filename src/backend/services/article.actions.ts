@@ -185,7 +185,7 @@ export async function updateMyArticle(
   }
 }
 
-export const scheduleArticleDelete = async (article_id: string) => {
+export async function scheduleArticleDelete(article_id: string) {
   try {
     const session_userID = await authID();
     if (!session_userID) {
@@ -206,14 +206,15 @@ export const scheduleArticleDelete = async (article_id: string) => {
         delete_scheduled_at: addDays(new Date(), 7),
       },
     });
+
     return {
       success: true as const,
       data: updated.rows[0],
-    };
+    } satisfies ActionResponse<unknown>;
   } catch (error) {
     return handleActionException(error);
   }
-};
+}
 
 export const restoreShceduleDeletedArticle = async (
   article_id: string
