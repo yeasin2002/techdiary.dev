@@ -254,7 +254,7 @@ const ArticleList = () => {
                         <span>
                           {article.is_published
                             ? _t("Make Draft")
-                            : _t("Publish article")}
+                            : _t("Publish")}
                         </span>
                       </button>
                     </DropdownMenuItem>
