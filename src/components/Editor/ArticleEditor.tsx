@@ -273,7 +273,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
             >
               {article?.is_published ? _t("Unpublish") : _t("Publish")}
             </button>
-            <button onClick={toggleSettingDrawer}>
+            <button onClick={toggleSettingDrawer.open}>
               <GearIcon className="w-5 h-5" />
             </button>
           </div>
@@ -326,7 +326,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
         <ArticleEditorDrawer
           article={article}
           open={isOpenSettingDrawer}
-          onClose={toggleSettingDrawer}
+          onClose={toggleSettingDrawer.close}
           onSave={() => {
             // silence is good
           }}
