@@ -1,6 +1,5 @@
 "use client";
 
-import { Article } from "@/backend/models/domain-models";
 import * as articleActions from "@/backend/services/article.actions";
 import { useAppConfirm } from "@/components/app-confirm";
 import { Button } from "@/components/ui/button";
@@ -31,7 +30,7 @@ import { addDays, differenceInHours } from "date-fns";
 import { TrashIcon } from "lucide-react";
 import Link from "next/link";
 
-const ArticleList = async () => {
+const ArticleList = () => {
   const { _t } = useTranslation();
   const queryClient = useQueryClient();
   const appConfirm = useAppConfirm();
