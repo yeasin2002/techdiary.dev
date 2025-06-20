@@ -99,7 +99,7 @@ export async function updateMyProfile(
       name: input.name,
       username: input.username,
       email: input.email,
-      profile_photo: input.profile_photo,
+      profile_photo_url: input.profile_photo,
       education: input.education,
       designation: input.designation,
       bio: input.bio,

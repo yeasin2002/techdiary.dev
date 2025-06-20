@@ -32,7 +32,7 @@ const UserItem = ({ user }: { user: User }) => (
     <Link href={`/@${user.username}`}>
       <div className="size-10 overflow-hidden rounded-full">
         <Image
-          src={user?.profile_photo!}
+          src={user?.profile_photo_url!}
           alt={user?.name!}
           loading="lazy"
           className="h-auto w-full"

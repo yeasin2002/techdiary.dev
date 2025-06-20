@@ -333,7 +333,7 @@ export async function articleFeed(
             foreignField: "id",
             localField: "author_id",
           },
-          columns: ["id", "name", "username", "profile_photo"],
+          columns: ["id", "name", "username", "profile_photo_url"],
         } as sk.Join<Article, User>,
       ],
     });

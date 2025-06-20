@@ -3,7 +3,7 @@ export interface User {
   name: string;
   username: string;
   email: string;
-  profile_photo: string;
+  profile_photo_url: string;
   education: string;
   designation: string;
   bio: string;
@@ -186,9 +186,10 @@ export type REACTION_TYPE =
 export enum DIRECTORY_NAME {
   ARTICLE_COVER = "article-cover",
   ARTICLE_CONTENT = "article-content",
-  USER_PROFILE = "user-profile",
+  USER_AVATARS = "user-avatars",
   USER_PROFILE_README_CONTENT = "user-profile-readme-content",
   COMMENT_ATTACHMENT = "comment-attachment",
+  UNCATEGORIES = "uncategories",
 }
 
 export interface Reaction {

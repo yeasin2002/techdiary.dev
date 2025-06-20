@@ -27,30 +27,31 @@ const ArticleFeed = () => {
     enabled: feedType === "articles",
   });
 
-  const seriesFeedQuery = useInfiniteQuery({
-    queryKey: ["series-feed", feedType],
-    queryFn: ({ pageParam }) =>
-      seriesActions.seriesFeed({ limit: 5, page: pageParam }),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      if (!lastPage?.meta.hasNextPage) return undefined;
-      const _page = lastPage?.meta?.currentPage ?? 1;
-      return _page + 1;
-    },
-    enabled: feedType === "series",
-  });
+  // const seriesFeedQuery = useInfiniteQuery({
+  //   queryKey: ["series-feed", feedType],
+  //   queryFn: ({ pageParam }) =>
+  //     seriesActions.seriesFeed({ limit: 5, page: pageParam }),
+  //   initialPageParam: 1,
+  //   getNextPageParam: (lastPage) => {
+  //     if (!lastPage?.meta.hasNextPage) return undefined;
+  //     const _page = lastPage?.meta?.currentPage ?? 1;
+  //     return _page + 1;
+  //   },
+  //   enabled: feedType === "series",
+  // });
 
-  const activeFeedQuery =
-    feedType === "articles" ? articleFeedQuery : seriesFeedQuery;
-  const isLoading =
-    feedType === "articles"
-      ? articleFeedQuery.isFetching
-      : seriesFeedQuery.isFetching;
+  // const activeFeedQuery =
+  //   feedType === "articles" ? articleFeedQuery : seriesFeedQuery;
+  // const isLoading =
+  //   feedType === "articles"
+  //     ? articleFeedQuery.isFetching
+  //     : seriesFeedQuery.isFetching;
 
   return (
     <>
+      {/* <pre>{JSON.stringify(articleFeedQuery.data, null, 2)}</pre> */}
       <div className="flex flex-col gap-10 mt-2">
-        {isLoading && (
+        {articleFeedQuery.isPending && (
           <>
             <div className="h-56 bg-muted animate-pulse mx-4" />
             <div className="h-56 bg-muted animate-pulse mx-4" />
@@ -73,7 +74,7 @@ const ArticleFeed = () => {
                 author={{
                   id: article?.user?.id ?? "",
                   name: article?.user?.name ?? "",
-                  avatar: article?.user?.profile_photo ?? "",
+                  avatar: article?.user?.profile_photo_url ?? "",
                   username: article?.user?.username ?? "",
                 }}
                 publishedAt={article?.created_at.toDateString() ?? ""}
@@ -85,10 +86,10 @@ const ArticleFeed = () => {
 
         <div className="my-10">
           <VisibilitySensor
-            visible={activeFeedQuery.hasNextPage}
+            visible={articleFeedQuery.hasNextPage}
             onLoadmore={async () => {
               console.log(`fetching next page for ${feedType}`);
-              await activeFeedQuery.fetchNextPage();
+              await articleFeedQuery.fetchNextPage();
             }}
           />
         </div>

@@ -18,7 +18,7 @@ export const usersTable = pgTable("users", {
   name: varchar("name").notNull(),
   username: varchar("username").notNull(),
   email: varchar("email"),
-  profile_photo: varchar("profile_photo"),
+  profile_photo_url: varchar("profile_photo_url"),
   education: varchar("education"),
   designation: varchar("designation"),
   bio: varchar("bio"),

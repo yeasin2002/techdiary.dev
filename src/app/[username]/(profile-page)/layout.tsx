@@ -28,7 +28,7 @@ const layout: React.FC<ProfilePageLayoutProps> = async ({
     "name",
     "username",
     "email",
-    "profile_photo",
+    "profile_photo_url",
     "education",
     "designation",
     "bio",

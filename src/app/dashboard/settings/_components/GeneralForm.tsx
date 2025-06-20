@@ -1,7 +1,7 @@
 "use client";
 
 import * as userActions from "@/backend/services/user.action";
-import { User } from "@/backend/models/domain-models";
+import { DIRECTORY_NAME, User } from "@/backend/models/domain-models";
 import { UserActionInput } from "@/backend/services/inputs/user.input";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,8 +21,9 @@ import { useMutation } from "@tanstack/react-query";
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import z from "zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, User2 } from "lucide-react";
 import { toast } from "sonner";
+import ImageDropzoneWithCropper from "@/components/ImageDropzoneWithCropper";
 
 // fields
 // name -> ✅
@@ -58,6 +59,7 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
       bio: user?.bio,
       email: user?.email,
       websiteUrl: user.website_url,
+      profile_photo: user.profile_photo_url,
       education: user.education,
       designation: user.designation,
       location: user.location,
@@ -74,6 +76,34 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="profile_photo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{_t("Avatar")}</FormLabel>
+              <FormControl>
+                <div className="size-30">
+                  <ImageDropzoneWithCropper
+                    enableCropper
+                    label=" "
+                    Icon={<User2 />}
+                    onUploadComplete={(key) => {
+                      form.setValue("profile_photo", key, {
+                        shouldValidate: true,
+                      });
+                    }}
+                    preFileKey={field.value}
+                    uploadDirectory={DIRECTORY_NAME.USER_AVATARS}
+                  />
+                </div>
+              </FormControl>
+              <FormDescription />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="name"

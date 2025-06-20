@@ -73,7 +73,7 @@ const ArticleCard = ({
                 {author.name}
               </Link>
               <div className="flex items-center text-xs text-muted-foreground">
-                <time dateTime={publishedAt}>
+                <time dateTime={publishedAt.toString()}>
                   {formattedTime(new Date(publishedAt), lang)}
                 </time>
                 <span className="mx-1.5">·</span>

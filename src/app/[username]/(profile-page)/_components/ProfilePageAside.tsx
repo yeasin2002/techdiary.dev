@@ -27,7 +27,7 @@ const ProfilePageAside: React.FC<ProfilePageAsideProps> = ({ profile }) => {
         width={320}
         height={320}
         src={
-          profile?.profile_photo ||
+          profile?.profile_photo_url ||
           `https://api.dicebear.com/8.x/initials/svg?seed=${profile?.username}`
         }
         alt={profile?.username ?? "Profile photo"}
