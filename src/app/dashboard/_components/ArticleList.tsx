@@ -74,9 +74,6 @@ const ArticleList = () => {
 
       return { previousData };
     },
-    onSuccess(data, variables, context) {
-      // data
-    },
     onError: (err, variables, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(["dashboard-articles"], context.previousData);
@@ -113,7 +110,7 @@ const ArticleList = () => {
 
       return { previousData };
     },
-    onError: (err, variables, context) => {
+    onError: (_, __, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(["dashboard-articles"], context.previousData);
       }
@@ -157,12 +154,12 @@ const ArticleList = () => {
                 </Link>
                 {article?.delete_scheduled_at && (
                   <p className="text-destructive text-sm">
-                    Article will be deleted within{" "}
-                    {differenceInHours(
-                      new Date(article?.delete_scheduled_at!),
-                      new Date()
-                    )}{" "}
-                    hours
+                    {_t("Article will be deleted within $ days", [
+                      differenceInHours(
+                        new Date(article?.delete_scheduled_at!),
+                        new Date()
+                      ),
+                    ])}
                   </p>
                 )}
 
