@@ -250,10 +250,7 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
           )}
         />
 
-        <Button
-          type="submit"
-          disabled={mutation.isPending || !form.formState.isValid}
-        >
+        <Button type="submit" disabled={mutation.isPending}>
           {mutation.isPending && <Loader2 className="animate-spin" />}
           {_t("Save")}
         </Button>
