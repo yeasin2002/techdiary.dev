@@ -119,7 +119,7 @@ const ReadmeForm: React.FC<Props> = ({ user }) => {
             className="focus:outline-none p-2 border bg-background w-full resize-none"
             placeholder={_t("Write something stunning...")}
             ref={editorRef}
-            value={form.watch("profile_readme")}
+            value={form.watch("profile_readme") ?? ""}
             onChange={(e) => form.setValue("profile_readme", e.target.value)}
           />
         ) : (
