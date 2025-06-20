@@ -25,7 +25,8 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { differenceInHours } from "date-fns";
+import clsx from "clsx";
+import { addDays, differenceInHours } from "date-fns";
 import { TrashIcon } from "lucide-react";
 import Link from "next/link";
 
@@ -50,9 +51,33 @@ const ArticleList = () => {
       actionPromisify(articleActions.scheduleArticleDelete(article_id), {
         enableToast: true,
       }),
-    onSuccess() {
-      // TODO: optimistic update
-      feedInfiniteQuery.refetch();
+    onMutate: async (article_id: string) => {
+      await queryClient.cancelQueries({ queryKey: ["dashboard-articles"] });
+
+      const previousData = queryClient.getQueryData(["dashboard-articles"]);
+
+      queryClient.setQueryData(["dashboard-articles"], (old: any) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          pages: old.pages.map((page: any) => ({
+            ...page,
+            nodes: page.nodes.map((article: any) =>
+              article.id === article_id
+                ? { ...article, delete_scheduled_at: addDays(new Date(), 7) }
+                : article
+            ),
+          })),
+        };
+      });
+
+      return { previousData };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(["dashboard-articles"], context.previousData);
+      }
     },
   });
 
@@ -62,9 +87,33 @@ const ArticleList = () => {
         articleActions.restoreShceduleDeletedArticle(article_id),
         { enableToast: true }
       ),
-    onSuccess() {
-      // TODO: optimistic update
-      feedInfiniteQuery.refetch();
+    onMutate: async (article_id: string) => {
+      await queryClient.cancelQueries({ queryKey: ["dashboard-articles"] });
+
+      const previousData = queryClient.getQueryData(["dashboard-articles"]);
+
+      queryClient.setQueryData(["dashboard-articles"], (old: any) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          pages: old.pages.map((page: any) => ({
+            ...page,
+            nodes: page.nodes.map((article: any) =>
+              article.id === article_id
+                ? { ...article, delete_scheduled_at: null }
+                : article
+            ),
+          })),
+        };
+      });
+
+      return { previousData };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(["dashboard-articles"], context.previousData);
+      }
     },
   });
 
@@ -91,7 +140,10 @@ const ArticleList = () => {
           return page?.nodes.map((article) => (
             <article
               key={article.id}
-              className="flex justify-between flex-col md:flex-row py-3 space-y-2"
+              className={clsx(
+                "flex justify-between flex-col md:flex-row py-3 space-y-2 px-2",
+                { "bg-destructive/10": !!article.delete_scheduled_at }
+              )}
             >
               <div className="flex flex-col">
                 <p>{article.handle}</p>
