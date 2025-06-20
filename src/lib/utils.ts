@@ -105,7 +105,7 @@ export const removeNullOrUndefinedFromObject = (obj: any) => {
   return newObj;
 };
 
-export function filterUndefined<T>(
+export function filterUndefined<T = unknown>(
   mapping: Partial<Record<keyof T, any>>
 ): Partial<Record<string, any>> {
   return Object.fromEntries(

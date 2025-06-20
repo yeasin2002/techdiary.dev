@@ -89,6 +89,7 @@ const ImageDropzoneWithCropper: React.FC<DropzoneWithCropperProps> = ({
     useDropzone({
       maxFiles: 1,
       disabled,
+      accept: { "image/*": [".*"] },
       async onDrop(acceptedFiles) {
         if (acceptedFiles.length > 0) {
           const base64 = (await getImageBase64(acceptedFiles[0])) as string;

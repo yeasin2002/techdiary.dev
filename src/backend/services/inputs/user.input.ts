@@ -27,11 +27,11 @@ export const UserActionInput = {
       })
       .optional()
       .nullable(),
-    education: z.string().optional(),
-    designation: z.string().optional(),
-    bio: z.string().optional(),
-    websiteUrl: z.string().url().optional(),
-    location: z.string().optional(),
+    education: z.string().optional().nullable(),
+    designation: z.string().optional().nullable(),
+    bio: z.string().optional().nullable(),
+    websiteUrl: z.string().url().optional().nullable(),
+    location: z.string().optional().nullable(),
     social_links: z
       .object({
         github: z
@@ -84,7 +84,7 @@ export const UserActionInput = {
           .optional(),
       })
       .optional(),
-    profile_readme: z.string().optional(),
-    skills: z.string().optional(),
+    profile_readme: z.string().optional().nullable(),
+    skills: z.string().optional().nullable(),
   }),
 };

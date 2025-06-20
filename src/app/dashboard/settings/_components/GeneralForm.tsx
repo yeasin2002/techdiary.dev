@@ -24,6 +24,7 @@ import z from "zod";
 import { Loader2, User2 } from "lucide-react";
 import { toast } from "sonner";
 import ImageDropzoneWithCropper from "@/components/ImageDropzoneWithCropper";
+import { filterUndefined } from "@/lib/utils";
 
 // fields
 // name -> ✅
@@ -54,7 +55,7 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
     },
   });
   const form = useForm({
-    defaultValues: {
+    defaultValues: filterUndefined({
       name: user?.name,
       username: user?.username,
       bio: user?.bio,
@@ -64,7 +65,7 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
       education: user.education,
       designation: user.designation,
       location: user.location,
-    },
+    }),
     resolver: zodResolver(UserActionInput.updateMyProfileInput),
   });
 
@@ -162,7 +163,11 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
             <FormItem>
               <FormLabel>{_t("Website url")}</FormLabel>
               <FormControl>
-                <Input className="py-6" {...field} />
+                <Input
+                  className="py-6"
+                  onChange={field.onChange}
+                  value={field.value ?? undefined}
+                />
               </FormControl>
               <FormDescription />
               <FormMessage />

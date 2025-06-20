@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 
   const uploadedFileResponse = await storageActions.uploadByUrl({
     url: githubUser?.data?.avatar_url,
-    key: `${DIRECTORY_NAME.USER_AVATARS}/${githubUser?.data?.login}.jpeg`,
+    key: `${DIRECTORY_NAME.USER_AVATARS}/${crypto.randomUUID()}.jpeg`,
   });
 
   const bootedSocialUser = await userActions.bootSocialUser({
