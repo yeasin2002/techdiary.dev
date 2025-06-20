@@ -7,7 +7,13 @@ export const UserActionInput = {
     name: z.string(),
     username: z.string(),
     email: z.string().email(),
-    profile_photo: z.string().url(),
+    profile_photo: z
+      .object({
+        key: z.string(),
+        provider: z.enum(["cloudinary", "direct", "r2"]),
+      })
+      .optional()
+      .nullable(),
     bio: z.string().optional().nullable(),
   }),
   updateMyProfileInput: z.object({

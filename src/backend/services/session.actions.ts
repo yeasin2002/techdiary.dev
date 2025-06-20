@@ -75,7 +75,7 @@ export const validateSessionToken = async (
   }
 
   await persistenceRepository.userSession.update({
-    operationName: "validateSessionToken/userSession.update--",
+    operationName: "validateSessionToken/userSession.update",
     where: eq("id", session.id),
     data: {
       last_action_at: new Date(),

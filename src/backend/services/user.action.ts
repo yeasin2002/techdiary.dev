@@ -40,7 +40,7 @@ export async function bootSocialUser(
             name: input.name,
             username: input.username,
             email: input.email,
-            profile_photo: null,
+            profile_photo: input.profile_photo,
             bio: input.bio ?? "",
           },
         ])

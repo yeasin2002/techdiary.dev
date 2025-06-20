@@ -21,6 +21,13 @@ export const uploadByUrl = async (_input: z.infer<typeof schema>) => {
       Body: body,
     });
     await s3Client.send(command);
+    return {
+      success: true as const,
+      data: {
+        key: input.key,
+        provider: "r2",
+      },
+    };
   } catch (error) {
     return handleActionException(error);
   }

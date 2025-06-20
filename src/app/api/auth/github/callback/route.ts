@@ -1,7 +1,9 @@
 import { GithubOAuthService } from "@/backend/services/oauth/GithubOAuthService";
 import * as sessionActions from "@/backend/services/session.actions";
 import * as userActions from "@/backend/services/user.action";
+import * as storageActions from "@/backend/services/storage.action";
 import { NextResponse } from "next/server";
+import { DIRECTORY_NAME } from "@/backend/models/domain-models";
 
 const githubOAuthService = new GithubOAuthService();
 
@@ -23,13 +25,26 @@ export async function GET(request: Request) {
     );
   }
 
+  const uploadedFileResponse = await storageActions.uploadByUrl({
+    url: githubUser?.data?.avatar_url,
+    key: `${DIRECTORY_NAME.USER_AVATARS}/${githubUser?.data?.login}.jpeg`,
+  });
+
   const bootedSocialUser = await userActions.bootSocialUser({
     service: "github",
     service_uid: githubUser?.data.id?.toString(),
     name: githubUser?.data?.login,
     username: githubUser?.data?.login,
     email: githubUser?.data.email,
-    profile_photo: githubUser?.data?.avatar_url,
+    profile_photo: uploadedFileResponse.success
+      ? {
+          key: uploadedFileResponse.data.key,
+          provider: uploadedFileResponse.data.provider as
+            | "r2"
+            | "cloudinary"
+            | "direct",
+        }
+      : undefined,
     bio: githubUser?.data?.bio ?? "",
   });
 
