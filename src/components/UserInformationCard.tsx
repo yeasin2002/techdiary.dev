@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSession } from "@/store/session.atom";
 import Link from "next/link";
 import Image from "next/image";
+import getFileUrl from "@/utils/getFileUrl";
 
 interface Props {
   userId: string;
@@ -43,15 +44,17 @@ const UserInformationCard: React.FC<Props> = ({ userId }) => {
       {/* Profile Header */}
       <div className="py-3 flex items-center">
         {/* Avatar */}
-        <div className="relative mr-4">
-          <Image
-            src={query.data?.profile_photo ?? ""}
-            alt={query.data?.name ?? ""}
-            width={56}
-            height={56}
-            className="w-14 h-14 rounded-full object-cover border-2 border-white/90 shadow-md"
-          />
-        </div>
+        {query.data?.profile_photo && (
+          <div className="relative mr-4">
+            <Image
+              src={getFileUrl(query.data?.profile_photo) ?? ""}
+              alt={query.data?.name ?? ""}
+              width={56}
+              height={56}
+              className="w-14 h-14 rounded-full object-cover border-2 border-white/90 shadow-md"
+            />
+          </div>
+        )}
 
         {/* Name */}
         <div>

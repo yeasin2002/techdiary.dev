@@ -359,6 +359,7 @@ export async function userArticleFeed(
     const input = await ArticleRepositoryInput.userFeedInput.parseAsync(_input);
 
     const response = await persistenceRepository.article.paginate({
+      operationName: "userArticleFeed",
       where: and(
         eq("is_published", true),
         neq("approved_at", null),
@@ -367,19 +368,12 @@ export async function userArticleFeed(
       page: input.page,
       limit: input.limit,
       orderBy: [desc("published_at")],
-      columns: columns ?? [
-        "id",
-        "title",
-        "handle",
-        "cover_image",
-        "body",
-        "created_at",
-        "excerpt",
-      ],
+      columns,
       joins: [
         {
-          as: "tags",
+          as: "user",
           table: DatabaseTableName.users,
+          type: "left",
           on: {
             foreignField: "id",
             localField: "author_id",

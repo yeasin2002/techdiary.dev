@@ -16,7 +16,7 @@ import { pgClient } from "./clients";
 import { DatabaseTableName } from "./persistence-contracts";
 
 const repositoryConfig = {
-  // logging: true,
+  logging: true,
 };
 
 const userRepository = new Repository<User>(

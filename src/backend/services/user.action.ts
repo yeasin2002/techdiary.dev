@@ -147,6 +147,7 @@ export async function getUserByUsername(
 ): Promise<User | null> {
   try {
     const [user] = await persistenceRepository.user.find({
+      operationName: "getUserByUsername",
       where: eq("username", username),
       limit: 1,
       columns: columns ? columns : undefined,

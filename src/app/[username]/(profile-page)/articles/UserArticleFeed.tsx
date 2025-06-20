@@ -16,11 +16,22 @@ const UserArticleFeed: React.FC<UserArticleFeedProps> = ({ userId }) => {
   const feedInfiniteQuery = useInfiniteQuery({
     queryKey: ["user-article-feed", userId],
     queryFn: ({ pageParam }) =>
-      articleActions.userArticleFeed({
-        user_id: userId,
-        limit: 5,
-        page: pageParam,
-      }),
+      articleActions.userArticleFeed(
+        {
+          user_id: userId,
+          limit: 5,
+          page: pageParam,
+        },
+        [
+          "id",
+          "title",
+          "handle",
+          "cover_image",
+          "body",
+          "created_at",
+          "excerpt",
+        ]
+      ),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       const _page = lastPage?.meta?.currentPage ?? 1;
@@ -46,6 +57,8 @@ const UserArticleFeed: React.FC<UserArticleFeedProps> = ({ userId }) => {
         </div>
       )}
 
+      {/* <pre>{JSON.stringify(feedArticles, null, 2)}</pre> */}
+
       {feedArticles?.map((article) => (
         <ArticleCard
           key={article?.id}
@@ -59,7 +72,7 @@ const UserArticleFeed: React.FC<UserArticleFeedProps> = ({ userId }) => {
             avatar: getFileUrl(article?.user?.profile_photo) ?? "",
             username: article?.user?.username ?? "",
           }}
-          publishedAt={article?.created_at.toDateString() ?? ""}
+          publishedAt={article?.created_at?.toDateString() ?? ""}
           readingTime={readingTime(article?.body ?? "")}
         />
       ))}

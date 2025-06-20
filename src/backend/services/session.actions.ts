@@ -11,6 +11,7 @@ import { persistenceRepository } from "../persistence/persistence-repositories";
 import { handleActionException } from "./RepositoryException";
 import { SessionResult, USER_SESSION_KEY } from "./action-type";
 import { UserSessionInput } from "./inputs/session.input";
+import getFileUrl from "@/utils/getFileUrl";
 
 /**
  * Creates a new login session for a user and sets a session cookie.
@@ -64,6 +65,7 @@ export const validateSessionToken = async (
   token: string
 ): Promise<SessionResult> => {
   const [session] = await persistenceRepository.userSession.find({
+    operationName: "validateSessionToken/userSession.find",
     limit: 1,
     where: eq("token", token),
     columns: ["id", "user_id", "token", "device"],
@@ -73,6 +75,7 @@ export const validateSessionToken = async (
   }
 
   await persistenceRepository.userSession.update({
+    operationName: "validateSessionToken/userSession.update--",
     where: eq("id", session.id),
     data: {
       last_action_at: new Date(),
@@ -80,6 +83,7 @@ export const validateSessionToken = async (
   });
 
   const [user] = await persistenceRepository.user.find({
+    operationName: "validateSessionToken/user.find",
     limit: 1,
     where: eq("id", session.user_id),
     columns: ["id", "name", "username", "email", "profile_photo"],
@@ -96,7 +100,7 @@ export const validateSessionToken = async (
       name: user?.name,
       username: user?.username,
       email: user?.email,
-      profile_photo: user?.profile_photo,
+      profile_photo_url: getFileUrl(user?.profile_photo),
     },
   };
 };

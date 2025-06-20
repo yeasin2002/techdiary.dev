@@ -111,8 +111,6 @@ const ArticleCard = ({
         )}
       </div>
 
-      <pre>{JSON.stringify(author, null, 2)}</pre>
-
       <div className="mt-4 flex items-center justify-between">
         <ResourceReaction resource_type="ARTICLE" resource_id={id} />
         <ResourceBookmark resource_type="ARTICLE" resource_id={id} />

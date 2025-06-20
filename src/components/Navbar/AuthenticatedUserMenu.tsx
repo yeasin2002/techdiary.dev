@@ -33,7 +33,7 @@ const AuthenticatedUserMenu = () => {
     <DropdownMenu>
       <DropdownMenuTrigger>
         <Avatar>
-          <AvatarImage src={authSession?.user?.profile_photo ?? ""} />
+          <AvatarImage src={authSession?.user?.profile_photo_url ?? ""} />
           <AvatarFallback>{authSession?.user?.name.charAt(0)}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
