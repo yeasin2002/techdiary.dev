@@ -154,7 +154,7 @@ const ArticleList = () => {
                 </Link>
                 {article?.delete_scheduled_at && (
                   <p className="text-destructive text-sm">
-                    {_t("Article will be deleted within $ days", [
+                    {_t("Article will be deleted within $ hours", [
                       differenceInHours(
                         new Date(article?.delete_scheduled_at!),
                         new Date()
