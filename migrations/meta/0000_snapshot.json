@@ -1,5 +1,5 @@
 {
-  "id": "ac9572ba-b268-46e2-8276-3fccefb6a2fc",
+  "id": "5197c085-a8e5-4f28-a7eb-cb01556496ff",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -850,9 +850,15 @@
           "primaryKey": false,
           "notNull": false
         },
+        "profile_photo_url": {
+          "name": "profile_photo_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "profile_photo": {
           "name": "profile_photo",
-          "type": "varchar",
+          "type": "json",
           "primaryKey": false,
           "notNull": false
         },

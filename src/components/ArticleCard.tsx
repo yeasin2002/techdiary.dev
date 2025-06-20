@@ -26,8 +26,6 @@ interface ArticleCardProps {
   };
   publishedAt: string;
   readingTime: number;
-  likes: number;
-  comments: number;
 }
 
 const ArticleCard = ({
@@ -39,8 +37,6 @@ const ArticleCard = ({
   author,
   publishedAt,
   readingTime,
-  likes,
-  comments,
 }: ArticleCardProps) => {
   const { lang } = useTranslation();
   const session = useSession();
@@ -114,6 +110,8 @@ const ArticleCard = ({
           </Link>
         )}
       </div>
+
+      <pre>{JSON.stringify(author, null, 2)}</pre>
 
       <div className="mt-4 flex items-center justify-between">
         <ResourceReaction resource_type="ARTICLE" resource_id={id} />

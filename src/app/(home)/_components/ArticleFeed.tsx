@@ -74,13 +74,13 @@ const ArticleFeed = () => {
                 author={{
                   id: article?.user?.id ?? "",
                   name: article?.user?.name ?? "",
-                  avatar: article?.user?.profile_photo_url ?? "",
+                  avatar: article?.user?.profile_photo
+                    ? getFileUrl(article?.user?.profile_photo!)
+                    : "",
                   username: article?.user?.username ?? "",
                 }}
                 publishedAt={article?.created_at.toDateString() ?? ""}
                 readingTime={readingTime(article?.body ?? "")}
-                likes={0}
-                comments={0}
               />
             ))}
 

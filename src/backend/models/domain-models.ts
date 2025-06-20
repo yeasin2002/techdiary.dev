@@ -3,7 +3,8 @@ export interface User {
   name: string;
   username: string;
   email: string;
-  profile_photo_url: string;
+  profile_photo_url?: string;
+  profile_photo?: IServerFile;
   education: string;
   designation: string;
   bio: string;
