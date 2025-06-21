@@ -125,7 +125,7 @@ const ArticleList = () => {
         <Button asChild>
           <Link href={`/dashboard/articles/new`}>
             <PlusIcon className="w-5 h-5" />
-            <span className="ml-2">Create new article</span>
+            <span className="ml-2">{_t("New diary")}</span>
           </Link>
         </Button>
       </div>
