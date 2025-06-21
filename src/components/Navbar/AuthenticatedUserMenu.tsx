@@ -40,14 +40,17 @@ const AuthenticatedUserMenu = () => {
       <DropdownMenuContent>
         <DropdownMenuItem asChild>
           <Link
-            className="text-foreground cursor-pointer"
+            className="text-foreground cursor-pointer block"
             href={`/@${authSession?.user?.username}`}
           >
             {_t("My profile")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link className="text-foreground cursor-pointer" href="/dashboard">
+          <Link
+            className="text-foreground cursor-pointer block"
+            href="/dashboard"
+          >
             {_t("Dashboard")}
           </Link>
         </DropdownMenuItem>
@@ -61,13 +64,16 @@ const AuthenticatedUserMenu = () => {
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Link
-            className="text-foreground cursor-pointer"
+            className="text-foreground cursor-pointer block"
             href="/dashboard/settings"
           >
             {_t("Settings")}
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
+        <DropdownMenuItem
+          className="cursor-pointer block"
+          onClick={handleLogout}
+        >
           {_t("Logout")}
         </DropdownMenuItem>
       </DropdownMenuContent>
