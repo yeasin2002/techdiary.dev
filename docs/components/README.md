@@ -18,7 +18,8 @@ Custom components are reusable UI elements that encapsulate specific functionali
 - **[ImageDropzoneWithCropper](./ImageDropzoneWithCropper.md)** - File upload with cropping capabilities
 
 ### Interactive Components
-- **[ResourceReaction](./ResourceReaction.md)** - Emoji reaction system for articles and comments
+- **[ResourceReaction](./ResourceReaction.md)** - Emoji reaction system for articles and comments (UI implementation of ResourceReactionable)
+- **[ResourceBookmark](./ResourceBookmark.md)** - Bookmark button for articles and comments (UI implementation of ResourceBookmarkable)
 
 ### Render Props Components
 - **[ResourceReactionable](./ResourceReactionable.md)** - Render prop for reaction functionality with optimistic updates
@@ -60,8 +61,8 @@ Components handling images and file uploads:
 
 ### Interactive Components  
 Components providing user interactions:
-- ResourceReaction for emoji reactions
-- ResourceBookmark for saving content
+- ResourceReaction for emoji reactions (UI implementation of ResourceReactionable)
+- ResourceBookmark for saving content (UI implementation of ResourceBookmarkable)
 - Comment system components
 
 ### Render Props Components
@@ -86,7 +87,8 @@ Helper components for specific functions:
 | `AppImage` | Optimized images | Cloudinary integration, lazy loading |
 | `ImageDropzoneWithCropper` | File uploads | Drag-and-drop, cropping, cloud storage |
 | `UserInformationCard` | User profiles | Bio, social info, follow/edit actions |
-| `ResourceReaction` | Emoji reactions | Multiple reaction types, real-time updates |
+| `ResourceReaction` | Emoji reactions UI | Pre-built UI using ResourceReactionable |
+| `ResourceBookmark` | Bookmark button UI | Pre-built UI using ResourceBookmarkable |
 | `ResourceReactionable` | Reaction logic | Render props, optimistic updates, auth |
 | `ResourceBookmarkable` | Bookmark logic | Render props, state sync, optimistic UI |
 
