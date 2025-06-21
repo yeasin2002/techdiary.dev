@@ -1,17 +1,17 @@
 "use client";
 
+import * as sessionActions from "@/backend/services/session.actions";
 import { useTranslation } from "@/i18n/use-translation";
 import { useSession } from "@/store/session.atom";
+import Link from "next/link";
 import { useAppConfirm } from "../app-confirm";
-import * as sessionActions from "@/backend/services/session.actions";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import Link from "next/link";
 
 const AuthenticatedUserMenu = () => {
   const { _t } = useTranslation();
@@ -62,16 +62,16 @@ const AuthenticatedUserMenu = () => {
             {_t("Bookmarks")}
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link
-            className="text-foreground cursor-pointer block"
+            className="text-foreground cursor-pointer"
             href="/dashboard/settings"
           >
             {_t("Settings")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem
-          className="cursor-pointer block"
+          className="cursor-pointer block hover:underline"
           onClick={handleLogout}
         >
           {_t("Logout")}
