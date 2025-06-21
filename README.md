@@ -297,7 +297,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - **Next.js Team** - For the amazing React framework
-- **Vercel** - For deployment and hosting platform
 - **shadcn** - For the beautiful UI component library
 - **MeilSearch** - For the powerful search engine
 - **Open Source Community** - For the incredible tools and libraries
