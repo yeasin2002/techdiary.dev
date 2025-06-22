@@ -1,5 +1,6 @@
 "use server";
 
+import { pgClient } from "@/backend/persistence/clients";
 import { slugify } from "@/lib/slug-helper.util";
 import {
   removeMarkdownSyntax,
@@ -13,8 +14,8 @@ import { ActionResponse } from "../models/action-contracts";
 import { Article, User } from "../models/domain-models";
 import { DatabaseTableName } from "../persistence/persistence-contracts";
 import { persistenceRepository } from "../persistence/persistence-repositories";
-import { ActionException, handleActionException } from "./RepositoryException";
 import { ArticleRepositoryInput } from "./inputs/article.input";
+import { ActionException, handleActionException } from "./RepositoryException";
 import { deleteArticleById, syncArticleById } from "./search.service";
 import { authID } from "./session.actions";
 import { syncTagsWithArticles } from "./tag.action";
@@ -390,6 +391,94 @@ export async function userArticleFeed(
     });
 
     return response;
+  } catch (error) {
+    handleActionException(error);
+  }
+}
+
+/**
+ * Retrieves a paginated feed of published articles filtered by tag ID.
+ *
+ * @param _input - Feed parameters including tag_id, page and limit, validated against ArticleRepositoryInput.tagFeedInput schema
+ * @returns Promise<{ data: Article[], total: number }> - Paginated articles with total count
+ * @throws {ActionException} If query fails or validation fails
+ */
+export async function articlesByTag(
+  _input: z.infer<typeof ArticleRepositoryInput.tagFeedInput>
+) {
+  try {
+    const input = await ArticleRepositoryInput.tagFeedInput.parseAsync(_input);
+    const offset = (input.page - 1) * input.limit;
+
+    // Single SQL query to get articles by tag with pagination
+    const sql = String.raw;
+    const articlesQuery = sql`
+      SELECT 
+        a.id,
+        a.title,
+        a.handle,
+        a.cover_image,
+        a.body,
+        a.created_at,
+        a.excerpt,
+        u.id as user_id,
+        u.name as user_name,
+        u.username as user_username,
+        u.profile_photo as user_profile_photo,
+        t.name as tag_name,
+        COUNT(*) OVER() as total_count
+      FROM articles a
+      INNER JOIN article_tag at ON a.id = at.article_id
+      INNER JOIN tags t ON at.tag_id = t.id
+      LEFT JOIN users u ON a.author_id = u.id
+      WHERE 
+        a.is_published = true 
+        AND t.id = $1
+      ORDER BY a.published_at DESC
+      LIMIT $2 OFFSET $3
+    `;
+
+    const result = await pgClient?.executeSQL<any>(articlesQuery, [
+      input.tag_id,
+      input.limit,
+      offset,
+    ]);
+
+    const rows = result?.rows || [];
+    const totalCount = rows.length > 0 ? parseInt(rows[0].total_count) : 0;
+    const totalPages = Math.ceil(totalCount / input.limit);
+
+    // Transform the data to match the expected format
+    const nodes = rows.map((row: any) => ({
+      id: row.id,
+      title: row.title,
+      handle: row.handle,
+      cover_image: row.cover_image,
+      body: row.body,
+      created_at: new Date(row.created_at),
+      excerpt: row.excerpt ?? removeMarkdownSyntax(row.body),
+      user: {
+        id: row.user_id,
+        name: row.user_name,
+        username: row.user_username,
+        profile_photo: row.user_profile_photo,
+      },
+    }));
+
+    // Get tag name from first row for display purposes
+    const tagName = rows.length > 0 ? rows[0].tag_name : null;
+
+    return {
+      nodes,
+      tagName,
+      meta: {
+        total: totalCount,
+        currentPage: input.page,
+        totalPages,
+        hasNextPage: input.page < totalPages,
+        hasPreviousPage: input.page > 1,
+      },
+    };
   } catch (error) {
     handleActionException(error);
   }

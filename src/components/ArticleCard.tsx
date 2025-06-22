@@ -48,10 +48,10 @@ const ArticleCard = ({
 
   return (
     <div data-article-id={id} className="flex flex-col p-4 sm:p-5 group">
-      <HoverCard openDelay={0}>
-        <HoverCardTrigger>
-          <div className="mb-4 flex items-center">
-            <div className="relative rounded-full overflow-hidden border border-neutral-200 bg-neutral-100 transition-transform duration-300 size-8 opacity-100">
+      <div className="mb-4 flex items-center">
+        <HoverCard openDelay={0}>
+          <HoverCardTrigger asChild>
+            <div className="relative rounded-full overflow-hidden border border-neutral-200 bg-neutral-100 transition-transform duration-300 size-8 opacity-100 cursor-pointer">
               <Image
                 width={32}
                 height={32}
@@ -61,27 +61,27 @@ const ArticleCard = ({
                 className="w-full h-full object-cover transition-opacity duration-300 ease-in-out opacity-100"
               />
             </div>
-            <div className="ml-2.5">
-              <Link
-                href={`/@${author.username}`}
-                className="text-sm font-medium text-foreground"
-              >
-                {author.name}
-              </Link>
-              <div className="flex items-center text-xs text-muted-foreground">
-                <time dateTime={publishedAt.toString()}>
-                  {formattedTime(new Date(publishedAt), lang)}
-                </time>
-                <span className="mx-1.5">·</span>
-                <span>{readingTime} min read</span>
-              </div>
-            </div>
+          </HoverCardTrigger>
+          <HoverCardContent align="start">
+            <UserInformationCard userId={author.id} />
+          </HoverCardContent>
+        </HoverCard>
+        <div className="ml-2.5">
+          <Link
+            href={`/@${author.username}`}
+            className="text-sm font-medium text-foreground"
+          >
+            {author.name}
+          </Link>
+          <div className="flex items-center text-xs text-muted-foreground">
+            <time dateTime={publishedAt.toString()}>
+              {formattedTime(new Date(publishedAt), lang)}
+            </time>
+            <span className="mx-1.5">·</span>
+            <span>{readingTime} min read</span>
           </div>
-        </HoverCardTrigger>
-        <HoverCardContent align="start">
-          <UserInformationCard userId={author.id} />
-        </HoverCardContent>
-      </HoverCard>
+        </div>
+      </div>
 
       <div className="flex flex-1 flex-col">
         <div className="flex flex-col space-y-2 mb-3">
