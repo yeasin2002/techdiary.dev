@@ -106,12 +106,12 @@ const TagArticleFeed: React.FC<TagArticleFeedProps> = ({ tagId }) => {
             handle={article?.handle ?? ""}
             title={article?.title ?? ""}
             excerpt={article?.excerpt ?? ""}
-            coverImage={getFileUrl(article?.cover_image!)}
+            coverImage={article?.cover_image ? getFileUrl(article.cover_image) : ""}
             author={{
               id: article?.user?.id ?? "",
               name: article?.user?.name ?? "",
               avatar: article?.user?.profile_photo
-                ? getFileUrl(article?.user?.profile_photo!)
+                ? getFileUrl(article.user.profile_photo)
                 : "",
               username: article?.user?.username ?? "",
             }}
@@ -124,7 +124,6 @@ const TagArticleFeed: React.FC<TagArticleFeedProps> = ({ tagId }) => {
           <VisibilitySensor
             visible={tagFeedQuery.hasNextPage}
             onLoadmore={async () => {
-              console.log(`fetching next page for tag: ${tagId}`);
               await tagFeedQuery.fetchNextPage();
             }}
           />
