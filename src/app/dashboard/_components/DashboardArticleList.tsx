@@ -30,7 +30,7 @@ import { addDays, differenceInHours } from "date-fns";
 import { TrashIcon } from "lucide-react";
 import Link from "next/link";
 
-const ArticleList = () => {
+const DashboardArticleList = () => {
   const { _t } = useTranslation();
   const queryClient = useQueryClient();
   const appConfirm = useAppConfirm();
@@ -299,4 +299,4 @@ const ArticleList = () => {
   );
 };
 
-export default ArticleList;
+export default DashboardArticleList;

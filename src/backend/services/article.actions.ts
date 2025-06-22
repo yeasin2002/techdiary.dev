@@ -502,6 +502,7 @@ export async function myArticles(
         "handle",
         "created_at",
         "is_published",
+        "delete_scheduled_at",
         "approved_at",
       ],
       limit: input.limit,
