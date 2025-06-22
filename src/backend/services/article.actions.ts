@@ -179,9 +179,12 @@ export async function updateMyArticle(
       });
     }
 
-    return article?.rows?.[0];
+    return {
+      success: true as const,
+      data: article?.rows?.[0],
+    };
   } catch (error) {
-    handleActionException(error);
+    return handleActionException(error);
   }
 }
 

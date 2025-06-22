@@ -76,12 +76,11 @@ export const ArticleRepositoryInput = {
             title: z.string().optional(),
             description: z.string().optional(),
             keywords: z.array(z.string()).optional(),
-            // canonical_url: z.string().url().nullable().optional(),
-            // canonical_url: z
-            //   .union([z.string().url(), z.literal(""), z.null()])
-            //   .optional()
-            //   .nullable()
-            //   .transform((val) => (val === "" ? null : val)),
+            canonical_url: z
+              .union([z.string().url(), z.literal(""), z.null()])
+              .optional()
+              .nullable()
+              .transform((val) => (val === "" ? null : val)),
           })
           .nullable()
           .optional(),

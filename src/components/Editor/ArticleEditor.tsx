@@ -19,7 +19,7 @@ import { ArticleRepositoryInput } from "@/backend/services/inputs/article.input"
 import { useAutosizeTextArea } from "@/hooks/use-auto-resize-textarea";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { useToggle } from "@/hooks/use-toggle";
-import { formattedTime } from "@/lib/utils";
+import { actionPromisify, formattedTime } from "@/lib/utils";
 import { markdocParser } from "@/utils/markdoc-parser";
 import { useMutation } from "@tanstack/react-query";
 import clsx from "clsx";
@@ -62,7 +62,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
   const updateMyArticleMutation = useMutation({
     mutationFn: (
       input: z.infer<typeof ArticleRepositoryInput.updateMyArticleInput>
-    ) => articleActions.updateMyArticle(input),
+    ) => actionPromisify(articleActions.updateMyArticle(input)),
     onSuccess: () => router.refresh(),
     onError: (err) => alert(err.message),
   });
