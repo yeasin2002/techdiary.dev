@@ -30,6 +30,7 @@ import { Input } from "../ui/input";
 import { Sheet, SheetContent } from "../ui/sheet";
 import { Textarea } from "../ui/textarea";
 import { actionPromisify } from "@/lib/utils";
+import { slugify } from "@/lib/slug-helper.util";
 
 interface Props {
   article: Article;
@@ -181,8 +182,13 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
                               page: 1,
                               search: searchTerm,
                             });
+
+                            if (!res.success) {
+                              return [];
+                            }
+
                             return (
-                              res?.map((tag) => ({
+                              res.data?.map((tag) => ({
                                 label: tag.name,
                                 value: tag.id,
                               })) ?? []
@@ -196,15 +202,16 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
                           }
                           creatable
                           onCreate={async (data) => {
+                            const name = slugify(data);
                             const createdResponse = await tagActions.createTag({
-                              name: data,
+                              name,
                             });
                             const old_tags = form.watch("tag_ids") ?? [];
 
                             setSelectedTags(function (draft) {
                               draft.push({
                                 id: createdResponse?.id!,
-                                name: data,
+                                name: name,
                                 created_at: new Date(),
                                 updated_at: new Date(),
                               });

@@ -11,13 +11,17 @@ export const getTags = async (
 ) => {
   try {
     const input = await TagRepositoryInput.findAllInput.parseAsync(_input);
-    return persistenceRepository.tags.find({
+    const res = await persistenceRepository.tags.find({
       where: input.search
         ? like("name", `%${input.search.toLowerCase()}%`)
         : undefined,
     });
+    return {
+      data: res,
+      success: true as const,
+    };
   } catch (error) {
-    handleActionException(error);
+    return handleActionException(error);
   }
 };
 
