@@ -19,6 +19,7 @@ const layout: React.FC<PropsWithChildren> = async ({ children }) => {
   const session = await sessionActions.getSession();
 
   const cookieStore = await cookies();
+
   const getSidebarOpenState = () => {
     const isOpen = cookieStore.get("sidebar_state")?.value;
     if (!isOpen) return true;
