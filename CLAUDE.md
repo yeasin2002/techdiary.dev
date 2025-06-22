@@ -33,6 +33,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **File Storage**: Cloudinary
 - **State Management**: Jotai, React Hook Form with Zod validation
 
+### Backend & Database
+- **[SQLKit](https://github.com/sqlkit-dev/sqlkit)** - Very light sql query builder, we are using most of the sql query using this.
+- **[Drizzle ORM](https://orm.drizzle.team/)** - Awesome sql tool but we are only using for migration
+- **[PostgreSQL](https://www.postgresql.org/)** - Primary database
+- **[Next.js API Routes](https://nextjs.org/docs/api-routes/introduction)** - Backend API
+
 ### Core Directory Structure
 
 #### Frontend (`/src/app/`)
@@ -119,11 +125,14 @@ Client-side:
 
 ## Development Workflow
 
-1. Database changes require running `npm run db:generate` followed by `npm run db:push`
-2. Backend logic testing can be done via `npm run play` playground script
+1. Database changes require running `bun run db:generate` followed by `bun run db:push`
+2. Backend logic testing can be done via `bun run play` playground script
 3. Type safety is enforced through Zod schemas for all inputs
 4. UI components follow shadcn/ui patterns and conventions
 5. All forms use React Hook Form with Zod validation schemas
+6. When querying data in component always use Tanstack Query.
+7. When interacting with DB, create a action in `src/backend/services` and use sqlkit package (https://github.com/sqlkit-dev/sqlkit)
+8. For Database schema reference look here for drizzle schema `src/backend/persistence/schemas.ts`
 
 ## Special Considerations
 

@@ -119,4 +119,10 @@ export const ArticleRepositoryInput = {
     page: z.number().default(1),
     limit: z.number().default(10),
   }),
+
+  tagFeedInput: z.object({
+    tag_id: z.string().uuid(),
+    page: z.number().default(1),
+    limit: z.number().default(10),
+  }),
 };
