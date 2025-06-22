@@ -25,6 +25,24 @@ export const getTags = async (
   }
 };
 
+export const getTag = async (
+  _input: z.infer<typeof TagRepositoryInput.getTag>
+) => {
+  try {
+    const input = await TagRepositoryInput.createInput.parseAsync(_input);
+    const response = await persistenceRepository.tags.find({
+      where: eq("name", input.name),
+    });
+
+    return {
+      data: response[0],
+      success: true as const,
+    };
+  } catch (error) {
+    handleActionException(error);
+  }
+};
+
 export const createTag = async (
   _input: z.infer<typeof TagRepositoryInput.createInput>
 ) => {
