@@ -255,13 +255,13 @@ TechDiary provides a focused, feature-rich blogging platform with:
 
 ### 9.2 Phase 2: Community Features (Months 4-6)
 - ✅ Comment system with threading
-- ✅ Following/follower system
+- 🔄 Following/follower system
 - ✅ Enhanced search with filtering
-- ✅ Series support for content organization
+- 🔄 Series support for content organization
 - ✅ Multi-language support (Bengali)
 
 ### 9.3 Phase 3: Engagement & Growth (Months 7-9)
-- 🔄 Advanced user profiles with achievements
+- 🔄 Advanced user profiles with achievements (Badges)
 - 🔄 Notification system
 - 📋 Content recommendations algorithm
 - 📋 Mobile app (PWA)
