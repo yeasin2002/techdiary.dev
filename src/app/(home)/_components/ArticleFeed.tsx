@@ -1,14 +1,11 @@
 "use client";
 
 import * as articleActions from "@/backend/services/article.actions";
-import * as seriesActions from "@/backend/services/series.action";
 import ArticleCard from "@/components/ArticleCard";
-import SeriesCard from "@/components/SeriesCard";
 import VisibilitySensor from "@/components/VisibilitySensor";
 import { readingTime } from "@/lib/utils";
 import getFileUrl from "@/utils/getFileUrl";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Loader } from "lucide-react";
 import { useState } from "react";
 
 const ArticleFeed = () => {
@@ -53,10 +50,22 @@ const ArticleFeed = () => {
       <div className="flex flex-col gap-10 mt-2">
         {articleFeedQuery.isPending && (
           <>
-            <div className="h-56 bg-muted animate-pulse mx-4" />
-            <div className="h-56 bg-muted animate-pulse mx-4" />
-            <div className="h-56 bg-muted animate-pulse mx-4" />
-            <div className="h-56 bg-muted animate-pulse mx-4" />
+            <div
+              className="h-56 bg-muted animate-pulse mx-4"
+              suppressHydrationWarning={true}
+            />
+            <div
+              className="h-56 bg-muted animate-pulse mx-4"
+              suppressHydrationWarning={true}
+            />
+            <div
+              className="h-56 bg-muted animate-pulse mx-4"
+              suppressHydrationWarning={true}
+            />
+            <div
+              className="h-56 bg-muted animate-pulse mx-4"
+              suppressHydrationWarning={true}
+            />
           </>
         )}
 

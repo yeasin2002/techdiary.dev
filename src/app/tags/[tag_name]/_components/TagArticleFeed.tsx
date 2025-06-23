@@ -4,17 +4,18 @@ import { Tag } from "@/backend/models/domain-models";
 import * as articleActions from "@/backend/services/article.actions";
 import ArticleCard from "@/components/ArticleCard";
 import VisibilitySensor from "@/components/VisibilitySensor";
-import _t from "@/i18n/_t";
+import { useTranslation } from "@/i18n/use-translation";
 import { readingTime } from "@/lib/utils";
 import getFileUrl from "@/utils/getFileUrl";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 
 interface TagArticleFeedProps {
   tag: Tag;
 }
 
 const TagArticleFeed: React.FC<TagArticleFeedProps> = ({ tag }) => {
+  const { _t } = useTranslation();
   const tagFeedQuery = useInfiniteQuery({
     queryKey: ["tag-articles", tag.id],
     queryFn: ({ pageParam }) =>
@@ -43,10 +44,10 @@ const TagArticleFeed: React.FC<TagArticleFeedProps> = ({ tag }) => {
   if (tagFeedQuery.isPending) {
     return (
       <div className="flex flex-col gap-10 mt-2">
-        <div className="h-56 bg-muted animate-pulse mx-4" />
-        <div className="h-56 bg-muted animate-pulse mx-4" />
-        <div className="h-56 bg-muted animate-pulse mx-4" />
-        <div className="h-56 bg-muted animate-pulse mx-4" />
+        <div className="h-56 bg-muted animate-pulse mx-4" suppressHydrationWarning={true} />
+        <div className="h-56 bg-muted animate-pulse mx-4" suppressHydrationWarning={true} />
+        <div className="h-56 bg-muted animate-pulse mx-4" suppressHydrationWarning={true} />
+        <div className="h-56 bg-muted animate-pulse mx-4" suppressHydrationWarning={true} />
       </div>
     );
   }
