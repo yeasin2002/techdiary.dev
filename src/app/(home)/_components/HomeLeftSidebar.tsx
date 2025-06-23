@@ -96,7 +96,7 @@ const tags = [
   {
     icon: "https://res.cloudinary.com/techdiary-dev/image/upload/v1620782239/static-assets/tag-icons/erfbu54l2mquphszheck.svg",
     label: "react",
-    link: "/tags/186e052a-9c5b-4ffe-b753-ea172ac2e663",
+    link: "/tags/reactjs",
   },
   {
     icon: "https://res.cloudinary.com/techdiary-dev/image/upload/v1620782240/static-assets/tag-icons/rh7xfiz28bxklfzymftd.svg",
