@@ -29,7 +29,7 @@ export const getTag = async (
   _input: z.infer<typeof TagRepositoryInput.getTag>
 ) => {
   try {
-    const input = await TagRepositoryInput.createInput.parseAsync(_input);
+    const input = await TagRepositoryInput.getTag.parseAsync(_input);
     const response = await persistenceRepository.tags.find({
       where: eq("name", input.name),
     });
@@ -39,7 +39,7 @@ export const getTag = async (
       success: true as const,
     };
   } catch (error) {
-    handleActionException(error);
+    return handleActionException(error);
   }
 };
 
@@ -58,7 +58,7 @@ export const createTag = async (
 
     return response.rows[0];
   } catch (error) {
-    handleActionException(error);
+    return handleActionException(error);
   }
 };
 
@@ -101,13 +101,7 @@ export const syncTagsWithArticles = async (
         inArray("tag_id", tagsToRemove)
       ),
     });
-    console.log({
-      tagsToRemove,
-      tagsToAdd,
-      attachedTagIds,
-      inputTagIds: input.tag_ids,
-    });
   } catch (error) {
-    handleActionException(error);
+    return handleActionException(error);
   }
 };
