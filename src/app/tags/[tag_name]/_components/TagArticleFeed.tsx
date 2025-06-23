@@ -1,23 +1,26 @@
 "use client";
 
+import { Tag } from "@/backend/models/domain-models";
 import * as articleActions from "@/backend/services/article.actions";
 import ArticleCard from "@/components/ArticleCard";
 import VisibilitySensor from "@/components/VisibilitySensor";
+import { useTranslation } from "@/i18n/use-translation";
 import { readingTime } from "@/lib/utils";
 import getFileUrl from "@/utils/getFileUrl";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 
 interface TagArticleFeedProps {
-  tagId: string;
+  tag: Tag;
 }
 
-const TagArticleFeed: React.FC<TagArticleFeedProps> = ({ tagId }) => {
+const TagArticleFeed: React.FC<TagArticleFeedProps> = ({ tag }) => {
+  const { _t } = useTranslation();
   const tagFeedQuery = useInfiniteQuery({
-    queryKey: ["tag-articles", tagId],
+    queryKey: ["tag-articles", tag.id],
     queryFn: ({ pageParam }) =>
       articleActions.articlesByTag({
-        tag_id: tagId,
+        tag_id: tag.id,
         limit: 5,
         page: pageParam,
       }),
@@ -37,18 +40,14 @@ const TagArticleFeed: React.FC<TagArticleFeedProps> = ({ tagId }) => {
     return tagFeedQuery.data?.pages?.[0]?.meta?.total ?? 0;
   }, [tagFeedQuery.data]);
 
-  const tagName = useMemo(() => {
-    return tagFeedQuery.data?.pages?.[0]?.tagName ?? "Unknown Tag";
-  }, [tagFeedQuery.data]);
-
   // Show loading skeletons
   if (tagFeedQuery.isPending) {
     return (
       <div className="flex flex-col gap-10 mt-2">
-        <div className="h-56 bg-muted animate-pulse mx-4" />
-        <div className="h-56 bg-muted animate-pulse mx-4" />
-        <div className="h-56 bg-muted animate-pulse mx-4" />
-        <div className="h-56 bg-muted animate-pulse mx-4" />
+        <div className="h-56 bg-muted animate-pulse mx-4" suppressHydrationWarning={true} />
+        <div className="h-56 bg-muted animate-pulse mx-4" suppressHydrationWarning={true} />
+        <div className="h-56 bg-muted animate-pulse mx-4" suppressHydrationWarning={true} />
+        <div className="h-56 bg-muted animate-pulse mx-4" suppressHydrationWarning={true} />
       </div>
     );
   }
@@ -78,10 +77,10 @@ const TagArticleFeed: React.FC<TagArticleFeedProps> = ({ tagId }) => {
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-          No articles found
+          {_t("No articles found")}
         </h2>
         <p className="text-gray-600 dark:text-gray-400">
-          No articles have been tagged with &ldquo;{tagName}&rdquo; yet.
+          {_t(`No articles have been tagged with "$" yet.`, [tag.name])}
         </p>
       </div>
     );
@@ -91,10 +90,10 @@ const TagArticleFeed: React.FC<TagArticleFeedProps> = ({ tagId }) => {
     <>
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Articles tagged with &ldquo;{tagName}&rdquo;
+          {_t(`Articles tagged with "$"`, [tag.name])}
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">
-          Found {totalArticles} articles
+          {_t(`Found $ articles`, [totalArticles])}
         </p>
       </div>
 
@@ -106,7 +105,9 @@ const TagArticleFeed: React.FC<TagArticleFeedProps> = ({ tagId }) => {
             handle={article?.handle ?? ""}
             title={article?.title ?? ""}
             excerpt={article?.excerpt ?? ""}
-            coverImage={article?.cover_image ? getFileUrl(article.cover_image) : ""}
+            coverImage={
+              article?.cover_image ? getFileUrl(article.cover_image) : ""
+            }
             author={{
               id: article?.user?.id ?? "",
               name: article?.user?.name ?? "",

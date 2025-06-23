@@ -3,15 +3,22 @@ import HomeRightSidebar from "@/app/(home)/_components/HomeRightSidebar";
 import SidebarToggleButton from "@/app/(home)/_components/SidebarToggleButton";
 import HomepageLayout from "@/components/layout/HomepageLayout";
 import TagArticleFeed from "./_components/TagArticleFeed";
+import { getTag, getTags } from "@/backend/services/tag.action";
+import { notFound } from "next/navigation";
 
 interface TagPageProps {
   params: Promise<{
-    tag_id: string;
+    tag_name: string;
   }>;
 }
 
 export default async function TagPage({ params }: TagPageProps) {
-  const { tag_id } = await params;
+  const { tag_name } = await params;
+  const tag = await getTag({ name: tag_name });
+
+  if (!tag?.success) {
+    throw notFound();
+  }
 
   return (
     <HomepageLayout
@@ -20,21 +27,21 @@ export default async function TagPage({ params }: TagPageProps) {
       NavbarTrailing={<SidebarToggleButton />}
     >
       <div className="px-4 py-6">
-        <TagArticleFeed tagId={tag_id} />
+        <TagArticleFeed tag={tag.data} />
       </div>
     </HomepageLayout>
   );
 }
 
 export async function generateMetadata({ params }: TagPageProps) {
-  const { tag_id } = await params;
+  const { tag_name } = await params;
 
   // For now, use tag_id in the title. Later we can fetch the tag name if needed
   return {
-    title: `Tag ${tag_id} - Tech Diary`,
+    title: `Tag ${tag_name} - Tech Diary`,
     description: `Browse all articles with this tag on Tech Diary`,
     openGraph: {
-      title: `Tag ${tag_id} - Tech Diary`,
+      title: `Tag ${tag_name} - Tech Diary`,
       description: `Browse all articles with this tag on Tech Diary`,
     },
   };
