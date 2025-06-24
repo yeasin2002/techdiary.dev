@@ -110,5 +110,7 @@
   "You are not logged in": "আপনি লগইন করেননি",
   "To do this, you must be logged in": "এটি করতে হলে আপনাকে লগইন করতে হবে",
   "Article will be deleted within $ hours": "আর্টিক্যাল $ ঘণ্টার মধ্যে মুছে যাবে",
-  "Upload Image for Article Content": "আর্টিকেলে ছবি আপলোড করুন"
+  "Upload Image for Article Content": "আর্টিকেলে ছবি আপলোড করুন",
+  "Copy": "কপি করুন",
+  "Code copied": "কোড কপি করা হয়েছে"
 }
