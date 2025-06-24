@@ -4,7 +4,7 @@ import { and, eq, inArray, like } from "sqlkit";
 import { z } from "zod";
 import { persistenceRepository } from "../persistence/persistence-repositories";
 import { TagRepositoryInput } from "./inputs/tag.input";
-import { handleActionException } from "./RepositoryException";
+import { ActionException, handleActionException } from "./RepositoryException";
 
 export const getTags = async (
   _input: z.infer<typeof TagRepositoryInput.findAllInput>
@@ -33,6 +33,10 @@ export const getTag = async (
     const response = await persistenceRepository.tags.find({
       where: eq("name", input.name),
     });
+
+    if (!response[0]) {
+      throw new ActionException("Tag not found");
+    }
 
     return {
       data: response[0],

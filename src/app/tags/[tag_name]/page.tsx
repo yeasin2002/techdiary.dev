@@ -26,9 +26,7 @@ export default async function TagPage({ params }: TagPageProps) {
       RightSidebar={<HomeRightSidebar />}
       NavbarTrailing={<SidebarToggleButton />}
     >
-      <div className="px-4 py-6">
-        <TagArticleFeed tag={tag.data} />
-      </div>
+      <TagArticleFeed tag={tag?.data} />
     </HomepageLayout>
   );
 }

@@ -439,7 +439,7 @@ export async function articlesByTag(
       INNER JOIN tags t ON at.tag_id = t.id
       LEFT JOIN users u ON a.author_id = u.id
       WHERE 
-        a.is_published = true 
+        a.published_at is not null
         AND t.id = $1
       ORDER BY a.published_at DESC
       LIMIT $2 OFFSET $3

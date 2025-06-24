@@ -17,14 +17,15 @@ interface TagArticleFeedProps {
 const TagArticleFeed: React.FC<TagArticleFeedProps> = ({ tag }) => {
   const { _t } = useTranslation();
   const tagFeedQuery = useInfiniteQuery({
-    queryKey: ["tag-articles", tag.id],
+    queryKey: ["tag-articles", tag?.id],
     queryFn: ({ pageParam }) =>
       articleActions.articlesByTag({
-        tag_id: tag.id,
+        tag_id: tag?.id,
         limit: 5,
         page: pageParam,
       }),
     initialPageParam: 1,
+    enabled: Boolean(tag?.id),
     getNextPageParam: (lastPage) => {
       if (!lastPage?.meta?.hasNextPage) return undefined;
       const _page = lastPage?.meta?.currentPage ?? 1;
@@ -44,16 +45,28 @@ const TagArticleFeed: React.FC<TagArticleFeedProps> = ({ tag }) => {
   if (tagFeedQuery.isPending) {
     return (
       <div className="flex flex-col gap-10 mt-2">
-        <div className="h-56 bg-muted animate-pulse mx-4" suppressHydrationWarning={true} />
-        <div className="h-56 bg-muted animate-pulse mx-4" suppressHydrationWarning={true} />
-        <div className="h-56 bg-muted animate-pulse mx-4" suppressHydrationWarning={true} />
-        <div className="h-56 bg-muted animate-pulse mx-4" suppressHydrationWarning={true} />
+        <div
+          className="h-56 bg-muted animate-pulse mx-4"
+          suppressHydrationWarning={true}
+        />
+        <div
+          className="h-56 bg-muted animate-pulse mx-4"
+          suppressHydrationWarning={true}
+        />
+        <div
+          className="h-56 bg-muted animate-pulse mx-4"
+          suppressHydrationWarning={true}
+        />
+        <div
+          className="h-56 bg-muted animate-pulse mx-4"
+          suppressHydrationWarning={true}
+        />
       </div>
     );
   }
 
-  // Show error state
   if (tagFeedQuery.isError) {
+    // Show error state
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -80,7 +93,7 @@ const TagArticleFeed: React.FC<TagArticleFeedProps> = ({ tag }) => {
           {_t("No articles found")}
         </h2>
         <p className="text-gray-600 dark:text-gray-400">
-          {_t(`No articles have been tagged with "$" yet.`, [tag.name])}
+          {_t(`No articles have been tagged with "$" yet.`, [tag?.name])}
         </p>
       </div>
     );
@@ -88,9 +101,9 @@ const TagArticleFeed: React.FC<TagArticleFeedProps> = ({ tag }) => {
 
   return (
     <>
-      <div className="mb-8">
+      <div className="mb-8 p-4">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          {_t(`Articles tagged with "$"`, [tag.name])}
+          {_t(`Articles tagged with "$"`, [tag?.name])}
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">
           {_t(`Found $ articles`, [totalArticles])}
