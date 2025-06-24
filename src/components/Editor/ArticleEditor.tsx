@@ -5,11 +5,7 @@ import * as articleActions from "@/backend/services/article.actions";
 import { useTranslation } from "@/i18n/use-translation";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import {
-  ArrowLeftIcon,
-  GearIcon,
-  PlusIcon,
-} from "@radix-ui/react-icons";
+import { ArrowLeftIcon, GearIcon, PlusIcon } from "@radix-ui/react-icons";
 import React, { useCallback, useRef, useState } from "react";
 
 import { ArticleRepositoryInput } from "@/backend/services/inputs/article.input";
@@ -18,7 +14,7 @@ import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { useServerFile } from "@/hooks/use-file-upload";
 import { useToggle } from "@/hooks/use-toggle";
 import { actionPromisify, formattedTime } from "@/lib/utils";
-import { markdocParser } from "@/utils/markdoc-parser";
+import { markdocParser } from "@/lib/markdown/markdoc-parser";
 import { useMutation } from "@tanstack/react-query";
 import clsx from "clsx";
 import { TrashIcon } from "lucide-react";
@@ -34,6 +30,7 @@ import UnsplashImageGallery from "../UnsplashImageGallery";
 import ArticleEditorDrawer from "./ArticleEditorDrawer";
 import { MarkdownEditorContent } from "./MarkdownEditorContent";
 import { MarkdownEditorProvider } from "./MarkdownEditorProvider";
+import Markdown from "@/lib/markdown/Markdown";
 
 interface ArticleEditorProps {
   uuid?: string;
@@ -162,7 +159,6 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
     },
     [editorForm, setDebouncedBody]
   );
-
 
   const toggleEditorMode = useCallback(
     () => setEditorMode((mode) => (mode === "write" ? "preview" : "write")),
@@ -342,7 +338,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
             onChange={handleTitleChange}
           />
 
-          <MarkdownEditorContent 
+          <MarkdownEditorContent
             bodyRef={bodyRef}
             onChange={handleBodyContentChange}
           />
@@ -363,7 +359,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
               />
             ) : (
               <div className="content-typography">
-                {markdocParser(watchedBody ?? "")}
+                {watchedBody && <Markdown content={watchedBody} />}
               </div>
             )}
           </div>

@@ -8,7 +8,7 @@ import { useMarkdownEditor } from "@/components/Editor/useMarkdownEditor";
 import { Button } from "@/components/ui/button";
 import { useAutosizeTextArea } from "@/hooks/use-auto-resize-textarea";
 import { useTranslation } from "@/i18n/use-translation";
-import { markdocParser } from "@/utils/markdoc-parser";
+import { markdocParser } from "@/lib/markdown/markdoc-parser";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   FontBoldIcon,

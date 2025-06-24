@@ -10,7 +10,7 @@ import HomepageLayout from "@/components/layout/HomepageLayout";
 import ResourceReaction from "@/components/ResourceReaction";
 import { readingTime, removeMarkdownSyntax } from "@/lib/utils";
 import getFileUrl from "@/utils/getFileUrl";
-import { markdocParser } from "@/utils/markdoc-parser";
+import { markdocParser } from "@/lib/markdown/markdoc-parser";
 import { Metadata, NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,6 +19,7 @@ import type { Article, WithContext } from "schema-dts";
 import { eq } from "sqlkit";
 import ArticleSidebar from "./_components/ArticleSidebar";
 import ResourceBookmark from "@/components/ResourceBookmark";
+import Markdown from "@/lib/markdown/Markdown";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -166,7 +167,7 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
           </div>
 
           <div className="mx-auto content-typography">
-            {markdocParser(article?.body ?? "")}
+            {article.body && <Markdown content={article.body!} />}
           </div>
         </div>
 
