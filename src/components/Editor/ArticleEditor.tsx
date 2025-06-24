@@ -68,7 +68,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
       input: z.infer<typeof ArticleRepositoryInput.updateMyArticleInput>
     ) => actionPromisify(articleActions.updateMyArticle(input)),
     onSuccess: () => router.refresh(),
-    onError: (err) => alert(err.message),
+    onError: (err) => alert(JSON.stringify(err.stack)),
   });
 
   const articleCreateMutation = useMutation({
@@ -172,26 +172,17 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
         confirm: _t("Yes"),
         cancel: _t("No"),
       },
-      onConfirm: () => {
+      onConfirm: async () => {
         if (uuid) {
-          updateMyArticleMutation.mutate(
-            {
-              article_id: uuid,
-              is_published: !article?.is_published,
-            },
-            {
-              onSuccess: () => {
-                articleActions.setArticlePublished(
-                  uuid,
-                  !article?.is_published
-                );
-              },
-            }
+          await articleActions.setArticlePublished(
+            uuid,
+            !Boolean(article?.published_at)
           );
+          router.refresh();
         }
       },
     });
-  }, [appConfig, _t, uuid, article?.is_published, updateMyArticleMutation]);
+  }, [appConfig, _t, uuid, article?.published_at, updateMyArticleMutation]);
 
   const handleTitleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -230,11 +221,11 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
             {uuid && (
               <p
                 className={clsx("px-2 py-1 text-foreground", {
-                  "bg-green-100": article?.is_published,
-                  "bg-red-100": !article?.is_published,
+                  "bg-green-100": Boolean(article?.published_at),
+                  "bg-red-100": !Boolean(article?.published_at),
                 })}
               >
-                {article?.is_published ? (
+                {Boolean(article?.published_at) ? (
                   <span className="text-success">{_t("Published")}</span>
                 ) : (
                   <span className="text-destructive">{_t("Draft")}</span>
@@ -257,13 +248,18 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
                 className={clsx(
                   "transition-colors hidden md:block duration-200 px-4 py-1 font-semibold cursor-pointer",
                   {
-                    "bg-success text-slate-800": !article?.is_published,
-                    "text-destructive text-destructive-foreground":
-                      article?.is_published,
+                    "bg-success text-slate-800": !Boolean(
+                      article?.published_at
+                    ),
+                    "text-destructive text-destructive-foreground": Boolean(
+                      article?.published_at
+                    ),
                   }
                 )}
               >
-                {article?.is_published ? _t("Unpublish") : _t("Publish")}
+                {Boolean(article?.published_at)
+                  ? _t("Unpublish")
+                  : _t("Publish")}
               </button>
               <button onClick={toggleSettingDrawer.open}>
                 <GearIcon className="w-5 h-5" />

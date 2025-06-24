@@ -1,14 +1,18 @@
-import * as commentActions from "./services/comment.action";
+import { NextResponse } from "next/server";
+import * as actions from "./services/article.actions";
 
 async function main() {
   // Comment on a resource
-  const newComment = await commentActions.createMyComment({
-    body: "This is a comment on a resource",
-    resource_id: "14fced36-31a7-42b3-9811-8887fc1331db",
-    resource_type: "ARTICLE",
+  const res = await actions.updateMyArticle({
+    article_id: "54603d22-1646-4ecd-a360-a8b9c8cd4889",
+    title: "updated",
   });
 
-  console.log(newComment);
+  console.log(res);
+
+  // return NextResponse.json(
+  //   res.success ? res.data : { error: "something wrong" }
+  // );
 }
 
 main();

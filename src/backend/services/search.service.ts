@@ -22,7 +22,7 @@ export const syncAllArticles = async () => {
   try {
     const articles = await persistenceRepository.article.find({
       columns: ["id", "title", "body", "user", "cover_image"],
-      where: and(eq("is_published", true), neq("approved_at", null)),
+      where: and(neq("published_at", null), neq("approved_at", null)),
       joins: [
         {
           as: "user",
@@ -37,9 +37,11 @@ export const syncAllArticles = async () => {
       ],
     });
 
-    await index.addDocuments(articles, {
+    const syncArticle = await index.addDocuments(articles, {
       primaryKey: "id",
     });
+
+    console.log({ syncArticle });
 
     return {
       message: "Articles synced successfully",
@@ -60,13 +62,9 @@ export const syncAllArticles = async () => {
 export const syncArticleById = async (articleId: string) => {
   try {
     const [article] = await persistenceRepository.article.find({
-      columns: ["id", "title", "body", "user", "cover_image"],
+      columns: ["id", "title", "body", "cover_image"],
       limit: 1,
-      where: and(
-        eq("id", articleId),
-        eq("is_published", true),
-        neq("approved_at", null)
-      ),
+      where: and(eq("id", articleId), neq("published_at", null)),
       joins: [
         {
           type: "left",
@@ -86,9 +84,11 @@ export const syncArticleById = async (articleId: string) => {
       );
     }
 
-    await index.addDocuments([article], {
+    const syncArticleByIdRes = await index.addDocuments([article], {
       primaryKey: "id",
     });
+
+    console.log({ syncArticleByIdRes });
 
     return {
       message: `Article ${articleId} synced successfully`,

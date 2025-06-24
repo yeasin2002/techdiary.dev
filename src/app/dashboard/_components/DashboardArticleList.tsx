@@ -163,7 +163,7 @@ const DashboardArticleList = () => {
                   </p>
                 )}
 
-                {article.is_published && (
+                {Boolean(article?.published_at) && (
                   <p className="text-sm text-muted-foreground">
                     {_t("Published on")} {formattedTime(article.published_at!)}
                   </p>
@@ -184,13 +184,13 @@ const DashboardArticleList = () => {
                     </p>
                   )} */}
 
-                  {!article.is_published && (
+                  {!Boolean(article?.published_at) && (
                     <p className="bg-yellow-400/30 rounded-sm px-2 py-1 text-sm">
                       🚧 {_t("Draft")}
                     </p>
                   )}
 
-                  {article.is_published && (
+                  {Boolean(article?.published_at) && (
                     <p className="bg-green-400/30 rounded-sm px-2 py-1 text-sm">
                       ✅ {_t("Published")}
                     </p>
@@ -240,7 +240,7 @@ const DashboardArticleList = () => {
                               try {
                                 await articleActions.setArticlePublished(
                                   article?.id,
-                                  !article?.is_published
+                                  !Boolean(article?.published_at)
                                 );
                               } finally {
                                 feedInfiniteQuery.refetch();
@@ -251,7 +251,7 @@ const DashboardArticleList = () => {
                       >
                         <CardStackIcon />
                         <span>
-                          {article.is_published
+                          {Boolean(article?.published_at)
                             ? _t("Make Draft")
                             : _t("Publish")}
                         </span>

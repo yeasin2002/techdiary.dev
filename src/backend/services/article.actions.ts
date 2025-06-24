@@ -48,9 +48,9 @@ export async function createMyArticle(
         excerpt: input.excerpt ?? null,
         body: input.body ?? null,
         cover_image: input.cover_image ?? null,
-        is_published: input.is_published ?? false,
         published_at: input.is_published ? new Date() : null,
         author_id: sessionUserId,
+        approved_at: new Date(), // TODO: manually handle this from seperate dashboard
       },
     ]);
     return article?.rows?.[0];
@@ -169,6 +169,10 @@ export async function updateMyArticle(
       }),
     });
 
+    if (article.rows[0].published_at) {
+      syncArticleById(article.rows[0].id);
+    }
+
     if (input.tag_ids) {
       await syncTagsWithArticles({
         article_id: input.article_id,
@@ -181,6 +185,9 @@ export async function updateMyArticle(
       data: article?.rows?.[0],
     };
   } catch (error) {
+    if (error instanceof Error) {
+      console.log(JSON.stringify(error.stack));
+    }
     return handleActionException(error);
   }
 }
@@ -277,7 +284,7 @@ export async function deleteArticle(article_id: string) {
 // ): Promise<Article[]> {
 //   try {
 //     return articleRepository.findRows({
-//       where: and(eq("is_published", true), neq("published_at", null)),
+//       where: and(neq("published_at", null), neq("published_at", null)),
 //       limit,
 //       orderBy: [desc("published_at")],
 //       columns: ["id", "title", "handle"],
@@ -311,7 +318,7 @@ export async function articleFeed(
     const input = await ArticleRepositoryInput.feedInput.parseAsync(_input);
 
     const response = await persistenceRepository.article.paginate({
-      where: and(eq("is_published", true), neq("approved_at", null)),
+      where: and(neq("published_at", null), neq("approved_at", null)),
       page: input.page,
       limit: input.limit,
       orderBy: [desc("published_at")],
@@ -361,7 +368,7 @@ export async function userArticleFeed(
     const response = await persistenceRepository.article.paginate({
       operationName: "userArticleFeed",
       where: and(
-        eq("is_published", true),
+        neq("published_at", null),
         neq("approved_at", null),
         eq("author_id", input.user_id)
       ),
@@ -495,7 +502,6 @@ export async function articleDetailByHandle(article_handle: string) {
         "excerpt",
         "body",
         "cover_image",
-        "is_published",
         "published_at",
         "approved_at",
         "metadata",
@@ -539,7 +545,6 @@ export async function articleDetailByUUID(uuid: string) {
         "excerpt",
         "body",
         "cover_image",
-        "is_published",
         "published_at",
         "approved_at",
         "metadata",
@@ -589,7 +594,7 @@ export async function myArticles(
         "title",
         "handle",
         "created_at",
-        "is_published",
+        "published_at",
         "delete_scheduled_at",
         "approved_at",
       ],
@@ -620,11 +625,9 @@ export async function setArticlePublished(
         eq("id", article_id),
         eq("author_id", sessionUserId?.toString()!)
       ),
-      data: {
-        is_published: is_published,
-        published_at: is_published ? new Date() : null,
-      },
+      data: { published_at: is_published ? new Date() : null },
     });
+
     if (articles?.rows?.[0] && is_published) {
       syncArticleById(article_id);
     }
@@ -633,6 +636,6 @@ export async function setArticlePublished(
     }
     return articles?.rows?.[0];
   } catch (error) {
-    handleActionException(error);
+    return handleActionException(error);
   }
 }

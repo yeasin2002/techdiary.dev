@@ -66,7 +66,6 @@ export interface Article {
   excerpt?: string | null;
   body?: string | null;
   cover_image?: IServerFile | null;
-  is_published: boolean;
   published_at?: Date | null;
   approved_at?: Date | null;
   user?: User | null;

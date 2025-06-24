@@ -100,7 +100,6 @@ export const articlesTable = pgTable("articles", {
   excerpt: varchar("excerpt"),
   body: text("body"),
   cover_image: jsonb("cover_image").$type<IServerFile>(),
-  is_published: boolean("is_published").default(false),
   published_at: timestamp("published_at"),
   approved_at: timestamp("approved_at"),
   delete_scheduled_at: timestamp("delete_scheduled_at"),
