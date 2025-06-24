@@ -117,11 +117,7 @@ const ImageDropzoneWithCropper: React.FC<DropzoneWithCropperProps> = ({
       <Dialog open={modalOpen} onOpenChange={modelHandler.close}>
         <DialogContent className="w-[500px]">
           <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
-            {/* <DialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-            </DialogDescription> */}
+            {/* <DialogTitle>Are you absolutely sure?</DialogTitle> */}
           </DialogHeader>
 
           <div className="relative w-full ">

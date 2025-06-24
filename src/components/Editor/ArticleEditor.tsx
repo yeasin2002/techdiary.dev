@@ -451,9 +451,19 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
       >
         <DialogContent className="md:min-w-[650px] pt-10">
           <UnsplashImageGallery
-            onUploadImage={function (image: IServerFile): void {
-              alert(JSON.stringify(image));
+            aspectRatio={1.91 / 1}
+            onUploadComplete={(file) => {
+              editorForm.setValue("cover_image", file);
+
+              setTimeout(() => {
+                updateMyArticleMutation.mutate({
+                  article_id: uuid!,
+                  cover_image: file,
+                });
+                unsplashDrawerHandler.close();
+              }, 0);
             }}
+            uploadDirectory={DIRECTORY_NAME.ARTICLE_COVER}
           />
         </DialogContent>
       </Dialog>
