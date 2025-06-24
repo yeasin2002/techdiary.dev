@@ -19,7 +19,7 @@ export const useServerFile = () => {
     // post files to server
     const keys = Array.from(param.files).map((file) => {
       return param.generateUniqueFileName
-        ? `${param.directory}/${generateRandomString(30)}-${file.name}`
+        ? `${param.directory}/${generateRandomString(30)}${file?.name ? `-${file?.name}` : ""}`
         : `${param.directory}/${file.name}`;
     });
 

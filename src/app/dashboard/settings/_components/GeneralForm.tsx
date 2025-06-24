@@ -93,6 +93,7 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
                   <ImageDropzoneWithCropper
                     enableCropper
                     label=" "
+                    aspectRatio={1}
                     Icon={<User2 />}
                     onUploadComplete={(file) => {
                       form.setValue("profile_photo", file, {

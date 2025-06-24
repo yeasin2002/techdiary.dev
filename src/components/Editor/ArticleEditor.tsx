@@ -7,11 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
   ArrowLeftIcon,
-  FontBoldIcon,
-  FontItalicIcon,
   GearIcon,
-  HeadingIcon,
-  ImageIcon,
   PlusIcon,
 } from "@radix-ui/react-icons";
 import React, { useCallback, useRef, useState } from "react";
@@ -36,8 +32,8 @@ import ImageDropzoneWithCropper from "../ImageDropzoneWithCropper";
 import { Dialog, DialogContent } from "../ui/dialog";
 import UnsplashImageGallery from "../UnsplashImageGallery";
 import ArticleEditorDrawer from "./ArticleEditorDrawer";
-import EditorCommandButton from "./EditorCommandButton";
-import { useMarkdownEditor } from "./useMarkdownEditor";
+import { MarkdownEditorContent } from "./MarkdownEditorContent";
+import { MarkdownEditorProvider } from "./MarkdownEditorProvider";
 
 interface ArticleEditorProps {
   uuid?: string;
@@ -167,10 +163,6 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
     [editorForm, setDebouncedBody]
   );
 
-  const editor = useMarkdownEditor({
-    ref: bodyRef,
-    onChange: handleBodyContentChange,
-  });
 
   const toggleEditorMode = useCallback(
     () => setEditorMode((mode) => (mode === "write" ? "preview" : "write")),
@@ -214,254 +206,240 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
     [editorForm, setDebouncedTitle]
   );
 
-  const renderEditorToolbar = () => (
-    <div className="flex w-full gap-6 p-2 my-2 bg-muted">
-      <EditorCommandButton
-        onClick={() => editor?.executeCommand("heading")}
-        Icon={<HeadingIcon />}
-      />
-      <EditorCommandButton
-        onClick={() => editor?.executeCommand("bold")}
-        Icon={<FontBoldIcon />}
-      />
-      <EditorCommandButton
-        onClick={() => editor?.executeCommand("italic")}
-        Icon={<FontItalicIcon />}
-      />
-      <EditorCommandButton
-        onClick={() => editor?.executeCommand("image")}
-        Icon={<ImageIcon />}
-      />
-    </div>
-  );
-
   return (
-    <div className="relative">
-      <div className="flex bg-background gap-2 items-center justify-between mt-2 mb-10 sticky z-30 p-5">
-        <div className="flex items-center gap-2 text-sm text-forground-muted">
-          <div className="flex gap-4 items-center">
-            <Link href="/dashboard" className="text-forground">
-              <ArrowLeftIcon width={20} height={20} />
-            </Link>
-            {updateMyArticleMutation.isPending ? (
-              <p>{_t("Saving")}...</p>
-            ) : (
-              article?.updated_at && (
-                <p>
-                  <span>
-                    ({_t("Saved")} {formattedTime(article.updated_at, lang)})
-                  </span>
-                </p>
-              )
+    <MarkdownEditorProvider
+      value={watchedBody || ""}
+      onChange={handleBodyContentChange}
+    >
+      <div className="relative">
+        <div className="flex bg-background gap-2 items-center justify-between mt-2 mb-10 sticky z-30 p-5">
+          <div className="flex items-center gap-2 text-sm text-forground-muted">
+            <div className="flex gap-4 items-center">
+              <Link href="/dashboard" className="text-forground">
+                <ArrowLeftIcon width={20} height={20} />
+              </Link>
+              {updateMyArticleMutation.isPending ? (
+                <p>{_t("Saving")}...</p>
+              ) : (
+                article?.updated_at && (
+                  <p>
+                    <span>
+                      ({_t("Saved")} {formattedTime(article.updated_at, lang)})
+                    </span>
+                  </p>
+                )
+              )}
+            </div>
+
+            {uuid && (
+              <p
+                className={clsx("px-2 py-1 text-foreground", {
+                  "bg-green-100": article?.is_published,
+                  "bg-red-100": !article?.is_published,
+                })}
+              >
+                {article?.is_published ? (
+                  <span className="text-success">{_t("Published")}</span>
+                ) : (
+                  <span className="text-destructive">{_t("Draft")}</span>
+                )}
+              </p>
             )}
           </div>
 
           {uuid && (
-            <p
-              className={clsx("px-2 py-1 text-foreground", {
-                "bg-green-100": article?.is_published,
-                "bg-red-100": !article?.is_published,
-              })}
-            >
-              {article?.is_published ? (
-                <span className="text-success">{_t("Published")}</span>
-              ) : (
-                <span className="text-destructive">{_t("Draft")}</span>
-              )}
-            </p>
-          )}
-        </div>
+            <div className="flex gap-2">
+              <button
+                onClick={toggleEditorMode}
+                className="px-4 py-1 hidden md:block font-semibold transition-colors duration-200 rounded-sm hover:bg-muted"
+              >
+                {editorMode === "write" ? _t("Preview") : _t("Editor")}
+              </button>
 
-        {uuid && (
-          <div className="flex gap-2">
-            <button
-              onClick={toggleEditorMode}
-              className="px-4 py-1 hidden md:block font-semibold transition-colors duration-200 rounded-sm hover:bg-muted"
-            >
-              {editorMode === "write" ? _t("Preview") : _t("Editor")}
-            </button>
-
-            <button
-              onClick={handlePublishToggle}
-              className={clsx(
-                "transition-colors hidden md:block duration-200 px-4 py-1 font-semibold cursor-pointer",
-                {
-                  "bg-success text-slate-800": !article?.is_published,
-                  "text-destructive text-destructive-foreground":
-                    article?.is_published,
-                }
-              )}
-            >
-              {article?.is_published ? _t("Unpublish") : _t("Publish")}
-            </button>
-            <button onClick={toggleSettingDrawer.open}>
-              <GearIcon className="w-5 h-5" />
-            </button>
-          </div>
-        )}
-      </div>
-
-      <div className="max-w-[750px] mx-auto p-4 md:p-0">
-        {uuid && (
-          <div className="mb-10">
-            {editorForm.watch("cover_image") ? (
-              <div className="relative overflow-hidden rounded-md">
-                <AppImage
-                  imageSource={editorForm.watch("cover_image")!}
-                  width={1200}
-                  height={630}
-                />
-                <button
-                  onClick={() => {
-                    serverFile.deleteFile(
-                      [editorForm.watch("cover_image")?.key!],
-                      () => {
-                        editorForm.setValue("cover_image", null);
-                        updateMyArticleMutation.mutate({
-                          article_id: uuid,
-                          cover_image: null,
-                        });
-                      }
-                    );
-                  }}
-                  className="absolute flex items-center p-2 rounded bg-destructive text-destructive-foreground top-4 right-4"
-                >
-                  <TrashIcon className="w-6 h-6 mr-1" />
-                  <p>{_t("Delete")}</p>
-                </button>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-4 md:items-center md:flex-row">
-                {/* Cover uploader button group */}
-                <button
-                  onClick={thumbnailDrawerHandler.toggle}
-                  className="flex items-center gap-2 text-forground-muted hover:underline hover:text-primary"
-                >
-                  <PlusIcon className="w-3 h-3" />
-                  <p>{_t("Upload article cover")}</p>
-                </button>
-
-                <button
-                  onClick={unsplashDrawerHandler.toggle}
-                  className="flex items-center gap-2 text-forground-muted hover:underline hover:text-primary"
-                >
-                  <PlusIcon className="w-3 h-3" />
-                  <p>{_t("Pick cover from unsplash")}</p>
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-        <textarea
-          placeholder={_t("Title")}
-          tabIndex={1}
-          rows={1}
-          value={watchedTitle}
-          disabled={
-            articleCreateMutation.isPending || updateMyArticleMutation.isPending
-          }
-          className="w-full text-2xl focus:outline-none bg-background resize-none"
-          ref={titleRef}
-          onBlur={(e) => handleSaveArticleOnBlurTitle(e.target.value)}
-          onChange={handleTitleChange}
-        />
-
-        <div className="flex flex-col justify-between md:items-center md:flex-row">
-          {renderEditorToolbar()}
-        </div>
-
-        <div className="w-full">
-          {editorMode === "write" ? (
-            <textarea
-              // disabled={
-              //   articleCreateMutation.isPending ||
-              //   updateMyArticleMutation.isPending
-              // }
-              tabIndex={2}
-              className="focus:outline-none h-[calc(100vh-120px)] bg-background w-full resize-none"
-              placeholder={_t("Write something stunning...")}
-              ref={bodyRef}
-              value={watchedBody}
-              onChange={handleBodyContentChange}
-            />
-          ) : (
-            <div className="content-typography">
-              {markdocParser(watchedBody ?? "")}
+              <button
+                onClick={handlePublishToggle}
+                className={clsx(
+                  "transition-colors hidden md:block duration-200 px-4 py-1 font-semibold cursor-pointer",
+                  {
+                    "bg-success text-slate-800": !article?.is_published,
+                    "text-destructive text-destructive-foreground":
+                      article?.is_published,
+                  }
+                )}
+              >
+                {article?.is_published ? _t("Unpublish") : _t("Publish")}
+              </button>
+              <button onClick={toggleSettingDrawer.open}>
+                <GearIcon className="w-5 h-5" />
+              </button>
             </div>
           )}
         </div>
+
+        <div className="max-w-[750px] mx-auto p-4 md:p-0">
+          {uuid && (
+            <div className="mb-10">
+              {editorForm.watch("cover_image") ? (
+                <div className="relative overflow-hidden rounded-md">
+                  <AppImage
+                    imageSource={editorForm.watch("cover_image")!}
+                    width={1200}
+                    height={630}
+                  />
+                  <button
+                    onClick={() => {
+                      serverFile.deleteFile(
+                        [editorForm.watch("cover_image")?.key!],
+                        () => {
+                          editorForm.setValue("cover_image", null);
+                          updateMyArticleMutation.mutate({
+                            article_id: uuid,
+                            cover_image: null,
+                          });
+                        }
+                      );
+                    }}
+                    className="absolute flex items-center p-2 rounded bg-destructive text-destructive-foreground top-4 right-4"
+                  >
+                    <TrashIcon className="w-6 h-6 mr-1" />
+                    <p>{_t("Delete")}</p>
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4 md:items-center md:flex-row">
+                  {/* Cover uploader button group */}
+                  <button
+                    onClick={thumbnailDrawerHandler.toggle}
+                    className="flex items-center gap-2 text-forground-muted hover:underline hover:text-primary"
+                  >
+                    <PlusIcon className="w-3 h-3" />
+                    <p>{_t("Upload article cover")}</p>
+                  </button>
+
+                  <button
+                    onClick={unsplashDrawerHandler.toggle}
+                    className="flex items-center gap-2 text-forground-muted hover:underline hover:text-primary"
+                  >
+                    <PlusIcon className="w-3 h-3" />
+                    <p>{_t("Pick cover from unsplash")}</p>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+          <textarea
+            placeholder={_t("Title")}
+            tabIndex={1}
+            rows={1}
+            value={watchedTitle}
+            disabled={
+              articleCreateMutation.isPending ||
+              updateMyArticleMutation.isPending
+            }
+            className="w-full text-2xl focus:outline-none bg-background resize-none"
+            ref={titleRef}
+            onBlur={(e) => handleSaveArticleOnBlurTitle(e.target.value)}
+            onChange={handleTitleChange}
+          />
+
+          <MarkdownEditorContent 
+            bodyRef={bodyRef}
+            onChange={handleBodyContentChange}
+          />
+
+          <div className="w-full">
+            {editorMode === "write" ? (
+              <textarea
+                // disabled={
+                //   articleCreateMutation.isPending ||
+                //   updateMyArticleMutation.isPending
+                // }
+                tabIndex={2}
+                className="focus:outline-none h-[calc(100vh-120px)] bg-background w-full resize-none"
+                placeholder={_t("Write something stunning...")}
+                ref={bodyRef}
+                value={watchedBody}
+                onChange={handleBodyContentChange}
+              />
+            ) : (
+              <div className="content-typography">
+                {markdocParser(watchedBody ?? "")}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {uuid && article && (
+          <ArticleEditorDrawer
+            article={article}
+            open={isOpenSettingDrawer}
+            onClose={toggleSettingDrawer.close}
+            onSave={() => {
+              // silence is good
+            }}
+          />
+        )}
+
+        <Dialog
+          open={isOpenThumbnailDrawer}
+          onOpenChange={thumbnailDrawerHandler.toggle}
+        >
+          <DialogContent className="md:min-w-[650px] pt-10">
+            <ImageDropzoneWithCropper
+              enableCropper
+              label=" "
+              aspectRatio={1.91 / 1}
+              onUploadComplete={(file) => {
+                editorForm.setValue("cover_image", file);
+                thumbnailDrawerHandler.close();
+
+                setTimeout(() => {
+                  updateMyArticleMutation.mutate({
+                    article_id: uuid!,
+                    cover_image: file,
+                  });
+                }, 0);
+              }}
+              onFileDeleteComplete={() => {
+                editorForm.setValue("cover_image", null);
+                thumbnailDrawerHandler.close();
+
+                setTimeout(() => {
+                  updateMyArticleMutation.mutate({
+                    article_id: uuid!,
+                    cover_image: null,
+                  });
+                }, 0);
+              }}
+              prefillFile={editorForm.watch("cover_image")}
+              uploadDirectory={DIRECTORY_NAME.ARTICLE_COVER}
+            />
+          </DialogContent>
+        </Dialog>
+        <Dialog
+          open={isOpenUnsplashDrawer}
+          onOpenChange={unsplashDrawerHandler.toggle}
+        >
+          <DialogContent className="md:min-w-[650px] pt-10">
+            <UnsplashImageGallery
+              aspectRatio={1.91 / 1}
+              onUploadComplete={(file) => {
+                editorForm.setValue("cover_image", file);
+
+                setTimeout(() => {
+                  updateMyArticleMutation.mutate({
+                    article_id: uuid!,
+                    cover_image: file,
+                  });
+                  unsplashDrawerHandler.close();
+                }, 0);
+              }}
+              uploadDirectory={DIRECTORY_NAME.ARTICLE_COVER}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
-
-      {uuid && article && (
-        <ArticleEditorDrawer
-          article={article}
-          open={isOpenSettingDrawer}
-          onClose={toggleSettingDrawer.close}
-          onSave={() => {
-            // silence is good
-          }}
-        />
-      )}
-
-      <Dialog
-        open={isOpenThumbnailDrawer}
-        onOpenChange={thumbnailDrawerHandler.toggle}
-      >
-        <DialogContent className="md:min-w-[650px] pt-10">
-          <ImageDropzoneWithCropper
-            enableCropper
-            label=" "
-            aspectRatio={1.91 / 1}
-            onUploadComplete={(file) => {
-              editorForm.setValue("cover_image", file);
-              thumbnailDrawerHandler.close();
-
-              setTimeout(() => {
-                updateMyArticleMutation.mutate({
-                  article_id: uuid!,
-                  cover_image: file,
-                });
-              }, 0);
-            }}
-            onFileDeleteComplete={() => {
-              editorForm.setValue("cover_image", null);
-              thumbnailDrawerHandler.close();
-
-              setTimeout(() => {
-                updateMyArticleMutation.mutate({
-                  article_id: uuid!,
-                  cover_image: null,
-                });
-              }, 0);
-            }}
-            prefillFile={editorForm.watch("cover_image")}
-            uploadDirectory={DIRECTORY_NAME.ARTICLE_COVER}
-          />
-        </DialogContent>
-      </Dialog>
-      <Dialog
-        open={isOpenUnsplashDrawer}
-        onOpenChange={unsplashDrawerHandler.toggle}
-      >
-        <DialogContent className="md:min-w-[650px] pt-10">
-          <UnsplashImageGallery
-            aspectRatio={1.91 / 1}
-            onUploadComplete={(file) => {
-              editorForm.setValue("cover_image", file);
-
-              setTimeout(() => {
-                updateMyArticleMutation.mutate({
-                  article_id: uuid!,
-                  cover_image: file,
-                });
-                unsplashDrawerHandler.close();
-              }, 0);
-            }}
-            uploadDirectory={DIRECTORY_NAME.ARTICLE_COVER}
-          />
-        </DialogContent>
-      </Dialog>
-    </div>
+    </MarkdownEditorProvider>
   );
 };
 

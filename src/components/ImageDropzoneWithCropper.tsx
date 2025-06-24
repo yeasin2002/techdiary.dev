@@ -43,7 +43,7 @@ const ImageDropzoneWithCropper: React.FC<DropzoneWithCropperProps> = ({
   onUploadComplete,
   onFileDeleteComplete,
   prefillFile,
-  aspectRatio = 1,
+  aspectRatio,
 }) => {
   const { uploadFile, uploading, deleteFile, deleting } = useServerFile();
   const cropperRef = useRef<CropperRef>(null);
