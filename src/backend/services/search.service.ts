@@ -3,16 +3,6 @@ import { and, eq, neq } from "sqlkit";
 import { persistenceRepository } from "../persistence/persistence-repositories";
 
 const index = meilisearchClient.index("articles");
-meilisearchClient
-  .updateIndex("articles", {
-    primaryKey: "id",
-  })
-  .then((res) => {
-    console.log(`Index 'articles' created:`, res);
-  })
-  .catch((error) => {
-    console.error("Error creating index 'articles':", error);
-  });
 
 /**
  * Sync all articles to the search index
