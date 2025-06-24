@@ -292,7 +292,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
               className={clsx(
                 "transition-colors hidden md:block duration-200 px-4 py-1 font-semibold cursor-pointer",
                 {
-                  "bg-success text-success-foreground": !article?.is_published,
+                  "bg-success text-slate-800": !article?.is_published,
                   "text-destructive text-destructive-foreground":
                     article?.is_published,
                 }
