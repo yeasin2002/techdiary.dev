@@ -62,11 +62,12 @@ export const syncAllArticles = async () => {
 export const syncArticleById = async (articleId: string) => {
   try {
     const [article] = await persistenceRepository.article.find({
-      columns: ["id", "title", "body", "cover_image"],
+      columns: ["id", "title", "body", "cover_image", "handle"],
       limit: 1,
       where: and(eq("id", articleId), neq("published_at", null)),
       joins: [
         {
+          as: "user",
           type: "left",
           table: "users",
           on: {
@@ -88,7 +89,7 @@ export const syncArticleById = async (articleId: string) => {
       primaryKey: "id",
     });
 
-    console.log({ syncArticleByIdRes });
+    console.log({ syncArticleByIdRes, article });
 
     return {
       message: `Article ${articleId} synced successfully`,

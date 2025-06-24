@@ -43,7 +43,7 @@ const SearchInput = () => {
   const handleSelect = (hit: any) => {
     // Handle the selection of a search result
     console.log("Selected hit:", hit);
-    router.push(`/@${hit.user.username}/${hit.handle}`);
+    router.push(`/@${hit?.user?.username}/${hit.handle}`);
     setOpen(false);
   };
 
