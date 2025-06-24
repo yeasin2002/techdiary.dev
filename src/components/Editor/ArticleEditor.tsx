@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  Article,
-  DIRECTORY_NAME,
-  IServerFile,
-} from "@/backend/models/domain-models";
+import { Article, DIRECTORY_NAME } from "@/backend/models/domain-models";
 import * as articleActions from "@/backend/services/article.actions";
 import { useTranslation } from "@/i18n/use-translation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,27 +19,25 @@ import React, { useCallback, useRef, useState } from "react";
 import { ArticleRepositoryInput } from "@/backend/services/inputs/article.input";
 import { useAutosizeTextArea } from "@/hooks/use-auto-resize-textarea";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
+import { useServerFile } from "@/hooks/use-file-upload";
 import { useToggle } from "@/hooks/use-toggle";
 import { actionPromisify, formattedTime } from "@/lib/utils";
 import { markdocParser } from "@/utils/markdoc-parser";
 import { useMutation } from "@tanstack/react-query";
 import clsx from "clsx";
+import { TrashIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAppConfirm } from "../app-confirm";
+import AppImage from "../AppImage";
+import ImageDropzoneWithCropper from "../ImageDropzoneWithCropper";
+import { Dialog, DialogContent } from "../ui/dialog";
+import UnsplashImageGallery from "../UnsplashImageGallery";
 import ArticleEditorDrawer from "./ArticleEditorDrawer";
 import EditorCommandButton from "./EditorCommandButton";
 import { useMarkdownEditor } from "./useMarkdownEditor";
-import AppImage from "../AppImage";
-import { TrashIcon } from "lucide-react";
-import { Sheet, SheetContent } from "../ui/sheet";
-import { Dialog, DialogContent } from "../ui/dialog";
-import ImageDropzoneWithCropper from "../ImageDropzoneWithCropper";
-import getFileUrl from "@/utils/getFileUrl";
-import { useServerFile } from "@/hooks/use-file-upload";
-import UnsplashImageGallery from "../UnsplashImageGallery";
 
 interface ArticleEditorProps {
   uuid?: string;
