@@ -43,6 +43,7 @@ import { Dialog, DialogContent } from "../ui/dialog";
 import ImageDropzoneWithCropper from "../ImageDropzoneWithCropper";
 import getFileUrl from "@/utils/getFileUrl";
 import { useServerFile } from "@/hooks/use-file-upload";
+import UnsplashImageGallery from "../UnsplashImageGallery";
 
 interface ArticleEditorProps {
   uuid?: string;
@@ -55,6 +56,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
   const router = useRouter();
   const [isOpenSettingDrawer, toggleSettingDrawer] = useToggle();
   const [isOpenThumbnailDrawer, thumbnailDrawerHandler] = useToggle();
+  const [isOpenUnsplashDrawer, unsplashDrawerHandler] = useToggle();
   const appConfig = useAppConfirm();
   const titleRef = useRef<HTMLTextAreaElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement | null>(null);
@@ -345,7 +347,10 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
                   <p>{_t("Upload article cover")}</p>
                 </button>
 
-                <button className="flex items-center gap-2 text-forground-muted hover:underline hover:text-primary">
+                <button
+                  onClick={unsplashDrawerHandler.toggle}
+                  className="flex items-center gap-2 text-forground-muted hover:underline hover:text-primary"
+                >
                   <PlusIcon className="w-3 h-3" />
                   <p>{_t("Pick cover from unsplash")}</p>
                 </button>
@@ -437,6 +442,18 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
             }}
             prefillFile={editorForm.watch("cover_image")}
             uploadDirectory={DIRECTORY_NAME.ARTICLE_COVER}
+          />
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={isOpenUnsplashDrawer}
+        onOpenChange={unsplashDrawerHandler.toggle}
+      >
+        <DialogContent className="md:min-w-[650px] pt-10">
+          <UnsplashImageGallery
+            onUploadImage={function (image: IServerFile): void {
+              alert(JSON.stringify(image));
+            }}
           />
         </DialogContent>
       </Dialog>

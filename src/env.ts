@@ -4,7 +4,7 @@ import { z } from "zod";
 export const env = createEnv({
   server: {
     NODE_ENV: z.enum(["development", "production", "test"]),
-    // UNSPLASH_CLIENT_ID: z.string(),
+    UNSPLASH_API_KEY: z.string(),
     CLOUDINARY_URL: z.string(),
     GITHUB_CLIENT_ID: z.string(),
     GITHUB_CLIENT_SECRET: z.string(),
@@ -27,7 +27,6 @@ export const env = createEnv({
   },
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
-    // UNSPLASH_CLIENT_ID: process.env.UNSPLASH_CLIENT_ID,
     CLOUDINARY_URL: process.env.CLOUDINARY_URL,
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
@@ -38,6 +37,7 @@ export const env = createEnv({
     MEILISEARCH_ADMIN_API_KEY: process.env.MEILISEARCH_ADMIN_API_KEY,
     NEXT_PUBLIC_MEILISEARCH_SEARCH_API_KEY:
       process.env.NEXT_PUBLIC_MEILISEARCH_SEARCH_API_KEY,
+    UNSPLASH_API_KEY: process.env.UNSPLASH_API_KEY,
 
     S3_ENDPOINT: process.env.S3_ENDPOINT,
     S3_REGION: process.env.S3_REGION,

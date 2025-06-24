@@ -206,3 +206,28 @@ export interface ReactionStatus {
   reaction_type?: REACTION_TYPE;
   reactor_user_ids?: string[];
 }
+
+export interface IUnsplashImage {
+  id: string;
+  slug: string;
+  created_at: Date;
+  updated_at: Date;
+  promoted_at: null;
+  width: number;
+  height: number;
+  color: string;
+  blur_hash: string;
+  description: null | string;
+  alt_description: string;
+  urls: UnsplashImageUrls;
+  likes: number;
+}
+
+interface UnsplashImageUrls {
+  raw: string;
+  full: string;
+  regular: string;
+  small: string;
+  thumb: string;
+  small_s3: string;
+}
