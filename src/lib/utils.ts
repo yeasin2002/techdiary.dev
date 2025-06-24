@@ -96,14 +96,6 @@ export const getImageBase64 = (file: File) => {
   });
 };
 
-export const slugify = (text: string) => {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/[\s_-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-};
-
 export const removeUndefinedFromObject = (obj: any) => {
   const newObj = { ...obj };
   Object.keys(newObj).forEach((key) => {
