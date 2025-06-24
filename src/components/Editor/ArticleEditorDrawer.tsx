@@ -208,9 +208,13 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
                             });
                             const old_tags = form.watch("tag_ids") ?? [];
 
+                            if (!createdResponse.success) {
+                              return;
+                            }
+
                             setSelectedTags(function (draft) {
                               draft.push({
-                                id: createdResponse?.id!,
+                                id: createdResponse.data.id!,
                                 name: name,
                                 created_at: new Date(),
                                 updated_at: new Date(),
@@ -218,7 +222,7 @@ const ArticleEditorDrawer: React.FC<Props> = ({ article, open, onClose }) => {
                             });
                             form.setValue("tag_ids", [
                               ...old_tags,
-                              createdResponse?.id! as string,
+                              createdResponse?.data.id! as string,
                             ]);
                           }}
                           onChange={(e) => {

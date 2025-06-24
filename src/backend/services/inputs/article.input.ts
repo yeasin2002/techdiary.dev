@@ -40,9 +40,10 @@ export const ArticleRepositoryInput = {
     cover_image: z
       .object({
         key: z.string(),
-        provider: z.enum(["cloudinary", "direct"]),
+        provider: z.enum(["cloudinary", "direct", "r2"]),
       })
-      .optional(),
+      .optional()
+      .nullable(),
     is_published: z.boolean().optional(),
   }),
   updateMyArticleInput: z.object({
@@ -58,10 +59,11 @@ export const ArticleRepositoryInput = {
     cover_image: z
       .object({
         key: z.string(),
-        provider: z.enum(["cloudinary", "direct"]),
+        provider: z.enum(["cloudinary", "direct", "r2"]),
         alt: z.string().optional(),
       })
-      .optional(),
+      .optional()
+      .nullable(),
 
     // Optional boolean flag for publication status
     is_published: z.boolean().optional(),

@@ -56,7 +56,10 @@ export const createTag = async (
       },
     ]);
 
-    return response.rows[0];
+    return {
+      success: true as const,
+      data: response.rows[0],
+    };
   } catch (error) {
     return handleActionException(error);
   }

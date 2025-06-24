@@ -59,15 +59,17 @@ export const useServerFile = () => {
   };
 
   // delete files from server
-  const deleteFile = async (keys: string[]) => {
+  const deleteFile = async (keys: string[], cb?: () => void) => {
     setDeleting(true);
 
     fetch(`/api/storage/delete`, {
       method: "POST",
       body: JSON.stringify({ keys }),
-    }).then(() => {
-      setDeleting(false);
-    });
+    })
+      .then(() => {
+        setDeleting(false);
+      })
+      .finally(cb);
   };
 
   return {

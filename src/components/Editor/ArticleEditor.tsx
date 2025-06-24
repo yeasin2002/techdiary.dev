@@ -1,6 +1,10 @@
 "use client";
 
-import { Article } from "@/backend/models/domain-models";
+import {
+  Article,
+  DIRECTORY_NAME,
+  IServerFile,
+} from "@/backend/models/domain-models";
 import * as articleActions from "@/backend/services/article.actions";
 import { useTranslation } from "@/i18n/use-translation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +16,7 @@ import {
   GearIcon,
   HeadingIcon,
   ImageIcon,
+  PlusIcon,
 } from "@radix-ui/react-icons";
 import React, { useCallback, useRef, useState } from "react";
 
@@ -31,6 +36,13 @@ import { useAppConfirm } from "../app-confirm";
 import ArticleEditorDrawer from "./ArticleEditorDrawer";
 import EditorCommandButton from "./EditorCommandButton";
 import { useMarkdownEditor } from "./useMarkdownEditor";
+import AppImage from "../AppImage";
+import { TrashIcon } from "lucide-react";
+import { Sheet, SheetContent } from "../ui/sheet";
+import { Dialog, DialogContent } from "../ui/dialog";
+import ImageDropzoneWithCropper from "../ImageDropzoneWithCropper";
+import getFileUrl from "@/utils/getFileUrl";
+import { useServerFile } from "@/hooks/use-file-upload";
 
 interface ArticleEditorProps {
   uuid?: string;
@@ -39,8 +51,10 @@ interface ArticleEditorProps {
 
 const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
   const { _t, lang } = useTranslation();
+  const serverFile = useServerFile();
   const router = useRouter();
   const [isOpenSettingDrawer, toggleSettingDrawer] = useToggle();
+  const [isOpenThumbnailDrawer, thumbnailDrawerHandler] = useToggle();
   const appConfig = useAppConfirm();
   const titleRef = useRef<HTMLTextAreaElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement | null>(null);
@@ -50,6 +64,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
     defaultValues: {
       title: article?.title || "",
       body: article?.body || "",
+      cover_image: article?.cover_image,
     },
     resolver: zodResolver(ArticleRepositoryInput.updateArticleInput),
   });
@@ -291,10 +306,56 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
       </div>
 
       <div className="max-w-[750px] mx-auto p-4 md:p-0">
+        {uuid && (
+          <div className="mb-10">
+            {editorForm.watch("cover_image") ? (
+              <div className="relative overflow-hidden rounded-md">
+                <AppImage
+                  imageSource={editorForm.watch("cover_image")!}
+                  width={1200}
+                  height={630}
+                />
+                <button
+                  onClick={() => {
+                    serverFile.deleteFile(
+                      [editorForm.watch("cover_image")?.key!],
+                      () => {
+                        editorForm.setValue("cover_image", null);
+                        updateMyArticleMutation.mutate({
+                          article_id: uuid,
+                          cover_image: null,
+                        });
+                      }
+                    );
+                  }}
+                  className="absolute flex items-center p-2 rounded bg-destructive text-destructive-foreground top-4 right-4"
+                >
+                  <TrashIcon className="w-6 h-6 mr-1" />
+                  <p>{_t("Delete")}</p>
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4 md:items-center md:flex-row">
+                {/* Cover uploader button group */}
+                <button
+                  onClick={thumbnailDrawerHandler.toggle}
+                  className="flex items-center gap-2 text-forground-muted hover:underline hover:text-primary"
+                >
+                  <PlusIcon className="w-3 h-3" />
+                  <p>{_t("Upload article cover")}</p>
+                </button>
+
+                <button className="flex items-center gap-2 text-forground-muted hover:underline hover:text-primary">
+                  <PlusIcon className="w-3 h-3" />
+                  <p>{_t("Pick cover from unsplash")}</p>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
         <textarea
           placeholder={_t("Title")}
           tabIndex={1}
-          autoFocus
           rows={1}
           value={watchedTitle}
           disabled={
@@ -313,10 +374,10 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
         <div className="w-full">
           {editorMode === "write" ? (
             <textarea
-              disabled={
-                articleCreateMutation.isPending ||
-                updateMyArticleMutation.isPending
-              }
+              // disabled={
+              //   articleCreateMutation.isPending ||
+              //   updateMyArticleMutation.isPending
+              // }
               tabIndex={2}
               className="focus:outline-none h-[calc(100vh-120px)] bg-background w-full resize-none"
               placeholder={_t("Write something stunning...")}
@@ -342,6 +403,43 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
           }}
         />
       )}
+
+      <Dialog
+        open={isOpenThumbnailDrawer}
+        onOpenChange={thumbnailDrawerHandler.toggle}
+      >
+        <DialogContent className="md:min-w-[650px] pt-10">
+          <ImageDropzoneWithCropper
+            enableCropper
+            label=" "
+            aspectRatio={1.91 / 1}
+            onUploadComplete={(file) => {
+              editorForm.setValue("cover_image", file);
+              thumbnailDrawerHandler.close();
+
+              setTimeout(() => {
+                updateMyArticleMutation.mutate({
+                  article_id: uuid!,
+                  cover_image: file,
+                });
+              }, 0);
+            }}
+            onFileDeleteComplete={() => {
+              editorForm.setValue("cover_image", null);
+              thumbnailDrawerHandler.close();
+
+              setTimeout(() => {
+                updateMyArticleMutation.mutate({
+                  article_id: uuid!,
+                  cover_image: null,
+                });
+              }, 0);
+            }}
+            prefillFile={editorForm.watch("cover_image")}
+            uploadDirectory={DIRECTORY_NAME.ARTICLE_COVER}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -95,10 +95,10 @@ export const slugify = (text: string) => {
     .replace(/^-+|-+$/g, "");
 };
 
-export const removeNullOrUndefinedFromObject = (obj: any) => {
+export const removeUndefinedFromObject = (obj: any) => {
   const newObj = { ...obj };
   Object.keys(newObj).forEach((key) => {
-    if (newObj[key] === null || newObj[key] === undefined) {
+    if (newObj[key] === undefined) {
       delete newObj[key];
     }
   });

@@ -2,10 +2,7 @@
 
 import { pgClient } from "@/backend/persistence/clients";
 import { slugify } from "@/lib/slug-helper.util";
-import {
-  removeMarkdownSyntax,
-  removeNullOrUndefinedFromObject,
-} from "@/lib/utils";
+import { removeMarkdownSyntax, removeUndefinedFromObject } from "@/lib/utils";
 import { addDays } from "date-fns";
 import * as sk from "sqlkit";
 import { and, desc, eq, like, neq, or } from "sqlkit";
@@ -162,7 +159,7 @@ export async function updateMyArticle(
 
     const article = await persistenceRepository.article.update({
       where: and(eq("id", input.article_id), eq("author_id", sessionUserId)),
-      data: removeNullOrUndefinedFromObject({
+      data: removeUndefinedFromObject({
         title: input.title,
         handle: input.handle,
         excerpt: input.excerpt,
