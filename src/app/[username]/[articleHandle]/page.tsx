@@ -87,8 +87,6 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
     throw notFound();
   }
 
-  const parsedHTML = markdocParser(article?.body ?? "");
-
   return (
     <>
       <script
@@ -167,7 +165,9 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
             />
           </div>
 
-          <div className="mx-auto content-typography">{parsedHTML}</div>
+          <div className="mx-auto content-typography">
+            {markdocParser(article?.body ?? "")}
+          </div>
         </div>
 
         <CommentSectionProvider>
