@@ -8,12 +8,7 @@ interface Props {
 }
 
 const Markdown: React.FC<Props> = ({ content }) => {
-  return (
-    <>
-      <h1>parser</h1>
-      {markdocParser(content)}
-    </>
-  );
+  return <>{markdocParser(content)}</>;
 };
 
 export default Markdown;
