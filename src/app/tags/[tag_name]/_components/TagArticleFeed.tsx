@@ -128,6 +128,7 @@ const TagArticleFeed: React.FC<TagArticleFeedProps> = ({ tag }) => {
                 ? getFileUrl(article.user.profile_photo)
                 : "",
               username: article?.user?.username ?? "",
+              is_verified: Boolean(article?.user.is_verified),
             }}
             publishedAt={article?.created_at?.toDateString() ?? ""}
             readingTime={readingTime(article?.body ?? "")}

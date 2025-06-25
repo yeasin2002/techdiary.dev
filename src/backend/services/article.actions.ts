@@ -340,7 +340,7 @@ export async function articleFeed(
             foreignField: "id",
             localField: "author_id",
           },
-          columns: ["id", "name", "username", "profile_photo"],
+          columns: ["id", "name", "username", "profile_photo", "is_verified"],
         } as sk.Join<Article, User>,
       ],
     });
@@ -385,7 +385,7 @@ export async function userArticleFeed(
             foreignField: "id",
             localField: "author_id",
           },
-          columns: ["id", "name", "username", "profile_photo"],
+          columns: ["id", "name", "username", "profile_photo", "is_verified"],
         } as sk.Join<Article, User>,
       ],
     });
@@ -432,6 +432,7 @@ export async function articlesByTag(
         u.name as user_name,
         u.username as user_username,
         u.profile_photo as user_profile_photo,
+        u.is_verified as user_is_verified,
         t.name as tag_name,
         COUNT(*) OVER() as total_count
       FROM articles a
@@ -469,6 +470,7 @@ export async function articlesByTag(
         name: row.user_name,
         username: row.user_username,
         profile_photo: row.user_profile_photo,
+        is_verified: row.user_is_verified,
       },
     }));
 

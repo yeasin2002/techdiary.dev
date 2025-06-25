@@ -11,6 +11,7 @@ import ResourceBookmark from "./ResourceBookmark";
 import ResourceReaction from "./ResourceReaction";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import UserInformationCard from "./UserInformationCard";
+import { VerifiedIcon } from "lucide-react";
 
 interface ArticleCardProps {
   id: string;
@@ -23,6 +24,7 @@ interface ArticleCardProps {
     name: string;
     avatar: string;
     username: string;
+    is_verified: boolean;
   };
   publishedAt: string;
   readingTime: number;
@@ -39,8 +41,6 @@ const ArticleCard = ({
   readingTime,
 }: ArticleCardProps) => {
   const { lang } = useTranslation();
-  const session = useSession();
-  const loginPopup = useLoginPopup();
 
   const articleUrl = useMemo(() => {
     return `/@${author.username}/${handle}`;
@@ -67,12 +67,17 @@ const ArticleCard = ({
           </HoverCardContent>
         </HoverCard>
         <div className="ml-2.5">
-          <Link
-            href={`/@${author.username}`}
-            className="text-sm font-medium text-foreground"
-          >
-            {author.name}
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={`/@${author.username}`}
+              className="text-sm font-medium text-foreground"
+            >
+              {author.name}
+            </Link>
+            {author?.is_verified && (
+              <VerifiedIcon className="size-4 fill-primary" />
+            )}
+          </div>
           <div className="flex items-center text-xs text-muted-foreground">
             <time dateTime={publishedAt.toString()}>
               {formattedTime(new Date(publishedAt), lang)}

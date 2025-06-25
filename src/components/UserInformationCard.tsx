@@ -1,13 +1,14 @@
 "use client";
 
-import { useTranslation } from "@/i18n/use-translation";
-import { Button } from "./ui/button";
 import * as userActions from "@/backend/services/user.action";
-import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "@/i18n/use-translation";
 import { useSession } from "@/store/session.atom";
-import Link from "next/link";
-import Image from "next/image";
 import getFileUrl from "@/utils/getFileUrl";
+import { useQuery } from "@tanstack/react-query";
+import { VerifiedIcon } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "./ui/button";
 
 interface Props {
   userId: string;
@@ -58,7 +59,12 @@ const UserInformationCard: React.FC<Props> = ({ userId }) => {
 
         {/* Name */}
         <div>
-          <h2 className="text-xl font-bold">{query.data?.name}</h2>
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-xl font-bold">{query.data?.name}</h2>
+            {query.data?.is_verified && (
+              <VerifiedIcon className="size-5 fill-primary" />
+            )}
+          </div>
           <p className="text-sm text-muted-foreground">
             {query.data?.username}
           </p>
