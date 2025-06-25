@@ -10,4 +10,5 @@ export enum DatabaseTableName {
   reactions = "reactions",
   tags = "tags",
   article_tag = "article_tag",
+  kv = "kv",
 }

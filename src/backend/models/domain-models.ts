@@ -231,3 +231,9 @@ interface UnsplashImageUrls {
   thumb: string;
   small_s3: string;
 }
+
+export interface KV {
+  id: string;
+  key: string;
+  value: any;
+}

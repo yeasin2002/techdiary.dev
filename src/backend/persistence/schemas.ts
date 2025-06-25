@@ -173,3 +173,9 @@ export const articleTagsTable = pgTable("article_tag", {
   created_at: timestamp("created_at"),
   updated_at: timestamp("updated_at"),
 });
+
+export const KVTable = pgTable("kv", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  key: text("key").notNull().unique(),
+  value: jsonb("value"),
+});
