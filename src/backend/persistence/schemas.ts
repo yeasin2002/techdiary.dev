@@ -15,6 +15,7 @@ export const usersTable = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: varchar("name").notNull(),
   username: varchar("username").notNull(),
+  is_verified: boolean("is_verified").default(false),
   email: varchar("email"),
   profile_photo_url: varchar("profile_photo_url"),
   profile_photo: json("profile_photo").$type<IServerFile>(),

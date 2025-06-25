@@ -2,6 +2,7 @@ export interface User {
   id: string;
   name: string;
   username: string;
+  is_verified?: boolean;
   email: string;
   profile_photo?: IServerFile | null;
   education: string;

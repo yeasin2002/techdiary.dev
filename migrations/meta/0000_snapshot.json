@@ -1,5 +1,5 @@
 {
-  "id": "5197c085-a8e5-4f28-a7eb-cb01556496ff",
+  "id": "062fd6f0-8554-4577-83ed-31e3d3559a47",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -115,13 +115,6 @@
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false
-        },
-        "is_published": {
-          "name": "is_published",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
         },
         "published_at": {
           "name": "published_at",
@@ -843,6 +836,13 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
+        },
+        "is_verified": {
+          "name": "is_verified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
         },
         "email": {
           "name": "email",
