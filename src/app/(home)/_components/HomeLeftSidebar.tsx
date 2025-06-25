@@ -181,7 +181,7 @@ const Sidebar = () => {
           {tags.slice(0, count).map((tag, index) => (
             <Link
               href={tag.link}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 text-forground-muted"
               key={index}
             >
               <Image
