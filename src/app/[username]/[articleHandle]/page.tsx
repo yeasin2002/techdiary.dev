@@ -114,11 +114,18 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
             </div>
           )}
 
+          {/* <pre>{JSON.stringify(article?.user, null, 2)}</pre> */}
+
           {/* User information */}
           <div className="mb-4 flex items-center my-4">
             <div className="relative rounded-full overflow-hidden border transition-transform duration-300 size-10">
-              <Image
-                src={getFileUrl(article?.user?.profile_photo) ?? ""}
+              <img
+                src={
+                  Boolean(article?.user?.profile_photo)
+                    ? getFileUrl(article?.user?.profile_photo)
+                    : "https://api.dicebear.com/9.x/personas/svg?seed=" +
+                      article?.user?.name
+                }
                 alt={article?.user?.username ?? ""}
                 width={40}
                 height={40}

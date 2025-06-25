@@ -56,7 +56,12 @@ const ArticleCard = ({
                 width={32}
                 height={32}
                 unoptimized
-                src={author.avatar ?? ""}
+                src={
+                  Boolean(author.avatar)
+                    ? author.avatar
+                    : "https://api.dicebear.com/9.x/personas/svg?seed=" +
+                      author.name
+                }
                 alt={author.name ?? ""}
                 className="w-full h-full object-cover transition-opacity duration-300 ease-in-out opacity-100"
               />
