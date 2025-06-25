@@ -1,5 +1,5 @@
 .content-typography {
-  @apply prose prose-slate text-foreground;
+  @apply prose prose-slate text-foreground dark:prose-invert;
   @apply max-w-none;
   @apply prose-code:p-0;
   @apply prose-blockquote:text-muted-foreground;
