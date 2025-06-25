@@ -7,6 +7,7 @@ import CommonProviders from "@/components/providers/CommonProviders";
 import I18nProvider from "@/components/providers/I18nProvider";
 import { fontKohinoorBanglaRegular } from "@/lib/fonts";
 import { cookies } from "next/headers";
+import Script from "next/script";
 import React, { PropsWithChildren } from "react";
 
 export const metadata: Metadata = {
@@ -37,6 +38,18 @@ const RootLayout: React.FC<PropsWithChildren> = async ({ children }) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <body style={fontKohinoorBanglaRegular.style}>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-F3VRW4H09N"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-F3VRW4H09N');
+          `}
+        </Script>
         <I18nProvider currentLanguage={_cookies.get("language")?.value || "en"}>
           <CommonProviders session={session}>
             {children}
