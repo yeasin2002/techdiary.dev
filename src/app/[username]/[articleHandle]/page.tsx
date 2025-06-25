@@ -20,6 +20,9 @@ import { eq } from "sqlkit";
 import ArticleSidebar from "./_components/ArticleSidebar";
 import ResourceBookmark from "@/components/ResourceBookmark";
 import Markdown from "@/lib/markdown/Markdown";
+import { Button } from "@/components/ui/button";
+import _t from "@/i18n/_t";
+import EditArticleButton from "./_components/EditArticleButton";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -169,10 +172,20 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
               resource_type="ARTICLE"
               resource_id={article.id}
             />
-            <ResourceBookmark
-              resource_type="ARTICLE"
-              resource_id={article.id}
-            />
+
+            <div className="flex gap-1.5 items-center">
+              {article.user?.id && (
+                <EditArticleButton
+                  article_id={article.id}
+                  article_author_id={article.user?.id}
+                />
+              )}
+
+              <ResourceBookmark
+                resource_type="ARTICLE"
+                resource_id={article.id}
+              />
+            </div>
           </div>
 
           <div className="mx-auto content-typography">
