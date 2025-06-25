@@ -82,6 +82,7 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
     "@context": "https://schema.org",
     "@type": "Article",
     name: article?.title,
+    headline: article?.title,
     image: article?.cover_image ? getFileUrl(article?.cover_image) : undefined,
     description: article?.excerpt ?? removeMarkdownSyntax(article?.body ?? ""),
     url: `https://www.techdiary.dev/@${article?.user?.username}/${article?.handle}`,
