@@ -133,7 +133,7 @@ const DashboardArticleList = () => {
       <div className="flex flex-col divide-y divide-dashed divide-border-color mt-2">
         {feedInfiniteQuery.isFetching &&
           Array.from({ length: 10 }).map((_, i) => (
-            <article key={i} className=" bg-muted h-20 animate-pulse" />
+            <article key={i} className=" bg-muted h-20 animate-pulse" suppressHydrationWarning />
           ))}
 
         {feedInfiniteQuery.data?.pages.map((page) => {
@@ -207,11 +207,9 @@ const DashboardArticleList = () => {
                 </div> */}
                 </div>
                 <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <button className="flex items-center gap-2">
-                      <p className="text-sm md:hidden">{_t("Actions")}</p>
-                      <DotsHorizontalIcon className="h-5 w-5" />
-                    </button>
+                  <DropdownMenuTrigger className="flex items-center gap-2">
+                    <p className="text-sm md:hidden">{_t("Actions")}</p>
+                    <DotsHorizontalIcon className="h-5 w-5" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem asChild>
