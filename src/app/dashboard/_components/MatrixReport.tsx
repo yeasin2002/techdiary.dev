@@ -24,7 +24,7 @@ const MatrixReport = () => {
           <CardContent className="flex flex-col gap-2">
             <p className="text-3xl font-semibold h-9">
               {query.isFetching && (
-                <LoaderIcon className="animate-spin size-8 text-muted-foreground" />
+                <LoaderIcon className="animate-spin size-8 text-muted-foreground" suppressHydrationWarning />
               )}
               {query.data?.total_articles}
             </p>
@@ -38,7 +38,7 @@ const MatrixReport = () => {
           <CardContent className="flex flex-col gap-2">
             <p className="text-3xl font-semibold h-9">
               {query.isFetching && (
-                <LoaderIcon className="animate-spin size-8 text-muted-foreground" />
+                <LoaderIcon className="animate-spin size-8 text-muted-foreground" suppressHydrationWarning />
               )}
               {query.data?.total_comments}
             </p>
