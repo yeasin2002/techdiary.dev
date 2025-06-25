@@ -63,13 +63,7 @@ const layout: React.FC<ProfilePageLayoutProps> = async ({
 
   return (
     <BaseLayout>
-      {/* <pre>
-        {JSON.stringify(
-          { currentPath: sanitizedUsername(currentPath!), username },
-          null,
-          2
-        )}
-      </pre> */}
+      {/* <pre>{JSON.stringify({ profile }, null, 2)}</pre> */}
       <div className="wrapper">
         <div className="grid grid-cols-1 gap-6 my-2 lg:my-6 md:grid-cols-12 lg:gap-10">
           <aside className="md:col-span-3 col-span-full">

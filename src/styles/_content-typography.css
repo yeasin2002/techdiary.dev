@@ -13,7 +13,7 @@
   @apply prose-h4:text-base;
 
   iframe {
-    @apply w-full aspect-[16/9];
+    @apply w-full aspect-video;
   }
 
   .table-of-contents {
