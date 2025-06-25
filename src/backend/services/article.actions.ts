@@ -49,6 +49,7 @@ export async function createMyArticle(
         body: input.body ?? null,
         cover_image: input.cover_image ?? null,
         published_at: input.is_published ? new Date() : null,
+        created_at: new Date(),
         author_id: sessionUserId,
         approved_at: new Date(), // TODO: manually handle this from seperate dashboard
       },
