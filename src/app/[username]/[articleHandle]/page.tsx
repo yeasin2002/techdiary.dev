@@ -38,16 +38,23 @@ export async function generateMetadata(
   const { articleHandle } = await options.params;
   const [article] = await persistenceRepository.article.find({
     where: eq("handle", articleHandle),
-    columns: ["title", "excerpt", "cover_image", "body"],
+    columns: ["title", "handle", "excerpt", "cover_image", "body"],
     limit: 1,
+    joins: [
+      {
+        table: "users",
+        as: "user",
+        on: {
+          localField: "author_id",
+          foreignField: "id",
+        },
+        type: "left",
+        columns: ["id", "username", "name"],
+      },
+    ],
   });
 
-  if (!article.cover_image) {
-    return {
-      title: article.title,
-      description: removeMarkdownSyntax(article.body ?? "", 20),
-    };
-  }
+  console.log(article);
 
   return {
     title: article.title,
@@ -56,7 +63,8 @@ export async function generateMetadata(
       20
     ),
     openGraph: {
-      url: `https://www.techdiary.dev/@${article.user?.username}/${article.handle}`,
+      title: article.title,
+      url: `https://www.techdiary.dev/@${article?.user?.username}/${article?.handle}`,
       type: "article",
       images: [
         {
@@ -78,13 +86,22 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
     "@context": "https://schema.org",
     "@type": "Article",
     name: article?.title,
-    image: getFileUrl(article?.cover_image),
+    image: article?.cover_image ? getFileUrl(article?.cover_image) : undefined,
     description: article?.excerpt ?? removeMarkdownSyntax(article?.body ?? ""),
+    url: `https://www.techdiary.dev/@${article?.user?.username}/${article?.handle}`,
     author: {
       "@type": "Person",
       name: article?.user?.name,
       image: getFileUrl(article?.user?.profile_photo),
       url: `https://www.techdiary.dev/@${article?.user?.username}`,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "TechDiary",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://www.techdiary.dev/og.png",
+      },
     },
     articleBody: removeMarkdownSyntax(article?.body ?? "", 300),
   };
