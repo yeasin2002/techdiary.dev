@@ -329,6 +329,7 @@ export async function articleFeed(
         "cover_image",
         "body",
         "created_at",
+        "published_at",
         "excerpt",
       ],
       joins: [

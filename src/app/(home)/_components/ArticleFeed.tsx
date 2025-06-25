@@ -89,7 +89,7 @@ const ArticleFeed = () => {
                   username: article?.user?.username ?? "",
                   is_verified: Boolean(article?.user?.is_verified),
                 }}
-                publishedAt={article?.created_at.toDateString() ?? ""}
+                publishedAt={article?.published_at?.toDateString() ?? ""}
                 readingTime={readingTime(article?.body ?? "")}
               />
             ))}
