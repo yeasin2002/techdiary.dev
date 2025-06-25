@@ -7,21 +7,17 @@ import {
   CommentSectionProvider,
 } from "@/components/comment-section";
 import HomepageLayout from "@/components/layout/HomepageLayout";
+import ResourceBookmark from "@/components/ResourceBookmark";
 import ResourceReaction from "@/components/ResourceReaction";
+import Markdown from "@/lib/markdown/Markdown";
 import { readingTime, removeMarkdownSyntax } from "@/lib/utils";
 import getFileUrl from "@/utils/getFileUrl";
-import { markdocParser } from "@/lib/markdown/markdoc-parser";
 import { Metadata, NextPage } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Article, WithContext } from "schema-dts";
 import { eq } from "sqlkit";
 import ArticleSidebar from "./_components/ArticleSidebar";
-import ResourceBookmark from "@/components/ResourceBookmark";
-import Markdown from "@/lib/markdown/Markdown";
-import { Button } from "@/components/ui/button";
-import _t from "@/i18n/_t";
 import EditArticleButton from "./_components/EditArticleButton";
 
 interface ArticlePageProps {
