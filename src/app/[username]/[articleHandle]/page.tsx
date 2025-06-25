@@ -53,6 +53,8 @@ export async function generateMetadata(
       20
     ),
     openGraph: {
+      url: `https://www.techdiary.dev/@${article.user?.username}/${article.handle}`,
+      type: "article",
       images: [
         {
           url: getFileUrl(article.cover_image),
