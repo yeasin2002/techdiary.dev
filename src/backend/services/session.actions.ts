@@ -8,11 +8,11 @@ import { cache } from "react";
 import { eq } from "sqlkit";
 import { z } from "zod";
 import { persistenceRepository } from "../persistence/persistence-repositories";
-import { handleActionException } from "./RepositoryException";
+import { ActionException, handleActionException } from "./RepositoryException";
 import { SessionResult, USER_SESSION_KEY } from "./action-type";
 import { UserSessionInput } from "./inputs/session.input";
 import getFileUrl from "@/utils/getFileUrl";
-
+import * as kv from "./kv.action";
 /**
  * Creates a new login session for a user and sets a session cookie.
  *
@@ -35,6 +35,53 @@ export async function createLoginSession(
         user_id: input.user_id,
         device: `${agent.os.name} ${agent.browser.name}`,
         ip: input.request.headers.get("x-forwarded-for") ?? "",
+        last_action_at: new Date(),
+      },
+    ]);
+    _cookies.set(USER_SESSION_KEY.SESSION_TOKEN, token, {
+      path: "/",
+      secure: env.NODE_ENV === "production",
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: "lax",
+    });
+    _cookies.set(USER_SESSION_KEY.SESSION_USER_ID, input.user_id, {
+      path: "/",
+      secure: env.NODE_ENV === "production",
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: "lax",
+    });
+    return {
+      success: true as const,
+      data: insertData.rows,
+    };
+  } catch (error) {
+    return handleActionException(error);
+  }
+}
+
+export async function createLoginSessionForBackdoor(
+  _input: z.infer<typeof UserSessionInput.createBackdoorLoginSessionInput>
+) {
+  const _cookies = await cookies();
+  const token = generateRandomString(120);
+  try {
+    const input =
+      await UserSessionInput.createBackdoorLoginSessionInput.parseAsync(_input);
+    const db_secret = await kv.get("backdoor_secret");
+    if (!db_secret) {
+      throw new ActionException("No secret in db");
+    }
+
+    if (db_secret != input.secret) {
+      throw new ActionException("Invalid secret");
+    }
+
+    const insertData = await persistenceRepository.userSession.insert([
+      {
+        token,
+        user_id: input.user_id,
         last_action_at: new Date(),
       },
     ]);
