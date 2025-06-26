@@ -350,7 +350,7 @@ export async function articleFeed(
     response["nodes"] = response["nodes"].map((article) => {
       return {
         ...article,
-        excerpt: article.excerpt ?? removeMarkdownSyntax(article.body),
+        excerpt: removeMarkdownSyntax(article.body),
       };
     });
 
