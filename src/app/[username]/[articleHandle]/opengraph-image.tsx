@@ -48,7 +48,7 @@ export default async function Image(options: ArticlePageProps) {
       <div
         style={{
           background: "white",
-          fontFamily: "KohinoorBangla",
+          // fontFamily: "KohinoorBangla",
           fontWeight: 400,
           display: "flex",
           flexDirection: "column",
@@ -72,6 +72,7 @@ export default async function Image(options: ArticlePageProps) {
               fontSize: 45,
               padding: 30,
               color: "white",
+              fontFamily: "serif",
             }}
           >
             {article.title}

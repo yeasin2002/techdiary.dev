@@ -50,8 +50,6 @@ export async function generateMetadata(
     ],
   });
 
-  console.log(article);
-
   return {
     title: article.title,
     description: removeMarkdownSyntax(
@@ -62,12 +60,12 @@ export async function generateMetadata(
       title: article.title,
       url: `https://www.techdiary.dev/@${article?.user?.username}/${article?.handle}`,
       type: "article",
-      images: [
-        {
-          url: getFileUrl(article.cover_image),
-          alt: article.title,
-        },
-      ],
+      // images: [
+      //   {
+      //     url: getFileUrl(article.cover_image),
+      //     alt: article.title,
+      //   },
+      // ],
     },
   };
 }
