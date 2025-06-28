@@ -177,6 +177,21 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
 
           <div className="my-6">
             <h1 className="text-2xl font-bold">{article?.title ?? ""}</h1>
+
+            {/* Display tags */}
+            {article?.tags && article.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {article.tags.map((tag) => (
+                  <Link
+                    key={tag.id}
+                    href={`/tags/${tag.name}`}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    #{tag.name}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-between mb-4">

@@ -532,7 +532,37 @@ export async function articleDetailByHandle(article_handle: string) {
       throw new ActionException("Article not found");
     }
 
-    return article;
+    // Fetch tags for the article
+    const sql = String.raw;
+    const tagsQuery = sql`
+      SELECT 
+        t.id,
+        t.name,
+        t.color,
+        t.description,
+        t.created_at,
+        t.updated_at
+      FROM tags t
+      INNER JOIN article_tag at ON t.id = at.tag_id
+      WHERE at.article_id = $1
+      ORDER BY t.name ASC
+    `;
+
+    const tagsResult = await pgClient?.executeSQL<{
+      id: string;
+      name: string;
+      color: string | null;
+      description: string | null;
+      created_at: Date;
+      updated_at: Date;
+    }>(tagsQuery, [article.id]);
+
+    const tags = tagsResult?.rows || [];
+
+    return {
+      ...article,
+      tags,
+    };
   } catch (error) {
     handleActionException(error);
   }
