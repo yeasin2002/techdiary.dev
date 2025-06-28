@@ -1,1 +1,0 @@
-ALTER TABLE "kv" ALTER COLUMN "value" SET DATA TYPE jsonb;

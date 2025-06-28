@@ -1,3 +1,10 @@
+CREATE TABLE "kv" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"key" text NOT NULL,
+	"value" jsonb,
+	CONSTRAINT "kv_key_unique" UNIQUE("key")
+);
+--> statement-breakpoint
 CREATE TABLE "article_tag" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"article_id" uuid NOT NULL,
