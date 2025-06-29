@@ -57,7 +57,7 @@ export async function generateMetadata(
     type: "article",
   };
 
-  if (article.cover_image?.key) {
+  if (article?.cover_image?.key) {
     openGraph["images"] = [
       {
         url: getFileUrl(article.cover_image),
