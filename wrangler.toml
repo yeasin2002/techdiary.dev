@@ -12,10 +12,3 @@ crons = [
 
 [observability.logs]
 enabled = true
-
-# Environment variables for the cron worker
-[vars]
-CRON_TARGET_URL = "https://your-domain.com/api/cron/cleanup-articles"
-
-# You can add these as secrets via wrangler secret put
-# CRON_SECRET = "your-secret-key"

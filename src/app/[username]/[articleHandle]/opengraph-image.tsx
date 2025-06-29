@@ -48,7 +48,7 @@ export default async function Image(options: ArticlePageProps) {
       <div
         style={{
           background: "white",
-          // fontFamily: "KohinoorBangla",
+          fontFamily: "BANGLA_FONT",
           fontWeight: 400,
           display: "flex",
           flexDirection: "column",
@@ -72,7 +72,7 @@ export default async function Image(options: ArticlePageProps) {
               fontSize: 45,
               padding: 30,
               color: "white",
-              fontFamily: "serif",
+              fontFamily: "BANGLA_FONT",
             }}
           >
             {article.title}
@@ -114,10 +114,8 @@ export default async function Image(options: ArticlePageProps) {
       ...size,
       fonts: [
         {
-          name: "KohinoorBangla",
-          data: await getFileLocation(
-            "/public/fonts/KohinoorBangla-Regular.woff"
-          ),
+          name: "BANGLA_FONT",
+          data: await getFileLocation("/public/fonts/HindSiliguri-Regular.ttf"),
           style: "normal",
           weight: 400,
         },
