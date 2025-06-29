@@ -5,6 +5,7 @@ import "../styles/app.css";
 import * as sessionActions from "@/backend/services/session.actions";
 import CommonProviders from "@/components/providers/CommonProviders";
 import I18nProvider from "@/components/providers/I18nProvider";
+import { CookieConsentPopup } from "@/components/CookieConsentPopup";
 import { fontKohinoorBanglaRegular } from "@/lib/fonts";
 import { cookies } from "next/headers";
 import Script from "next/script";
@@ -69,6 +70,7 @@ const RootLayout: React.FC<PropsWithChildren> = async ({ children }) => {
           <CommonProviders session={session}>
             {children}
             <Toaster />
+            <CookieConsentPopup />
           </CommonProviders>
         </I18nProvider>
       </body>
