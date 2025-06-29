@@ -19,6 +19,7 @@ import type { Article, WithContext } from "schema-dts";
 import { eq } from "sqlkit";
 import ArticleSidebar from "./_components/ArticleSidebar";
 import EditArticleButton from "./_components/EditArticleButton";
+import { OpenGraph } from "next/dist/lib/metadata/types/opengraph-types";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -50,23 +51,28 @@ export async function generateMetadata(
     ],
   });
 
+  const openGraph: OpenGraph = {
+    title: article.title,
+    url: `https://www.techdiary.dev/@${article?.user?.username}/${article?.handle}`,
+    type: "article",
+  };
+
+  if (article.cover_image?.key) {
+    openGraph["images"] = [
+      {
+        url: getFileUrl(article.cover_image),
+        alt: article.title,
+      },
+    ];
+  }
+
   return {
     title: article.title,
     description: removeMarkdownSyntax(
       article.excerpt ?? article.body ?? "",
       20
     ),
-    openGraph: {
-      title: article.title,
-      url: `https://www.techdiary.dev/@${article?.user?.username}/${article?.handle}`,
-      type: "article",
-      // images: [
-      //   {
-      //     url: getFileUrl(article.cover_image),
-      //     alt: article.title,
-      //   },
-      // ],
-    },
+    openGraph,
   };
 }
 
