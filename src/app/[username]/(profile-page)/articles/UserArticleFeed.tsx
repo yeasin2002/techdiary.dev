@@ -48,7 +48,7 @@ const UserArticleFeed: React.FC<UserArticleFeedProps> = ({ userId }) => {
   return (
     <>
       {feedInfiniteQuery.isFetching && (
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-10 pt-4">
           <div className="h-56 bg-muted animate-pulse mx-4" />
           <div className="h-56 bg-muted animate-pulse mx-4" />
           <div className="h-56 bg-muted animate-pulse mx-4" />

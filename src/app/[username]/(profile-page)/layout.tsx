@@ -27,6 +27,7 @@ const layout: React.FC<ProfilePageLayoutProps> = async ({
     "profile_photo",
     "created_at",
     "updated_at",
+    "social_links",
   ]);
 
   if (!profile) {
