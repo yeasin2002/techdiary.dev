@@ -4,19 +4,18 @@ import { User } from "@/backend/models/domain-models";
 import { UserActionInput } from "@/backend/services/inputs/user.input";
 import * as userActions from "@/backend/services/user.action";
 import EditorCommandButton from "@/components/Editor/EditorCommandButton";
-import { useMarkdownEditor } from "@/components/Editor/useMarkdownEditor";
+import { MarkdownEditorProvider } from "@/components/Editor/MarkdownEditorProvider";
 import { Button } from "@/components/ui/button";
-import { useAutosizeTextArea } from "@/hooks/use-auto-resize-textarea";
 import { useTranslation } from "@/i18n/use-translation";
-import { markdocParser } from "@/lib/markdown/markdoc-parser";
+import Markdown from "@/lib/markdown/Markdown";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   FontBoldIcon,
   FontItalicIcon,
   HeadingIcon,
-  ImageIcon,
 } from "@radix-ui/react-icons";
 import { useMutation } from "@tanstack/react-query";
+import clsx from "clsx";
 import { Loader } from "lucide-react";
 import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -53,87 +52,142 @@ const ReadmeForm: React.FC<Props> = ({ user }) => {
     resolver: zodResolver(UserActionInput.updateMyProfileInput),
   });
 
-  useAutosizeTextArea(editorRef, form.watch("profile_readme") ?? "");
-
-  const editor = useMarkdownEditor({
-    ref: editorRef,
-    onChange: (value) => form.setValue("profile_readme", value),
-  });
-
-  const renderEditorToolbar = useCallback(
-    () => (
-      <div className="flex w-full gap-6 p-2 my-2 bg-muted">
-        <EditorCommandButton
-          onClick={() => editor?.executeCommand("heading")}
-          Icon={<HeadingIcon />}
-        />
-        <EditorCommandButton
-          onClick={() => editor?.executeCommand("bold")}
-          Icon={<FontBoldIcon />}
-        />
-        <EditorCommandButton
-          onClick={() => editor?.executeCommand("italic")}
-          Icon={<FontItalicIcon />}
-        />
-        {/* <EditorCommandButton
-          onClick={() => editor?.executeCommand("image")}
-          Icon={<ImageIcon />}
-        /> */}
-      </div>
-    ),
-    [editor]
+  const handleBodyContentChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement> | string) => {
+      const value = typeof e === "string" ? e : e.target.value;
+      form.setValue("profile_readme", value);
+    },
+    [form]
   );
 
-  return (
-    <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))}>
-      <div className="flex items-center justify-between">
-        {renderEditorToolbar()}
-        <div className="flex items-center gap-4">
-          {editorMode === "write" && (
-            <Button
-              variant={"link"}
-              className="!px-2"
-              type="button"
-              onClick={() => setEditorMode("preview")}
-            >
-              {_t("Preview Mode")}
-            </Button>
-          )}
-          {editorMode === "preview" && (
-            <Button
-              variant={"link"}
-              className="!px-2"
-              type="button"
-              onClick={() => setEditorMode("write")}
-            >
-              {_t("Write Mode")}
-            </Button>
-          )}
-        </div>
-      </div>
-      <div className="w-full">
-        {editorMode === "write" ? (
-          <textarea
-            disabled={mutation.isPending}
-            tabIndex={2}
-            className="focus:outline-none p-2 border bg-background w-full resize-none"
-            placeholder={_t("Write something stunning...")}
-            ref={editorRef}
-            value={form.watch("profile_readme") ?? ""}
-            onChange={(e) => form.setValue("profile_readme", e.target.value)}
-          />
-        ) : (
-          <div className="content-typography">
-            {markdocParser(form.watch("profile_readme") ?? "")}
-          </div>
-        )}
-      </div>
+  const toggleEditorMode = useCallback(
+    () => setEditorMode((mode) => (mode === "write" ? "preview" : "write")),
+    []
+  );
 
-      <Button type="submit" className="mt-2" disabled={mutation.isPending}>
-        {mutation.isPending && <Loader className="animate-spin" />}
-        {_t("Save")}
-      </Button>
-    </form>
+  const executeCommand = useCallback((command: string) => {
+    const textarea = editorRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const selectedText = text.substring(start, end);
+    let newText = "";
+    let newStart = start;
+    let newEnd = end;
+
+    switch (command) {
+      case "heading":
+        newText = text.substring(0, start) + `## ${selectedText}` + text.substring(end);
+        newStart = start + 3;
+        newEnd = end + 3;
+        break;
+      case "bold":
+        newText = text.substring(0, start) + `**${selectedText}**` + text.substring(end);
+        newStart = start + 2;
+        newEnd = end + 2;
+        break;
+      case "italic":
+        newText = text.substring(0, start) + `*${selectedText}*` + text.substring(end);
+        newStart = start + 1;
+        newEnd = end + 1;
+        break;
+      default:
+        return;
+    }
+
+    form.setValue("profile_readme", newText);
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(newStart, newEnd);
+    }, 0);
+  }, [form]);
+
+  return (
+    <MarkdownEditorProvider
+      value={form.watch("profile_readme") || ""}
+      onChange={handleBodyContentChange}
+    >
+      <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))}>
+        <div className="relative">
+          {/* Header with editor controls */}
+          <div className="flex bg-background gap-2 items-center justify-between mb-6 sticky z-30 p-4 border-b">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <h3 className="font-semibold text-foreground">{_t("Profile README")}</h3>
+              {mutation.isPending && (
+                <span className="text-muted-foreground">{_t("Saving")}...</span>
+              )}
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={toggleEditorMode}
+                className="px-4 py-1 font-semibold transition-colors duration-200 rounded-sm hover:bg-muted"
+              >
+                {editorMode === "write" ? _t("Preview") : _t("Editor")}
+              </button>
+            </div>
+          </div>
+
+          <div className="max-w-[750px] mx-auto p-4">
+            {/* Editor Toolbar */}
+            <div className="flex w-full gap-4 p-3 mb-4 bg-muted rounded-md">
+              <EditorCommandButton
+                onClick={() => executeCommand("heading")}
+                Icon={<HeadingIcon />}
+              />
+              <EditorCommandButton
+                onClick={() => executeCommand("bold")}
+                Icon={<FontBoldIcon />}
+              />
+              <EditorCommandButton
+                onClick={() => executeCommand("italic")}
+                Icon={<FontItalicIcon />}
+              />
+            </div>
+
+            {/* Editor Content */}
+            <div className="w-full">
+              {editorMode === "write" ? (
+                <textarea
+                  disabled={mutation.isPending}
+                  tabIndex={2}
+                  className="focus:outline-none p-4 border bg-background w-full resize-none min-h-[400px] rounded-md"
+                  placeholder={_t("Write something stunning...")}
+                  ref={editorRef}
+                  value={form.watch("profile_readme") ?? ""}
+                  onChange={handleBodyContentChange}
+                />
+              ) : (
+                <div className="content-typography p-4 border rounded-md min-h-[400px] bg-muted/10">
+                  {form.watch("profile_readme") ? (
+                    <Markdown content={form.watch("profile_readme") ?? ""} />
+                  ) : (
+                    <p className="text-muted-foreground italic">{_t("Nothing to preview")}</p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Save Button */}
+            <div className="flex justify-end mt-6">
+              <Button 
+                type="submit" 
+                disabled={mutation.isPending}
+                className={clsx("px-6 py-2", {
+                  "bg-primary/80": mutation.isPending
+                })}
+              >
+                {mutation.isPending && <Loader className="animate-spin mr-2 h-4 w-4" />}
+                {_t("Save")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </MarkdownEditorProvider>
   );
 };
 

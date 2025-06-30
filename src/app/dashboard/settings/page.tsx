@@ -5,6 +5,7 @@ import GeneralForm from "./_components/GeneralForm";
 import SocialMediaForm from "./_components/SocialMediaForm";
 import ReadmeForm from "./_components/ReadmeForm";
 import { authID } from "@/backend/services/session.actions";
+import { MarkdownEditorProvider } from "@/components/Editor/MarkdownEditorProvider";
 
 const SettingsPage = async () => {
   const auth_id = await authID();
