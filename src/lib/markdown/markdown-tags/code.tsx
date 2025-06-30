@@ -24,8 +24,8 @@ export const CodeTag: React.FC<Props> = (props) => {
             toast.success(_t("Code copied"));
           }}
         >
-          <Clipboard className="size-4" />
-          {_t("Copy")}
+          <Clipboard className="size-4 text-white" />
+          <span className="text-white">{_t("Copy")}</span>
         </button>
         <SyntaxHighlighter
           language={props.language ?? "js"}
