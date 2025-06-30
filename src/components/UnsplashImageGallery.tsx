@@ -3,13 +3,14 @@ import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { useTranslation } from "@/i18n/use-translation";
 import { actionPromisify } from "@/lib/utils";
 import { UploadIcon } from "@radix-ui/react-icons";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Input } from "./ui/input";
 import ImageCropperModal from "./ImageCropperModal";
 import { useToggle } from "@/hooks/use-toggle";
 import { DIRECTORY_NAME, IServerFile } from "@/backend/models/domain-models";
+import VisibilitySensor from "./VisibilitySensor";
 
 interface IProp {
   onUploadComplete: (url: IServerFile) => void;
@@ -23,18 +24,29 @@ const UnsplashImageGallery: React.FC<IProp> = ({
   uploadDirectory,
 }) => {
   const { _t } = useTranslation();
-  const [q, setQ] = useState("programming");
+  const [q, setQ] = useState("");
   const [selectedURL, setSelectedURL] = useState("");
   const [cropperOpened, cropperModalHandle] = useToggle();
   const debouncedSearchQuery = useDebouncedCallback((searchTerm: string) => {
     setQ(searchTerm);
   }, 500);
 
-  const query = useQuery({
+  const query = useInfiniteQuery({
     queryKey: ["unsplash", q],
-    queryFn: () => actionPromisify(searchUnsplash(q)),
-    enabled: !!q,
+    queryFn: ({ pageParam }) =>
+      actionPromisify(searchUnsplash(q || "programming", pageParam)),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      console.log(lastPage.meta);
+      if (!lastPage?.meta?.hasNextPage) return undefined;
+      return lastPage?.meta?.currentPage + 1;
+    },
   });
+
+  const data = useMemo(
+    () => query.data?.pages?.flatMap((page) => page?.results || []) || [],
+    [query.data]
+  );
 
   return (
     <>
@@ -56,13 +68,13 @@ const UnsplashImageGallery: React.FC<IProp> = ({
           />
         </div>
         <div className="max-h-120 overflow-y-auto">
-          {query.isPending && (
+          {query.isPending && !query.data && (
             <div className="grid place-content-center h-20">
               <Loader className="animate-spin" />
             </div>
           )}
           <div className="max-w-full gap-5 columns-2 sm:gap-8 lg:columns-3 [&>img:not(:first-child)]:mt-8">
-            {query.data?.results?.map((image) => (
+            {data.map((image) => (
               <div
                 key={image.id}
                 onClick={() => {
@@ -77,6 +89,15 @@ const UnsplashImageGallery: React.FC<IProp> = ({
                 </div>
               </div>
             ))}
+          </div>
+
+          <div className="text-center my-2">
+            <button
+              className="text-sm cursor-pointer"
+              onClick={() => query.fetchNextPage()}
+            >
+              {query.isFetchingNextPage ? "Loading..." : "Load more"}
+            </button>
           </div>
         </div>
       </div>
