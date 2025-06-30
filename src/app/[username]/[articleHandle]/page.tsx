@@ -173,10 +173,7 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
                   )}
                 </time>
                 <span className="mx-1.5">·</span>
-                <span>
-                  {readingTime(removeMarkdownSyntax(article?.body ?? "")!)} min
-                  read
-                </span>
+                <span>{readingTime(article?.body ?? "")} min read</span>
               </div>
             </div>
           </div>
