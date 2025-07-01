@@ -51,6 +51,19 @@ const RootLayout: React.FC<PropsWithChildren> = async ({ children }) => {
             gtag('config', 'G-F3VRW4H09N');
           `}
         </Script>
+        <Script id="sw-register" strategy="afterInteractive">
+          {`
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                  console.log('SW registered: ', registration);
+                }).catch(function(registrationError) {
+                  console.log('SW registration failed: ', registrationError);
+                });
+              });
+            }
+          `}
+        </Script>
         <script
           id="hothar"
           dangerouslySetInnerHTML={{
