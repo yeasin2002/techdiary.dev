@@ -6,6 +6,7 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: [],
+    scrollRestoration: true,
   },
   images: {
     remotePatterns: [

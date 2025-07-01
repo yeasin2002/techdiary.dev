@@ -69,7 +69,7 @@ export default function manifest(): MetadataRoute.Manifest {
       },
     ],
     categories: ["productivity", "education", "technology"],
-    lang: "en",
+    lang: "bn",
     dir: "ltr",
   };
 }
