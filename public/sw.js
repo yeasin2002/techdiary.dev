@@ -1,5 +1,5 @@
-const CACHE_NAME = "techdiary-v1.10";
-const urlsToCache = ["/", "/manifest.json", "/offline.html"];
+const CACHE_NAME = "techdiary-v1.11";
+const urlsToCache = ["/", "/manifest.webmanifest", "/offline.html"];
 
 // Install event
 self.addEventListener("install", (event) => {
