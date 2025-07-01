@@ -35,52 +35,79 @@ export const UserActionInput = {
     social_links: z
       .object({
         github: z
-          .string()
-          .url()
-          .regex(/^https:\/\/(www\.)?github\.com\/[A-Za-z0-9_-]+\/?$/, {
-            message: "Invalid GitHub profile URL",
-          })
+          .union([
+            z.literal(""),
+            z
+              .string()
+              .url()
+              .regex(/^https:\/\/(www\.)?github\.com\/[A-Za-z0-9_-]+\/?$/, {
+                message: "Invalid GitHub profile URL",
+              }),
+          ])
           .optional(),
         x: z
-          .string()
-          .url()
-          .regex(
-            /^https:\/\/(www\.)?(twitter\.com|x\.com)\/[A-Za-z0-9_]+\/?$/,
-            {
-              message: "Invalid X (Twitter) profile URL",
-            }
-          )
+          .union([
+            z.literal(""),
+            z
+              .string()
+              .url()
+              .regex(
+                /^https:\/\/(www\.)?(twitter\.com|x\.com)\/[A-Za-z0-9_]+\/?$/,
+                {
+                  message: "Invalid X (Twitter) profile URL",
+                }
+              ),
+          ])
           .optional(),
         linkedin: z
-          .string()
-          .url()
-          .regex(/^https:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9_-]+\/?$/, {
-            message: "Invalid LinkedIn profile URL",
-          })
+          .union([
+            z.literal(""),
+            z
+              .string()
+              .url()
+              .regex(
+                /^https:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9_-]+\/?$/,
+                {
+                  message: "Invalid LinkedIn profile URL",
+                }
+              ),
+          ])
           .optional(),
         facebook: z
-          .string()
-          .url()
-          .regex(/^https:\/\/(www\.)?facebook\.com\/[A-Za-z0-9.]+\/?$/, {
-            message: "Invalid Facebook profile URL",
-          })
+          .union([
+            z.literal(""),
+            z
+              .string()
+              .url()
+              .regex(/^https:\/\/(www\.)?facebook\.com\/[A-Za-z0-9.]+\/?$/, {
+                message: "Invalid Facebook profile URL",
+              }),
+          ])
           .optional(),
         instagram: z
-          .string()
-          .url()
-          .regex(/^https:\/\/(www\.)?instagram\.com\/[A-Za-z0-9_.]+\/?$/, {
-            message: "Invalid Instagram profile URL",
-          })
+          .union([
+            z.literal(""),
+            z
+              .string()
+              .url()
+              .regex(/^https:\/\/(www\.)?instagram\.com\/[A-Za-z0-9_.]+\/?$/, {
+                message: "Invalid Instagram profile URL",
+              }),
+          ])
           .optional(),
         youtube: z
-          .string()
-          .url()
-          .regex(
-            /^https:\/\/(www\.)?youtube\.com\/(c|channel|user)\/[A-Za-z0-9_-]+\/?$/,
-            {
-              message: "Invalid YouTube profile URL",
-            }
-          )
+          .union([
+            z.literal(""),
+            z
+              .string()
+              .url()
+              .regex(
+                /^https:\/\/(www\.)?youtube\.com\/(c|channel|user)\/[A-Za-z0-9_-]+\/?$/,
+                {
+                  message: "Invalid YouTube profile URL",
+                }
+              ),
+          ])
           .optional(),
       })
       .optional(),

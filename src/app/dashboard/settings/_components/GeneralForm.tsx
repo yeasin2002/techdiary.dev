@@ -198,7 +198,11 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
             <FormItem>
               <FormLabel>{_t("Bio")}</FormLabel>
               <FormControl>
-                <Textarea className="py-6" {...field} />
+                <Textarea
+                  className="py-6"
+                  onChange={field.onChange}
+                  value={field.value ?? ""}
+                />
               </FormControl>
               <FormDescription />
               <FormMessage />
@@ -213,7 +217,11 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
             <FormItem>
               <FormLabel>{_t("Education")}</FormLabel>
               <FormControl>
-                <Input className="py-6" {...field} />
+                <Input
+                  className="py-6"
+                  onChange={field.onChange}
+                  value={field.value ?? ""}
+                />
               </FormControl>
               <FormDescription />
               <FormMessage />
@@ -228,7 +236,11 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
             <FormItem>
               <FormLabel>{_t("Designation")}</FormLabel>
               <FormControl>
-                <Input className="py-6" {...field} />
+                <Input
+                  className="py-6"
+                  onChange={field.onChange}
+                  value={field.value ?? ""}
+                />
               </FormControl>
               <FormDescription />
               <FormMessage />
@@ -243,7 +255,11 @@ const GeneralForm: React.FC<Props> = ({ user }) => {
             <FormItem>
               <FormLabel>{_t("Location")}</FormLabel>
               <FormControl>
-                <Input className="py-6" {...field} />
+                <Input
+                  className="py-6"
+                  onChange={field.onChange}
+                  value={field.value ?? ""}
+                />
               </FormControl>
               <FormDescription />
               <FormMessage />

@@ -49,12 +49,9 @@ const UserArticleFeed: React.FC<UserArticleFeedProps> = ({ userId }) => {
     <>
       {feedInfiniteQuery.isFetching && (
         <div className="flex flex-col gap-10 pt-4">
-          <div className="h-56 bg-muted animate-pulse mx-4" />
-          <div className="h-56 bg-muted animate-pulse mx-4" />
-          <div className="h-56 bg-muted animate-pulse mx-4" />
-          <div className="h-56 bg-muted animate-pulse mx-4" />
-          <div className="h-56 bg-muted animate-pulse mx-4" />
-          <div className="h-56 bg-muted animate-pulse mx-4" />
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="h-56 bg-muted animate-pulse mx-4" />
+          ))}
         </div>
       )}
 
