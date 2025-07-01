@@ -1,4 +1,4 @@
-const CACHE_NAME = "techdiary-v1.9";
+const CACHE_NAME = "techdiary-v1.10";
 const urlsToCache = ["/", "/manifest.json", "/offline.html"];
 
 // Install event
