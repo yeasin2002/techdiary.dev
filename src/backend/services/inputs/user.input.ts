@@ -102,7 +102,7 @@ export const UserActionInput = {
               .string()
               .url()
               .regex(
-                /^https:\/\/(www\.)?youtube\.com\/(c|channel|user)\/[A-Za-z0-9_-]+\/?$/,
+                /^https:\/\/(www\.)?youtube\.com\/(@[A-Za-z0-9_-]+|(c|channel|user)\/[A-Za-z0-9_-]+)\/?$/,
                 {
                   message: "Invalid YouTube profile URL",
                 }
