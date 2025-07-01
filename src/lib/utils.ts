@@ -167,3 +167,7 @@ export const actionPromisify = async <T = any>(
 
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(() => resolve("Hello"), ms));
+
+export const getAvatarPlaceholder = (name: string) => {
+  return `https://api.dicebear.com/9.x/personas/svg?seed=${name}`;
+};

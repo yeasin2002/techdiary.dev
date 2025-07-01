@@ -1,17 +1,13 @@
 "use server";
 
+import { filterUndefined } from "@/lib/utils";
 import { and, desc, eq } from "sqlkit";
 import { z } from "zod";
 import { User } from "../models/domain-models";
 import { persistenceRepository } from "../persistence/persistence-repositories";
 import { ActionException, handleActionException } from "./RepositoryException";
 import { UserActionInput } from "./inputs/user.input";
-import { drizzleClient } from "@/backend/persistence/clients";
-import { usersTable } from "@/backend/persistence/schemas";
 import { authID } from "./session.actions";
-import { filterUndefined } from "@/lib/utils";
-import { ActionResult } from "next/dist/server/app-render/types";
-import { ActionResponse } from "../models/action-contracts";
 
 /**
  * Creates or syncs a user account from a social login provider.
@@ -38,7 +34,7 @@ export async function bootSocialUser(
         await persistenceRepository.user.insert([
           {
             name: input.name,
-            username: input.username,
+            username: input.username.toLowerCase(),
             email: input.email,
             profile_photo: input.profile_photo,
             bio: input.bio ?? "",
@@ -97,7 +93,7 @@ export async function updateMyProfile(
     where: eq("id", sessionUser!),
     data: filterUndefined<User>({
       name: input.name,
-      username: input.username,
+      username: input.username?.toLowerCase(),
       email: input.email,
       profile_photo: input.profile_photo,
       education: input.education,

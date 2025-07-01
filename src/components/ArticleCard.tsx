@@ -1,17 +1,15 @@
 "use client";
 
 import { useTranslation } from "@/i18n/use-translation";
-import { formattedTime } from "@/lib/utils";
-import { useSession } from "@/store/session.atom";
+import { formattedTime, getAvatarPlaceholder } from "@/lib/utils";
+import { VerifiedIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
-import { useLoginPopup } from "./app-login-popup";
 import ResourceBookmark from "./ResourceBookmark";
 import ResourceReaction from "./ResourceReaction";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import UserInformationCard from "./UserInformationCard";
-import { VerifiedIcon } from "lucide-react";
 
 interface ArticleCardProps {
   id: string;
@@ -59,8 +57,7 @@ const ArticleCard = ({
                 src={
                   Boolean(author.avatar)
                     ? author.avatar
-                    : "https://api.dicebear.com/9.x/personas/svg?seed=" +
-                      author.name
+                    : getAvatarPlaceholder(author.name)
                 }
                 alt={author.name ?? ""}
                 className="w-full h-full object-cover transition-opacity duration-300 ease-in-out opacity-100"

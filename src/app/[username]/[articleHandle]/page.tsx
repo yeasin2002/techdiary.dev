@@ -10,16 +10,20 @@ import HomepageLayout from "@/components/layout/HomepageLayout";
 import ResourceBookmark from "@/components/ResourceBookmark";
 import ResourceReaction from "@/components/ResourceReaction";
 import Markdown from "@/lib/markdown/Markdown";
-import { readingTime, removeMarkdownSyntax } from "@/lib/utils";
+import {
+  getAvatarPlaceholder,
+  readingTime,
+  removeMarkdownSyntax,
+} from "@/lib/utils";
 import getFileUrl from "@/utils/getFileUrl";
 import { Metadata, NextPage } from "next";
+import { OpenGraph } from "next/dist/lib/metadata/types/opengraph-types";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Article, WithContext } from "schema-dts";
 import { eq } from "sqlkit";
 import ArticleSidebar from "./_components/ArticleSidebar";
 import EditArticleButton from "./_components/EditArticleButton";
-import { OpenGraph } from "next/dist/lib/metadata/types/opengraph-types";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -144,8 +148,7 @@ const Page: NextPage<ArticlePageProps> = async ({ params }) => {
                 src={
                   Boolean(article?.user?.profile_photo)
                     ? getFileUrl(article?.user?.profile_photo)
-                    : "https://api.dicebear.com/9.x/personas/svg?seed=" +
-                      article?.user?.name
+                    : getAvatarPlaceholder(article?.user?.name ?? "")
                 }
                 alt={article?.user?.username ?? ""}
                 width={40}
