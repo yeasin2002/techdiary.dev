@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React, { createContext, useCallback, useContext, useState } from "react";
 import TechdiaryLogo from "./logos/TechdiaryLogo";
-import { AlertDialog, AlertDialogContent } from "./ui/alert-dialog";
 import { Dialog, DialogContent } from "./ui/dialog";
 
 interface ContextType {
