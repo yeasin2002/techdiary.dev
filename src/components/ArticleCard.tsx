@@ -17,6 +17,7 @@ interface ArticleCardProps {
   handle: string;
   excerpt: string;
   coverImage?: string;
+  galleryImages?: string[];
   author: {
     id: string;
     name: string;
@@ -37,6 +38,7 @@ const ArticleCard = ({
   author,
   publishedAt,
   readingTime,
+  galleryImages,
 }: ArticleCardProps) => {
   const { lang } = useTranslation();
 
@@ -116,6 +118,22 @@ const ArticleCard = ({
             </div>
           </Link>
         )}
+
+        <div className="grid gap-2 grid-cols-2  auto-rows-auto">
+          {galleryImages?.map((image) => (
+            <Link
+              key={image}
+              href={articleUrl}
+              className="relative rounded-sm overflow-hidden group cursor-pointer"
+            >
+              <img
+                src={image}
+                alt={title}
+                className="w-full h-auto object-cover"
+              />
+            </Link>
+          ))}
+        </div>
       </div>
 
       <div className="mt-4 flex items-center justify-between">

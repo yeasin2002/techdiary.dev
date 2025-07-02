@@ -50,6 +50,20 @@ export function removeMarkdownSyntax(md?: string | null, words_count = 65) {
     .join(" ");
 }
 
+export function extractImageUrlsFromMarkdown(markdown: string): string[] {
+  const imageRegex = /!\[.*?\]\((.*?)\)/g;
+  const urls: string[] = [];
+  let match: RegExpExecArray | null;
+
+  while ((match = imageRegex.exec(markdown)) !== null) {
+    if (match[1]) {
+      urls.push(match[1]);
+    }
+  }
+
+  return urls;
+}
+
 export function readingTime(text: string) {
   const wordsPerMinute = 120;
   const textWithoutPunctuation = text.replace(/[.,!?;:]/g, "");
