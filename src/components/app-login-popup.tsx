@@ -1,18 +1,12 @@
 "use client";
 
-import React, { createContext, useCallback, useContext, useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "./ui/alert-dialog";
 import { useTranslation } from "@/i18n/use-translation";
 import Link from "next/link";
-import TechdiaryLogo from "./logos/TechdiaryLogo";
-import { Button } from "./ui/button";
 import { useSearchParams } from "next/navigation";
+import React, { createContext, useCallback, useContext, useState } from "react";
+import TechdiaryLogo from "./logos/TechdiaryLogo";
+import { AlertDialog, AlertDialogContent } from "./ui/alert-dialog";
+import { Dialog, DialogContent } from "./ui/dialog";
 
 interface ContextType {
   show: () => void;
@@ -41,8 +35,8 @@ export function AppLoginPopupProvider({
   return (
     <Context.Provider value={{ show, closeModal }}>
       {children}
-      <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-        <AlertDialogContent aria-describedby={undefined}>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent>
           <div className="flex flex-col items-center gap-4">
             <Link href="/" className="flex items-center gap-2">
               <TechdiaryLogo />
@@ -72,8 +66,8 @@ export function AppLoginPopupProvider({
               <span className="text-sm">{_t("Login with Github")}</span>
             </Link>
           </div>
-        </AlertDialogContent>
-      </AlertDialog>
+        </DialogContent>
+      </Dialog>
     </Context.Provider>
   );
 }
