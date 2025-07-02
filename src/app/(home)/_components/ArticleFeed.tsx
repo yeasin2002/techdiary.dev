@@ -83,7 +83,10 @@ const ArticleFeed = () => {
                 coverImage={getFileUrl(article?.cover_image!)}
                 galleryImages={
                   !article?.cover_image
-                    ? extractImageUrlsFromMarkdown(article?.body ?? "")
+                    ? extractImageUrlsFromMarkdown(article?.body ?? "")?.splice(
+                        0,
+                        4
+                      )
                     : []
                 }
                 author={{

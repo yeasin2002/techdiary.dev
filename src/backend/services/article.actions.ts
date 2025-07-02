@@ -351,7 +351,6 @@ export async function articleFeed(
       return {
         ...article,
         excerpt: removeMarkdownSyntax(article.body),
-        gallery_image_urls: [],
       };
     });
 
