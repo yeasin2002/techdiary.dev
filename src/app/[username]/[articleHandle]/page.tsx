@@ -76,6 +76,9 @@ export async function generateMetadata(
       article.excerpt ?? article.body ?? "",
       20
     ),
+    other: {
+      "last-updated": article.published_at?.toString() ?? new Date().toString(),
+    },
     openGraph,
   };
 }
