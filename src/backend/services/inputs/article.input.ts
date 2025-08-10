@@ -18,7 +18,7 @@ export const ArticleRepositoryInput = {
   }),
 
   createMyArticleInput: z.object({
-    title: z.string(),
+    title: z.string().optional(),
     excerpt: z.string().optional().nullable(),
     body: z.string().optional().nullable(),
     cover_image: z

@@ -118,9 +118,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
         });
       } else {
         articleCreateMutation.mutate({
-          title: watchedTitle?.length
-            ? (watchedTitle ?? "untitled")
-            : "untitled",
+          title: watchedTitle?.trim() || undefined,
           body,
         });
       }
@@ -142,10 +140,13 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article, uuid }) => {
 
   const handleSaveArticleOnBlurTitle = useCallback(
     (title: string) => {
-      if (!uuid && title) {
+      if (!uuid && title.trim()) {
         articleCreateMutation.mutate({
-          title,
+          title: title.trim(),
         });
+      } else if (!uuid && !title.trim()) {
+        // Create article with no title, backend will generate untitled-XXXXXX
+        articleCreateMutation.mutate({});
       }
     },
     [uuid, articleCreateMutation]
